@@ -1,9 +1,9 @@
 #header_wrapper {
 	position:fixed;
-	width: 1040px;
-	height: 60px;
-	background-image: url("../images/bg_header.gif");
-	background-repeat: repeat;
+	width: 100%;
+        min-width: 500px;
+	height: 150px;
+	background-color: #000;
 	margin: 0 auto;
 }
 
@@ -15,7 +15,7 @@
 	height: 59px;
 	width: 194px;
 	float: left;
-	background-image: url("../public/images/logo.png");
+	/*background-image: url("../images/navigation.png");*/
 	margin-left: 8%;
 }
 
@@ -39,7 +39,7 @@
 
 #top_nav li a {
 	text-decoration: none;
-	font-size: 0px;
+
 	width: 90px;
 	height: 59px;
 	display: block;
@@ -48,7 +48,7 @@
 li#sort_by {
 	width: 90px;
 	height: 59px;
-	/*background-image: url("../images/navigation.png");*/
+	background-image: url("../images/navigation.png");
 	background-position: 0 0;
 }
 
@@ -59,7 +59,7 @@ li#sort_by:hover{
 li#submit {
 	width: 80px;
 	height: 59px;
-	/*background-image: url("../images/navigation.png");*/
+	background-image: url("../images/navigation.png");
 	background-position: -91px 0;
 }
 
@@ -70,7 +70,7 @@ li#submit:hover{
 li#search{
 	width: 90px;
 	height: 59px;
-	/*background-image: url("../images/navigation.png");*/
+	background-image: url("../images/navigation.png");
 	background-position: -172px 0;
 }
 
