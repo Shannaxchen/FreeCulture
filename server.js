@@ -31,6 +31,18 @@ app.configure('production', function(){
 });
 
 //route
+app.get('/',function(request,response){
+		/*var q = conn.query("SELECT DISTINCT room FROM messages WHERE time >= strftime('%s','now') - 300");
+		var str='';
+		q.on('row', function(row){
+				str=str+'<p>Join this room: <a href="/'+row.room+'">'+row.room+'</a>'+'</p>';
+			}).on('end',function(){
+				response.render('index.html',{title:"Chatroom",extrainfo:str});
+			});
+		if (request.session.name==null)
+			loggedin=false;*/
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+		});
 
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");

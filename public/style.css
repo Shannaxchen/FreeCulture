@@ -1,0 +1,108 @@
+#header_wrapper {
+	position:fixed;
+	width: 1040px;
+	height: 60px;
+	background-image: url("../images/bg_header.gif");
+	background-repeat: repeat;
+	margin: 0 auto;
+}
+
+#header_wrapper *{
+	display: inline;
+}
+
+#logo {
+	height: 59px;
+	width: 194px;
+	float: left;
+	background-image: url("../public/images/logo.png");
+	margin-left: 8%;
+}
+
+#logo a{
+	text-decoration: none;
+	display: block;
+	width: 194px;
+	height:59px;
+	font-size: 0;
+}
+
+#top_nav ul {
+	padding: .2em 1em;
+	list-style-type: none;
+}
+
+#top_nav li{
+	float: left;
+	text-align: center;
+}
+
+#top_nav li a {
+	text-decoration: none;
+	font-size: 0px;
+	width: 90px;
+	height: 59px;
+	display: block;
+}
+
+li#sort_by {
+	width: 90px;
+	height: 59px;
+	/*background-image: url("../images/navigation.png");*/
+	background-position: 0 0;
+}
+
+li#sort_by:hover{
+	background-position: 0 -59px;
+}
+
+li#submit {
+	width: 80px;
+	height: 59px;
+	/*background-image: url("../images/navigation.png");*/
+	background-position: -91px 0;
+}
+
+li#submit:hover{
+	background-position: -91px -59px;
+}
+
+li#search{
+	width: 90px;
+	height: 59px;
+	/*background-image: url("../images/navigation.png");*/
+	background-position: -172px 0;
+}
+
+li#search:hover{
+	background-position: -172px -59px;
+}
+
+
+div#footer_nav {
+	background-color: #000;
+	margin-top:20px;
+	height: 24px;
+	width: 100%;
+        min-width: 500px;
+}
+
+#footer_nav_wrapper ul {
+	list-style-type: none;
+	text-align: right;
+}
+
+#footer_nav_wrapper ul li {
+  	display:inline;
+	font-family:"ff-dagny-web-pro-1","ff-dagny-web-pro-2","Helvetica Neue", Helvetica, Arial, sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+        font-size:10px;
+
+}
+
+#footer_nav_wrapper ul li a {
+	text-decoration: none;
+	padding:.2em 1em;
+        color:white;
+}
