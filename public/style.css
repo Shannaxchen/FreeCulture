@@ -1,7 +1,18 @@
+body{
+	margin: 0 auto;
+	min-width:800px;
+	width:1200px;
+}
+
+head, body, header, a, li, p {
+	font-family: 'Roboto+Condensed', sans-serif;
+}
+
 #header_wrapper {
 	position:fixed;
 	width: 100%;
-        min-width: 500px;
+        max-width: 1200px;
+	min-width:800px;
 	height: 150px;
 	background-color: #000;
 	margin: 0 auto;
@@ -12,19 +23,15 @@
 }
 
 #logo {
-	height: 59px;
-	width: 194px;
 	float: left;
-	/*background-image: url("../images/navigation.png");*/
-	margin-left: 8%;
+	padding: 0;
+	margin-top: 0;
+	margin-left:10px;
 }
 
 #logo a{
 	text-decoration: none;
 	display: block;
-	width: 194px;
-	height:59px;
-	font-size: 0;
 }
 
 #top_nav ul {
@@ -33,22 +40,30 @@
 }
 
 #top_nav li{
+	padding-right:20px;
 	float: left;
 	text-align: center;
+	text-transform: uppercase;
+	font-size: 20px;
+}
+
+#top_nav li:last-child{
+	padding-right:0px;
 }
 
 #top_nav li a {
+	padding-top:120px;
 	text-decoration: none;
-
+	color: #FFF;
 	width: 90px;
 	height: 59px;
 	display: block;
 }
 
 li#sort_by {
+	padding-left: 35px;
 	width: 90px;
 	height: 59px;
-	background-image: url("../images/navigation.png");
 	background-position: 0 0;
 }
 
@@ -63,7 +78,7 @@ li#submit {
 }
 
 li#submit:hover{
-	background-position: -91px -59px;
+	background-position: -91px -59px;
 }
 
 li#search{
@@ -76,13 +91,56 @@ li#search:hover{
 	background-position: -172px -59px;
 }
 
+li#adspace{
+	height: 150px;
+	float: right;
+}
+
+div#left_sidebar{
+	display: block;
+	padding-top: 150px;
+	width: 180px;
+}
+
+#calendar{
+	height: 200px;
+
+}
+#blurb{
+	font-weight: bold;
+	border-top:1px solid gray;
+	border-bottom:1px solid gray;
+	font-size: 15px;
+}
+#categories{
+	font-weight: bold;
+}
+
+#categories li {
+	margin-left: -40px;
+	list-style-type: none;
+}
+
+#categories li a{
+	text-decoration: none;
+	font-size: 15px;
+}
+
+#categories li a:visited{
+	color: #EB0299;
+}
+
+#post_container{
+	float:right;
+}
 
 div#footer_nav {
 	background-color: #000;
 	margin-top:20px;
 	height: 24px;
 	width: 100%;
-        min-width: 500px;
+        max-width: 1200px;
+	min-width:800px;
 }
 
 #footer_nav_wrapper ul {
@@ -92,7 +150,6 @@ div#footer_nav {
 
 #footer_nav_wrapper ul li {
   	display:inline;
-	font-family:"ff-dagny-web-pro-1","ff-dagny-web-pro-2","Helvetica Neue", Helvetica, Arial, sans-serif;
 	text-transform: uppercase;
 	font-weight: bold;
         font-size:10px;

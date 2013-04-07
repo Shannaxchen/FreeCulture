@@ -44,6 +44,10 @@ app.get('/',function(request,response){
 		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
 		});
 
+app.get('/admin',function(request,response){
+
+	});
+
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");
 });
