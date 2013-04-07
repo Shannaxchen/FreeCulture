@@ -24,9 +24,8 @@ head, body, header, a, li, p {
 
 #logo {
 	float: left;
-	padding: 0;
+	padding-right: 40px;
 	margin-top: 0;
-	margin-left:10px;
 }
 
 #logo a{
@@ -40,7 +39,7 @@ head, body, header, a, li, p {
 }
 
 #top_nav li{
-	padding-right:20px;
+	padding-right:40px;
 	float: left;
 	text-align: center;
 	text-transform: uppercase;
@@ -97,6 +96,7 @@ li#adspace{
 }
 
 div#left_sidebar{
+	position: fixed;
 	display: block;
 	padding-top: 150px;
 	width: 180px;
@@ -135,9 +135,11 @@ div#left_sidebar{
 }
 
 div#footer_nav {
+	bottom: 0;
+	position: fixed;
+	margin-bottom: 20px;
 	background-color: #000;
-	margin-top:20px;
-	height: 24px;
+	height: 36px;
 	width: 100%;
         max-width: 1200px;
 	min-width:800px;
@@ -146,6 +148,7 @@ div#footer_nav {
 #footer_nav_wrapper ul {
 	list-style-type: none;
 	text-align: right;
+	padding-bottom:20px;
 }
 
 #footer_nav_wrapper ul li {
@@ -153,7 +156,6 @@ div#footer_nav {
 	text-transform: uppercase;
 	font-weight: bold;
         font-size:10px;
-
 }
 
 #footer_nav_wrapper ul li a {
