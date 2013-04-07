@@ -124,6 +124,7 @@ div#left_sidebar{
 #categories li a{
 	text-decoration: none;
 	font-size: 15px;
+	color: #000;
 }
 
 #categories li a:visited{
@@ -134,9 +135,19 @@ div#left_sidebar{
 	float:right;
 }
 
+#about_us, #contact{
+	margin-top: 200px;
+	margin-left: 300px;
+}
+
+div#body_stuff{
+	display: inline-block;
+
+}
+
 div#footer_nav {
 	bottom: 0;
-	position: fixed;
+	position: absolute;
 	margin-bottom: 20px;
 	background-color: #000;
 	height: 36px;
@@ -152,13 +163,15 @@ div#footer_nav {
 }
 
 #footer_nav_wrapper ul li {
-  	display:inline;
+  	display:inline-block;
 	text-transform: uppercase;
 	font-weight: bold;
         font-size:10px;
+	
 }
 
 #footer_nav_wrapper ul li a {
+	display:inline-block;
 	text-decoration: none;
 	padding:.2em 1em;
         color:white;

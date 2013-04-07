@@ -48,6 +48,14 @@ app.get('/admin',function(request,response){
 
 	});
 
+app.get('/about',function(request,response){
+		response.render('about.html',{title:"About Us"});
+});
+
+app.get('/contact',function(request,response){
+		response.render('about.html',{title:"About Us"});
+});
+
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");
 });
