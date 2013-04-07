@@ -29,3 +29,9 @@ app.configure('development', function(){
 app.configure('production', function(){
   app.use(express.errorHandler());
 });
+
+//route
+
+app.listen(8080, function(){
+  console.log("FreeCulture server listening on 8080");
+});
