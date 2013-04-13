@@ -8,6 +8,19 @@
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer');
 				calJEC.showCalendar();
+
+				calJEC.linkDates(
+				  [
+				    {
+				      linkedDate: 20130413,
+				      dateLink: 'http://calendar.ilsen.net'
+				    },
+				    {
+				      linkedDate: 20130442,
+				      dateLink: 'http://monkeystapping.com'
+				    }
+				  ]
+				);
 		</script>
 
 		<title>{{title}}</title>
