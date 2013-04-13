@@ -1,5 +1,5 @@
 body{
-	margin: 0 auto;
+	margin-top: 0;
 	min-width:800px;
 	width:1024px;
 }
@@ -11,11 +11,10 @@ head, body, header, a, li, p {
 #header_wrapper {
 	position:fixed;
 	width: 100%;
-        max-width: 1024px;
+       
 	min-width:800px;
 	height: 150px;
 	background-color: #000;
-	margin: 0 auto;
 }
 
 #header_wrapper *{
@@ -192,6 +191,7 @@ table.JEC td.dayToday {
 
 #post_container{
 	margin-top: 150px;
+	margin-left: 300px;
 	position:absolute;
 }
 
@@ -214,7 +214,6 @@ div#footer_nav {
 	background-color: #000;
 	height: 36px;
 	width: 100%;
-        max-width: 1024px;
 	min-width:800px;
 }
 
@@ -244,12 +243,40 @@ div#footer_nav {
 	height: 307px;
 	width: 307px;
 	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
+}
+
+.post img{
+	display:block;
+	height: 150px;
+	width: 280px;
+	margin: 10px 10px 0 12px
 }
 
 h1, h2, h3, h4 {
 	margin-left: 5px;
+	font-family: Helvetica;
+	font-size: small;
 }
 
-p{
+.post p{
+	position:absolute;
 	color: transparent;
+	width: 280px;
+	height: 150px;
+}
+
+h1{
+	font-size: x-small;
+	text-transform: uppercase;
+}
+
+h2{
+	text-transform: capitalize;
+	font-size: large;
+}
+
+h3{
+	display:inline;
+	color:gray;
 }
