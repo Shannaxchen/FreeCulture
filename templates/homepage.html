@@ -4,6 +4,75 @@
 		<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type='text/css'>
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
+		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script type="text/javascript">
+					  var myCalendar = new JEC('myCalendarContainer',{
+						tableClass: 'styledCalendar',
+						firstMonth: 201003,
+						lastMonth: 201010,
+						firstDayOfWeek: 2,
+						specialDays: [ 1, 7 ],
+						linkNewWindow: false,
+						weekdays: [
+						    "Sunday",
+						    "Monday",
+						    "Tuesday",
+						    "Wednesday",
+						    "Thursday",
+						    "Friday",
+						    "Saturday"
+						  ]
+						});
+
+					myCal.defineEvents(
+					  [
+					    {
+					      eventDate: 20100407,
+					      eventDescription: 'JEC 2.0 Released',
+					      eventLink: 'http://calendar.ilsen.net'
+					    },
+					    {
+					      eventDate: 20090101,
+					      eventDescription: 'MonkeysTapping Launched!',
+					      eventLink: 'http://monkeystapping.com'
+					    },
+					    { eventDate: 20100705, eventDescription: 'Kevin\'s Birthday' },
+					    { eventDate: 20090705, eventDescription: 'Kevin\'s BIG Birthday!' }
+					  ]
+					);
+
+					myCal.linkDates(
+					  [
+					    {
+					      linkedDate: 20100407,
+					      dateLink: 'http://calendar.ilsen.net'
+					    },
+					    {
+					      linkedDate: 20090101,
+					      dateLink: 'http://monkeystapping.com'
+					    }
+					  ]
+					);
+
+					myCal.styleDates(
+					  [
+					    {
+					      styledDate: 20110528,
+					      dateClass: 'memorialDayWeekend'
+					    },
+					    {
+					      styledDate: 20110529,
+					      dateClass: 'memorialDayWeekend'
+					    },
+					    {
+					      styledDate: 20110530,
+					      dateClass: 'memorialDayWeekend'
+					    }
+					  ]
+					);
+					  myCalendar.showCalendar(201304);
+		</script>
+
 		<title>{{title}}</title>
 	</head>
 	<body>
@@ -20,7 +89,8 @@
 		</header>
 		<div id="body_stuff">
 			<div id="left_sidebar">
-				<div id = "calendar">
+				<div id = "myCalendarContainer">
+					
 				</div>
 				<div id="blurb">
 				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
