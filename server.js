@@ -6,7 +6,7 @@ var app = express();
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, date INTEGER, body TEXT, linkto TEXT)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
 
 //configuration
 app.configure(function(){
@@ -33,25 +33,35 @@ app.configure('production', function(){
 
 //all possible category IDs.
 var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6, $7,$8)',["Architecture", "asdasdasd", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130420", "20130425","2400","hey", "#"]).on('error',console.error);
 
 //route
 app.get('/',function(request,response){
-			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE date > "+modify_d+" ORDER BY date DESC";
+			var today = new Date();
+			var modify_d = moment(today).format('YYYYMMDD')
+			console.log(modify_d)
+			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
 			var q = conn.query(sql);
 			var post_html='';
+			console.log(q);
 			q.on('row', function(row){
-					post_html += "<div class ='post'>"
-					post_html += "<img src =" + row.image + "/>"
-					post_html += "<p>" + row.body + "</p>"
-					post_html += "<h1>" + row.category + "</h1>"
-					post_html += "<h2>" + row.title + "</h2>"
-					post_html += "<h3>" + row.date + "</h3>"
+					post_html += "<div class ='post'>";
+					post_html += "<img src =" + row.image + "/>";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
 					post_html += "</div>"
 				}).on('end',function(){
 					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
 			});
-		});
 
+		});
+app.get('/submit',function(request,response){
+
+});
 app.get('/:Category',function(request,response){
 		var cat;
 		for (var i = 0; i < categoryIDS.length; i++){
@@ -66,23 +76,32 @@ app.get('/:Category',function(request,response){
 			//format of the date will be 6 digits: YearMonthDay
 			//so keep this in mind for the "SUBMIT" option
 			var today = new Date();
-			var d = today.getDate();
-			var modify_d = moment(d).format('YYMMDD')
-			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 AND date > "+modify_d+" ORDER BY date DESC";
+			var modify_d = moment(today).format('YYYYMMDD')
+			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 AND enddate > "+modify_d+" ORDER BY startdate DESC";
 			var q = conn.query(sql,[cat]);
 			var post_html='';
 			q.on('row', function(row){
-					post_html += "<div class ='post'>"
-					post_html += "<img src =" + row.image + "/>"
-					post_html += "<p>" + row.body + "</p>"
-					post_html += "<h1>" + row.category + "</h1>"
-					post_html += "<h2>" + row.title + "</h2>"
-					post_html += "<h3>" + row.date + "</h3>"
+					post_html += "<div class ='post'>";
+					post_html += "<img src =" + row.image + "/>";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
 					post_html += "</div>"
 				}).on('end',function(){
 					response.render('homepage.html',{title:cat, posts:post_html});
 			});
 		}
+});
+
+app.get('/submit',function(request,response){
+
+});
+
+app.get('/search',function(request,response){
+
 });
 
 app.get('/about',function(request,response){
