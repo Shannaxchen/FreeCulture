@@ -1,7 +1,7 @@
 body{
 	margin: 0 auto;
 	min-width:800px;
-	width:1200px;
+	width:1024px;
 }
 
 head, body, header, a, li, p {
@@ -11,7 +11,7 @@ head, body, header, a, li, p {
 #header_wrapper {
 	position:fixed;
 	width: 100%;
-        max-width: 1200px;
+        max-width: 1024px;
 	min-width:800px;
 	height: 150px;
 	background-color: #000;
@@ -127,7 +127,52 @@ div#left_sidebar{
 	color: #000;
 }
 
-#categories li a:visited{
+
+#Architecture:visited{
+	color: #EB0299;
+}
+
+#Art:visited{
+	color: #EB0299;
+}
+
+#Dance:visited{
+	color: #EB0299;
+}
+
+#Design:visited{
+	color: #EB0299;
+}
+
+#Film:visited{
+	color: #EB0299;
+}
+
+#Food:visited{
+	color: #EB0299;
+}
+
+#Food:visited{
+	color: #EB0299;
+}
+
+#Fun:visited{
+	color: #EB0299;
+}
+
+#Lecture/Talk:visited{
+	color: #EB0299;
+}
+
+#Music:visited{
+	color: #EB0299;
+}
+
+#Theater:visited{
+	color: #EB0299;
+}
+
+#Tours:visited{
 	color: #EB0299;
 }
 
@@ -136,8 +181,10 @@ div#left_sidebar{
 }
 
 #about_us, #contact{
-	margin-top: 200px;
-	margin-left: 300px;
+	margin-top: 175px;
+	margin-left: 200px;
+	text-align: justify;
+	margin-right: 20px;
 }
 
 div#body_stuff{
@@ -152,7 +199,7 @@ div#footer_nav {
 	background-color: #000;
 	height: 36px;
 	width: 100%;
-        max-width: 1200px;
+        max-width: 1024px;
 	min-width:800px;
 }
 

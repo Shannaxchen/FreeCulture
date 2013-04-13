@@ -48,12 +48,65 @@ app.get('/admin',function(request,response){
 
 	});
 
+app.get('/Architecture',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Art',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Dance',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Design',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Film',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Food',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Fun',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/LectureTalk',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Music',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+app.get('/Theater',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
+
+app.get('/Tours',function(request,response){
+		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+});
+
 app.get('/about',function(request,response){
 		response.render('about.html',{title:"About Us"});
 });
 
 app.get('/contact',function(request,response){
+		response.render('contact.html',{title:"About Us"});
+});
+
+app.get('/about.html',function(request,response){
 		response.render('about.html',{title:"About Us"});
+});
+
+app.get('/contact.html',function(request,response){
+		response.render('contact.html',{title:"About Us"});
 });
 
 app.listen(8080, function(){
