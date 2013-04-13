@@ -106,10 +106,16 @@ div#left_sidebar{
 	height: 200px;
 
 }
-
+table.JEC {
+	text-align: center;
+	color: #696969;
+}
+table.JEC a{
+	color: #696969;
+	font-size: 15px;
+}
 table.JEC thead th {
-  background-color: #696969;
-  color: white;
+  color: black;
   font-size: 16px;
   font-weight: bold;
   margin: 5px;
@@ -240,10 +246,15 @@ div#footer_nav {
 }
 
 .post {
+	margin-left: 500px;
 	display:inline-block;
 	height: 307px;
 	width: 307px;
 	background-image: url("/public/images/post.png");
+}
+.post img{
+       height: 150px;
+       width: 280px;
 }
 
 h1, h2, h3, h4 {
@@ -253,3 +264,4 @@ h1, h2, h3, h4 {
 p{
 	color: transparent;
 }
+
