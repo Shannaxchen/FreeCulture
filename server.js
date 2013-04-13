@@ -46,7 +46,7 @@ app.get('/',function(request,response){
 			console.log(q);
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + "/>";
+					post_html += "<img src =" + row.image + ">";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
@@ -82,7 +82,7 @@ app.get('/:Category',function(request,response){
 			var post_html='';
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + "/>";
+					post_html += "<img src =" + row.image + ">";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
