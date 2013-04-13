@@ -191,7 +191,8 @@ table.JEC td.dayToday {
 }
 
 #post_container{
-	float:right;
+	margin-top: 150px;
+	position:absolute;
 }
 
 #about_us, #contact, #error_message{
@@ -236,4 +237,19 @@ div#footer_nav {
 	text-decoration: none;
 	padding:.2em 1em;
         color:white;
+}
+
+.post {
+	display:inline-block;
+	height: 307px;
+	width: 307px;
+	background-image: url("/public/images/post.png");
+}
+
+h1, h2, h3, h4 {
+	margin-left: 5px;
+}
+
+p{
+	color: transparent;
 }
