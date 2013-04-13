@@ -1,6 +1,7 @@
 var express = require('express');
 var anyDB = require('any-db');
 var engines = require('consolidate');
+var moment = require('moment');
 var app = express();
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 
@@ -30,11 +31,25 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+//all possible category IDs.
 var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
 
 //route
 app.get('/',function(request,response){
-				response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE date > "+modify_d+" ORDER BY date DESC";
+			var q = conn.query(sql);
+			var post_html='';
+			q.on('row', function(row){
+					post_html += "<div class ='post'>"
+					post_html += "<img src =" + row.image + "/>"
+					post_html += "<p>" + row.body + "</p>"
+					post_html += "<h1>" + row.category + "</h1>"
+					post_html += "<h2>" + row.title + "</h2>"
+					post_html += "<h3>" + row.date + "</h3>"
+					post_html += "</div>"
+				}).on('end',function(){
+					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
+			});
 		});
 
 app.get('/:Category',function(request,response){
@@ -48,15 +63,24 @@ app.get('/:Category',function(request,response){
 			response.render('error.html',{title:"Error"});
 		}
 		else{
-			//format of the date will be 6 digits: Year/Month/Day
+			//format of the date will be 6 digits: YearMonthDay
 			//so keep this in mind for the "SUBMIT" option
-			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 ORDER BY date DESC";
+			var today = new Date();
+			var d = today.getDate();
+			var modify_d = moment(d).format('YYMMDD')
+			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 AND date > "+modify_d+" ORDER BY date DESC";
 			var q = conn.query(sql,[cat]);
-			var str='';
+			var post_html='';
 			q.on('row', function(row){
-					str=str+"BUILD THE STRING";
+					post_html += "<div class ='post'>"
+					post_html += "<img src =" + row.image + "/>"
+					post_html += "<p>" + row.body + "</p>"
+					post_html += "<h1>" + row.category + "</h1>"
+					post_html += "<h2>" + row.title + "</h2>"
+					post_html += "<h3>" + row.date + "</h3>"
+					post_html += "</div>"
 				}).on('end',function(){
-					response.render('homepage.html',{title:cat, posts:str});
+					response.render('homepage.html',{title:cat, posts:post_html});
 			});
 		}
 });
