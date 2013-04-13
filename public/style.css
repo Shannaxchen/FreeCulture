@@ -180,7 +180,7 @@ div#left_sidebar{
 	float:right;
 }
 
-#about_us, #contact{
+#about_us, #contact, #error_message{
 	margin-top: 175px;
 	margin-left: 200px;
 	text-align: justify;

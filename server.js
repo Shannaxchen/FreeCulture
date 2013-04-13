@@ -5,7 +5,7 @@ var app = express();
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, date INTEGER, body TEXT, linkto TEXT)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, date INTEGER, body TEXT, linkto TEXT)');
 
 //configuration
 app.configure(function(){
@@ -30,67 +30,35 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
+var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
+
 //route
 app.get('/',function(request,response){
-		/*var q = conn.query("SELECT DISTINCT room FROM messages WHERE time >= strftime('%s','now') - 300");
-		var str='';
-		q.on('row', function(row){
-				str=str+'<p>Join this room: <a href="/'+row.room+'">'+row.room+'</a>'+'</p>';
-			}).on('end',function(){
-				response.render('index.html',{title:"Chatroom",extrainfo:str});
-			});
-		if (request.session.name==null)
-			loggedin=false;*/
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+				response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
 		});
 
-app.get('/admin',function(request,response){
-
-	});
-
-app.get('/Architecture',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Art',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Dance',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Design',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Film',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Food',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Fun',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/LectureTalk',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Music',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-app.get('/Theater',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
-});
-
-
-app.get('/Tours',function(request,response){
-		response.render('homepage.html',{title:"Culture On The Cheap", posts:"hi"});
+app.get('/:Category',function(request,response){
+		var cat;
+		for (var i = 0; i < categoryIDS.length; i++){
+			if (categoryIDS[i]==request.params.Category){
+				cat = request.params.Category;
+			}
+		}
+		if (cat == null){
+			response.render('error.html',{title:"Error"});
+		}
+		else{
+			//format of the date will be 6 digits: Year/Month/Day
+			//so keep this in mind for the "SUBMIT" option
+			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 ORDER BY date DESC";
+			var q = conn.query(sql,[cat]);
+			var str='';
+			q.on('row', function(row){
+					str=str+"BUILD THE STRING";
+				}).on('end',function(){
+					response.render('homepage.html',{title:cat, posts:str});
+			});
+		}
 });
 
 app.get('/about',function(request,response){
@@ -98,7 +66,7 @@ app.get('/about',function(request,response){
 });
 
 app.get('/contact',function(request,response){
-		response.render('contact.html',{title:"About Us"});
+		response.render('contact.html',{title:"Contact Us"});
 });
 
 app.get('/about.html',function(request,response){
@@ -106,8 +74,12 @@ app.get('/about.html',function(request,response){
 });
 
 app.get('/contact.html',function(request,response){
-		response.render('contact.html',{title:"About Us"});
+		response.render('contact.html',{title:"Contact Us"});
 });
+
+app.get('/admin',function(request,response){
+
+	});
 
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");
