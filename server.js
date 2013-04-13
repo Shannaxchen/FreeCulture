@@ -59,50 +59,26 @@ app.get('/',function(request,response){
 			});
 
 		});
-app.get('/submit',function(request,response){
 
-});
-app.get('/:Category',function(request,response){
-		var cat;
-		for (var i = 0; i < categoryIDS.length; i++){
-			if (categoryIDS[i]==request.params.Category){
-				cat = request.params.Category;
-			}
-		}
-		if (cat == null){
-			response.render('error.html',{title:"Error"});
-		}
-		else{
-			//format of the date will be 6 digits: YearMonthDay
-			//so keep this in mind for the "SUBMIT" option
-			var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD')
-			var sql = "SELECT DISTINCT category,title,image,date,body,linkto FROM posts WHERE category=$1 AND enddate > "+modify_d+" ORDER BY startdate DESC";
-			var q = conn.query(sql,[cat]);
-			var post_html='';
-			q.on('row', function(row){
-					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + ">";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
-					post_html += "</div>"
-				}).on('end',function(){
-					response.render('homepage.html',{title:cat, posts:post_html});
-			});
-		}
-});
+
 
 app.get('/submit',function(request,response){
-
+		response.render('submit.html',{title:"Submit A Post!"});
 });
+
+app.post('/submit/form',function(request,response){
+		//DO MORE THINGS TO HANDLE THE POST SUBMISSION
+		response.render('homepage.html',{title:"Your post has been submitted!",posts:"<p>Your event has been submitted! We are reviewing it right now.</p>"});
+		});
 
 app.get('/search',function(request,response){
-
+		response.render('search.html',{title:"Search"});
 });
+
+app.post('/search/form',function(request,response){
+		//DO MORE THINGS TO lace the sql query together from the request
+		response.render('homepage.html',{title:"Your post has been submitted!",posts:post_html});
+		});
 
 app.get('/about',function(request,response){
 		response.render('about.html',{title:"About Us"});
@@ -123,6 +99,40 @@ app.get('/contact.html',function(request,response){
 app.get('/admin',function(request,response){
 
 	});
+
+app.get('/:Category',function(request,response){
+		var cat;
+		for (var i = 0; i < categoryIDS.length; i++){
+			if (categoryIDS[i]==request.params.Category){
+				cat = request.params.Category;
+			}
+		}
+		if (cat == null){
+			response.render('error.html',{title:"Error"});
+		}
+		else{
+			//format of the date will be 6 digits: YearMonthDay
+			//so keep this in mind for the "SUBMIT" option
+			var today = new Date();
+			var modify_d = moment(today).format('YYYYMMDD')
+			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE category=$1 AND enddate > "+modify_d+" ORDER BY startdate DESC";
+			var q = conn.query(sql,[cat]);
+			var post_html='';
+			q.on('row', function(row){
+					post_html += "<div class ='post'>";
+					post_html += "<img src =" + row.image + ">";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</div>"
+				}).on('end',function(){
+					response.render('homepage.html',{title:cat, posts:post_html});
+			});
+		}
+});
 
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");
