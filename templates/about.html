@@ -5,6 +5,23 @@
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script type="text/javascript">					 
+				var calJEC = new JEC('myCalendarContainer');
+				calJEC.showCalendar();
+
+				calJEC.linkDates(
+				  [ 
+				    {
+				      linkedDate: 20130413,
+				      dateLink: 'http://calendar.ilsen.net'
+				    },
+				    {
+				      linkedDate: 20130442,
+				      dateLink: 'http://monkeystapping.com'
+				    }
+				  ]
+				);
+		</script>
 		<title>{{title}}</title>
 	</head>
 	<body>
@@ -21,7 +38,8 @@
 		</header>
 		<div id="body_stuff">
 			<div id="left_sidebar">
-				<div id = "calendar">
+				<div id = "myCalendarContainer">
+					
 				</div>
 				<div id="blurb">
 				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
