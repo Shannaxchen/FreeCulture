@@ -11,8 +11,8 @@ head, body, header, a, li, p, textarea {
 
 #header_wrapper {
 	position:fixed;
+	left:0;
 	width: 100%;
-       
 	min-width:800px;
 	height: 150px;
 	background-color: #000;
@@ -26,12 +26,9 @@ head, body, header, a, li, p, textarea {
 	float: left;
 	padding-right: 40px;
 	margin-top: 0;
+	margin-left: 0;
 }
 
-#logo a{
-	text-decoration: none;
-	display: block;
-}
 
 #top_nav ul {
 	padding: .2em 1em;
@@ -256,26 +253,24 @@ div#footer_nav {
 
 .post {
 	display:inline-block;
-	height: 307px;
-	width: 307px;
+	height: 320px;
+	width: 320px;
 	background-image: url("/public/images/post.png");
 	background-repeat: no-repeat;
 }
 
 .post img{
 	display:block;
-	height: 150px;
-	width: 280px;
-	margin: 10px 10px 0 12px
-}
-.post img{
-       height: 150px;
-       width: 280px;
+	height: 180px;
+	width: 298px;
+	margin-top: 11px;
+	margin-left: 11px;
 }
 
 h1, h2, h3, h4 {
-	margin-left: 5px;
-	font-family: Helvetica;
+	margin-left: 18px;
+	display:block;
+	font-family: 'Roboto+Condensed', sans-serif;
 	font-size: small;
 }
 
@@ -294,11 +289,13 @@ h1{
 }
 
 h2{
+	margin-top: 50px;
 	text-transform: capitalize;
 	font-size: large;
+	height:7px;
 }
 
-h3{
+h3, h4{
 	display:inline;
 	color:gray;
 }
