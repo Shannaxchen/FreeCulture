@@ -4,9 +4,11 @@ var engines = require('consolidate');
 var moment = require('moment');
 var app = express();
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
+var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
 
 //make db
 conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
+conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
 
 //configuration
 app.configure(function(){
@@ -36,14 +38,14 @@ var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","Le
 
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Architecture", "Son.", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130420", "20130425","2400","hey", "google.com"]).on('error',console.error);
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come get me chris", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "accept me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "feel me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "get with me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come get me ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "chris", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "get", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Dance", "accept me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Design", "feel me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Film", "get with me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Food", "come get me ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Fun", "chris", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["LectureTalk", "come ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Music", "get", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Theater", "me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
 
 //route
 app.get('/',function(request,response){
@@ -56,7 +58,7 @@ app.get('/',function(request,response){
 			console.log(q);
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + ">";//+ "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" />";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
@@ -107,8 +109,70 @@ app.get('/contact.html',function(request,response){
 });
 
 app.get('/admin',function(request,response){
+  /* if(!request.session.password){
 
+    }
+
+    if(request.session.password){
+	   //Read values from your form
+	    var password = request.param('password');
+
+		//marks that they aren't british, mark it again or remove that session cookie
+
+	    //Show the list of documents or an error,
+	    //depending on whether they're British.
+	    request.session.username = username;
+	    request.session.password = password;
+	    request.session.brit = brit;
+
+	var today = new Date();
+	var modify_d = moment(today).format('YYYYMMDD')
+	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
+	var q = conn_admin.query(sql);
+	var post_html='';
+	console.log(q);
+	q.on('row', function(row){
+			post_html += "<div class ='post'>";
+			post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+			post_html += "<p>" + row.body + "</p>";
+			post_html += "<h1>" + row.category + "</h1>";
+			post_html += "<h2>" + row.title + "</h2>";
+			post_html += "<h3>" + row.startdate + "</h3>";
+			post_html += "<h3>" + row.enddate + "</h3>";
+			post_html += "<h4>" + row.time + "</h4>";
+			post_html += "</div>"
+		}).on('end',function(){
+			response.render('admin.html',{title:"Culture on The Cheap", posts:post_html});
 	});
+
+    }
+    else {
+			var today = new Date();
+			var modify_d = moment(today).format('YYYYMMDD')
+			console.log(modify_d)
+			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
+			var q = conn.query(sql);
+			var post_html='';
+			console.log(q);
+			q.on('row', function(row){
+					post_html += "<div class ='post'>";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</div>"
+				}).on('end',function(){
+					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
+			});
+
+
+    }*/
+
+
+});
 
 app.get('/:Category',function(request,response){
 		var cat;
@@ -130,7 +194,7 @@ app.get('/:Category',function(request,response){
 			var post_html='';
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + "\" onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" />";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
@@ -158,6 +222,8 @@ app.post('/submit/submit', function(request, response){
     var startmonth = monthtext.indexOf(request.body.startmonth);
     var startday = request.body.startday;
 
+console.log(startmonth + " " + startday);
+
     if(startmonth < 10){
     	startmonth = '0' + startmonth;
     }
@@ -184,7 +250,7 @@ app.post('/submit/submit', function(request, response){
 
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
 
-    var q = conn.query(sql, [category, title, image, startdate, enddate, time, body, linkto]);
+    var q = conn_admin.query(sql, [category, title, image, startdate, enddate, time, body, linkto]);
 
 
     q.on('error', console.error);
