@@ -106,7 +106,7 @@ div#left_sidebar{
 
 }
 table.JEC {
-	margin-top: 20px;
+	margin-top: 10px;
 	margin-left: 15px;
 	text-align: center;
 	color: #696969;
@@ -241,9 +241,9 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #post_container, #submitbox{
-	margin-top: 150px;
+	margin-top: 175px;
 	margin-left: 300px;
-	
+	position:absolute;
 }
 
 #post_container{
@@ -255,6 +255,7 @@ table.JEC thead tr *, table.JEC thead *{
 	margin-left: 300px;
 	text-align: justify;
 	margin-right: 20px;
+	position:absolute;
 }
 
 #submitbox{
