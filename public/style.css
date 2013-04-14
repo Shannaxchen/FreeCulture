@@ -241,7 +241,7 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #post_container, #submitbox{
-	margin-top: 175px;
+	margin-top: 150px;
 	margin-left: 300px;
 	position:absolute;
 }
@@ -251,7 +251,7 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #about_us, #contact, #error_message, #submitbox{
-	margin-top: 175px;
+	margin-top: 150px;
 	margin-left: 300px;
 	text-align: justify;
 	margin-right: 20px;
