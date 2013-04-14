@@ -105,6 +105,10 @@ div#left_sidebar{
 table.JEC {
 	text-align: center;
 	color: #696969;
+	border-style: none none none solid;
+	border-width: 1px;
+	box-shadow: 3px 3px 4px #000;
+
 }
 table.JEC a{
 	color: #696969;
@@ -117,9 +121,15 @@ table.JEC thead th {
   margin: 5px;
 }
 
+table.JEC td{
+	font-size: 11px;
+	font-family: 'Roboto+Condensed', sans-serif;
+	font-weight: 700;
+}
+
 table.JEC td.dayToday {
   background-color: #eee;
-  border: 3px solid black;
+  border: 1px solid black;
 }
 
 #blurb{
