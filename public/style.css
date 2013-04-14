@@ -11,6 +11,8 @@ head, body, header, a, li, p, textarea {
 
 #header_wrapper {
 	position:fixed;
+	z-index: 100;
+	top:0;
 	left:0;
 	width: 100%;
 	min-width:800px;
@@ -100,13 +102,15 @@ div#left_sidebar{
 }
 
 #myCalendarContainer{
-	height: 200px;
+	height: 175px;
 
 }
 table.JEC {
+	margin-top: 10px;
+	margin-left: 15px;
 	text-align: center;
 	color: #696969;
-	border-style: none none none solid;
+	border-style: solid none none solid;
 	border-width: 1px;
 	box-shadow: 3px 3px 4px #000;
 
@@ -122,16 +126,49 @@ table.JEC thead th {
   margin: 5px;
 }
 
-table.JEC td{
+table.JEC tr{
+	display:inline;
+}
+
+.date, th, .dayBlank{
+	text-align: center;
+	width: 16px;
 	font-size: 11px;
 	font-family: 'Roboto+Condensed', sans-serif;
 	font-weight: 700;
 }
 
-table.JEC td.dayToday {
+.date{
+	background-color: #eee;
+}
+
+tfoot{
+	background-color: blue;
+}
+
+table.JEC thead tr *, table.JEC thead *{
+	display: inline;
+	text-decoration: none;
+	font-size: 11px;
+	color:gray;
+}
+
+/*table.JEC td.dayToday {
   background-color: #eee;
   border: 1px solid black;
+}*/
+
+/*table.JEC tbody tr th{
+	margin: 0 3px 0 3px;
+	display: inline;
+	background-color: blue;
 }
+
+.date
+/*table.JEC tbody tr{
+	background-color: blue;
+}*/
+
 
 #blurb{
 	font-weight: bold;
@@ -209,11 +246,16 @@ table.JEC td.dayToday {
 	position:absolute;
 }
 
+#post_container{
+	margin-left: 200px;
+}
+
 #about_us, #contact, #error_message, #submitbox{
-	margin-top: 175px;
+	margin-top: 150px;
 	margin-left: 300px;
 	text-align: justify;
 	margin-right: 20px;
+	position:absolute;
 }
 
 #submitbox{
@@ -231,13 +273,14 @@ div#body_stuff{
 }
 
 div#footer_nav {
+	left: 0;
 	bottom: 0;
-	position: absolute;
-	margin-bottom: 20px;
+	position: fixed;
 	background-color: #000;
 	height: 36px;
 	width: 100%;
 	min-width:800px;
+	z-index: 100;
 }
 
 #footer_nav_wrapper ul {
