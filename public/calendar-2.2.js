@@ -335,8 +335,9 @@
         _Event.add(elA, 'click', function() {
           showCalendar(_prevYearMonth(yearmonth));
         });
-        elA.innerHTML = '&larr;&nbsp;' + _months[_prevMonth(mo)-1];
-        elTh.appendChild(elA);
+        elA.innerHTML = '&larr;&nbsp;';
+        elThead.insertBefore(elA, elThead.childNodes[0]);
+        //elThead.appendChild(elA);
       }
       elTr.appendChild(elTh);
       elTh = document.createElement('th');
@@ -344,19 +345,7 @@
       elTh.setAttribute('colSpan', 3);
       var elSelect = document.createElement('select');
       elSelect.setAttribute('size', 1);
-      _Event.add(elSelect, 'change', function() {
-        showCalendar(this.options[this.selectedIndex].value);
-      });
-      for (var ym = _firstMonth; ym <= _lastMonth; ym = _nextYearMonth(ym)) {
-        var selMo = ym % 100;
-        var selYr = (ym - selMo) / 100;
-        var elOption = document.createElement('option');
-        elOption.setAttribute('value', ym);
-        if (ym == yearmonth) elOption.setAttribute('selected', 'selected');
-        elOption.innerHTML = _months[selMo-1] + ' ' + selYr;
-        elSelect.appendChild(elOption);
-      }
-      elTh.appendChild(elSelect);
+
       elTr.appendChild(elTh);
       elTh = document.createElement('th');
       elTh.setAttribute('colspan', 2);      
@@ -367,11 +356,10 @@
         _Event.add(elA, 'click', function() {
           showCalendar(_nextYearMonth(yearmonth));
         });
-        elA.innerHTML = _months[_nextMonth(mo)-1] + '&nbsp;&rarr;';
-        elTh.appendChild(elA);
+        elA.innerHTML ='&nbsp;&rarr;';
+        elThead.appendChild(elA);
       }
       elTr.appendChild(elTh);
-      elTfoot.appendChild(elTr);
       // Put it all together into a table
       var elTable = document.createElement('table');
       elTable.setAttribute('class', _tableClass);
