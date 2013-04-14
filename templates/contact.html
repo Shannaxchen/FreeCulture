@@ -6,7 +6,17 @@
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
 		<script type="text/javascript">					 
-				var calJEC = new JEC('myCalendarContainer');
+				var calJEC = new JEC('myCalendarContainer', {
+					weekdays: [
+					    "S",
+					    "M",
+					    "T",
+					    "W",
+					    "Th",
+					    "F",
+					    "S"
+					  ]
+				});
 				calJEC.showCalendar();
 
 				calJEC.linkDates(

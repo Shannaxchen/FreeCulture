@@ -4,9 +4,10 @@ body{
 	width:1024px;
 }
 
-head, body, header, a, li, p {
+head, body, header, a, li, p, textarea {
 	font-family: 'Roboto+Condensed', sans-serif;
 }
+
 
 #header_wrapper {
 	position:fixed;
@@ -94,7 +95,7 @@ li#adspace{
 div#left_sidebar{
 	position: fixed;
 	display: block;
-	padding-top: 150px;
+	margin-top: 150px;
 	width: 180px;
 }
 
@@ -202,18 +203,27 @@ table.JEC td.dayToday {
 	color: #EB0299;
 }
 
-#post_container{
+#post_container, #submitbox{
 	margin-top: 150px;
 	margin-left: 300px;
 	position:absolute;
 }
 
-#about_us, #contact, #error_message{
+#about_us, #contact, #error_message, #submitbox{
 	margin-top: 175px;
-	margin-left: 200px;
+	margin-left: 300px;
 	text-align: justify;
 	margin-right: 20px;
 }
+
+#submitbox{
+	font-size: 12px;
+}
+
+#submitbox p{
+	padding-left: 1px;
+}
+
 
 div#body_stuff{
 	display: inline-block;
@@ -279,6 +289,9 @@ h1, h2, h3, h4 {
 	color: transparent;
 }
 
+.post h1,h2,h3,h4{
+	margin-left: 15px;
+}
 
 h1{
 	font-size: x-small;

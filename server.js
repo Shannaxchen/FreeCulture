@@ -33,7 +33,17 @@ app.configure('production', function(){
 
 //all possible category IDs.
 var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6, $7,$8)',["Architecture", "asdasdasd", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130420", "20130425","2400","hey", "google.com"]).on('error',console.error);
+
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Architecture", "Son.", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130420", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come get me chris", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "accept me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "feel me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "get with me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come get me ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "chris", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "come ", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "get", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "me", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130421", "20130425","2400","hey", "google.com"]).on('error',console.error);
 
 //route
 app.get('/',function(request,response){
@@ -46,7 +56,7 @@ app.get('/',function(request,response){
 			console.log(q);
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + ">";
+					post_html += "<img src =" + row.image + ">";//+ "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" />";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
@@ -120,7 +130,7 @@ app.get('/:Category',function(request,response){
 			var post_html='';
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =" + row.image + ">";
+					post_html += "<img src =" + row.image + "\" onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" />";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
@@ -132,6 +142,52 @@ app.get('/:Category',function(request,response){
 					response.render('homepage.html',{title:cat, posts:post_html});
 			});
 		}
+});
+
+app.post('/submit/submit', function(request, response){
+    // post everything to the database, then...
+    response.redirect('/');
+
+
+    var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+
+    var category = request.body.category;
+    var title = request.body.title;
+    var image = request.body.image;
+    
+    var startmonth = monthtext.indexOf(request.body.startmonth);
+    var startday = request.body.startday;
+
+    if(startmonth < 10){
+    	startmonth = '0' + startmonth;
+    }
+    if(startday < 10){
+    	startday = '0' + startday;
+    }
+    var startdate = request.body.startyear + request.body.startmonth + request.body.startday; 
+
+    var endmonth = monthtext.indexOf(request.body.endmonth);
+    var endday = request.body.endday;
+
+    if(endmonth < 10){
+    	endmonth = '0' + endmonth;
+    }
+    if(endday < 10){
+    	endday = '0' + endday;
+    }
+    var enddate = request.body.endyear + request.body.endmonth + request.body.endday; 
+    var startdate = "20130520"
+    var enddate = "20130520"
+    var time = "2400";
+    var body = request.body.description;
+    var linkto = request.body.link;
+
+    var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+
+    var q = conn.query(sql, [category, title, image, startdate, enddate, time, body, linkto]);
+
+
+    q.on('error', console.error);
 });
 
 app.listen(8080, function(){
