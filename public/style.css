@@ -99,6 +99,9 @@ div#left_sidebar{
 	display: block;
 	margin-top: 150px;
 	width: 180px;
+	height:100%;
+	top:0;
+	overflow-y:auto;
 }
 
 #myCalendarContainer{
