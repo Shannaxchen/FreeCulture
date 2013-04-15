@@ -105,6 +105,7 @@ div#left_sidebar{
 }
 
 #myCalendarContainer{
+	margin-top: 24px;
 	height: 175px;
 
 }
@@ -253,8 +254,12 @@ table.JEC thead tr *, table.JEC thead *{
 	margin-left: 200px;
 }
 
+#about_us, #contact, #error_message{
+	margin-top: 140px;
+}
+
+
 #about_us, #contact, #error_message, #submitbox{
-	margin-top: 150px;
 	margin-left: 200px;
 	text-align: justify;
 	margin-right: 150px;
@@ -262,6 +267,7 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #submitbox{
+	margin-top: 155px;
 	font-size: 12px;
 }
 
