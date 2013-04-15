@@ -99,6 +99,9 @@ div#left_sidebar{
 	display: block;
 	margin-top: 150px;
 	width: 180px;
+	height:100%;
+	top:0;
+	overflow-y:auto;
 }
 
 #myCalendarContainer{
@@ -252,9 +255,9 @@ table.JEC thead tr *, table.JEC thead *{
 
 #about_us, #contact, #error_message, #submitbox{
 	margin-top: 150px;
-	margin-left: 300px;
+	margin-left: 200px;
 	text-align: justify;
-	margin-right: 20px;
+	margin-right: 150px;
 	position:absolute;
 }
 
