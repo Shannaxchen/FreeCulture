@@ -36,7 +36,7 @@ app.configure('production', function(){
 //all possible category IDs.
 var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
 
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Architecture", "Architecture event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130620", "20130625","2400","hey", "google.com"]).on('error',console.error);
+conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Architecture", "Architecture event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130620", "20130625","2400","hey kabob curry what", "google.com"]).on('error',console.error);
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Art", "Art event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130465","2400","hey", "google.com"]).on('error',console.error);
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Dance", "Dance event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","2400","hey", "google.com"]).on('error',console.error);
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',["Design", "Andy Warhol", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","2400","hey", "google.com"]).on('error',console.error);
@@ -87,10 +87,31 @@ app.get('/search',function(request,response){
 		response.render('search.html',{title:"Search"});
 });
 
-app.post('/search/form',function(request,response){
+app.post('/search',function(request,response){
 		//DO MORE THINGS TO lace the sql query together from the request
-		response.render('homepage.html',{title:"Your post has been submitted!",posts:post_html});
+		var keyword = request.body.textsearch;
+		var post_html = '';
+		var today = new Date();
+		var modify_d = moment(today).format('YYYYMMDD')
+		var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%') ORDER BY startdate DESC";
+		var q = conn.query(sql,[]);
+		q.on('row', function(row){
+			post_html += "<div class ='post'>";
+			post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+			post_html += "<p>" + row.body + "</p>";
+			post_html += "<h1>" + row.category + "</h1>";
+			post_html += "<h2>" + row.title + "</h2>";
+			post_html += "<h3>" + row.startdate + "</h3>";
+			post_html += "<h3>" + row.enddate + "</h3>";
+			post_html += "<h4>" + row.time + "</h4>";
+			post_html += "</div>";
+		}).on('end',function() { 
+			if (post_html === "") {
+				post_html = "<div class='noresult'><p><b>No results found.</p></div>";
+			}
+			response.render('homepage.html',{title:"Search Results", posts:post_html});
 		});
+});
 
 app.get('/about',function(request,response){
 		response.render('about.html',{title:"About Us"});
