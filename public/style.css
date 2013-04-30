@@ -272,6 +272,11 @@ table.JEC thead tr *, table.JEC thead *{
 	position:absolute;
 }
 
+#searchbox {
+	margin-top: 255px;
+	margin-left: 200px;
+}
+
 #submitbox{
 	margin-top: 155px;
 	font-size: 12px;
@@ -317,6 +322,10 @@ div#footer_nav {
 	text-decoration: none;
 	padding:.2em 1em;
         color:white;
+}
+
+.noresult {
+
 }
 
 .post {
