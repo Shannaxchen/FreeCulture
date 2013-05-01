@@ -112,6 +112,7 @@ div#left_sidebar{
 
 #myCalendarContainer{
 	margin-top: 24px;
+	margin-bottom:26px;
 	height: 175px;
 
 }
@@ -127,8 +128,10 @@ table.JEC {
 }
 table.JEC a{
 	color: #696969;
+	text-decoration:none;
 	font-size: 15px;
 }
+
 table.JEC thead th {
   color: black;
   font-size: 16px;
@@ -199,55 +202,6 @@ table.JEC thead tr *, table.JEC thead *{
 	text-decoration: none;
 	font-size: 15px;
 	color: #000;
-}
-
-
-#Architecture:visited{
-	color: #EB0299;
-}
-
-#Art:visited{
-	color: #EB0299;
-}
-
-#Dance:visited{
-	color: #EB0299;
-}
-
-#Design:visited{
-	color: #EB0299;
-}
-
-#Film:visited{
-	color: #EB0299;
-}
-
-#Food:visited{
-	color: #EB0299;
-}
-
-#Food:visited{
-	color: #EB0299;
-}
-
-#Fun:visited{
-	color: #EB0299;
-}
-
-#Lecture/Talk:visited{
-	color: #EB0299;
-}
-
-#Music:visited{
-	color: #EB0299;
-}
-
-#Theater:visited{
-	color: #EB0299;
-}
-
-#Tours:visited{
-	color: #EB0299;
 }
 
 #post_container, #submitbox{
