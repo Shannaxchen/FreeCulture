@@ -17,10 +17,11 @@
 					    "S"
 					  ]
 				});
-				var temparray = new Array();
+				var temparray = [];
 				start = 20130101;
-				while (start <= 30131231){
-					temparray.push({linkedDate:x,dateLink:'/'+x});
+				while (start <= 21001231){
+					temparray.push({linkedDate:start,dateLink:'/'+start});
+					start = start+1;
 				}
 				calJEC.linkDates(temparray);
 				calJEC.showCalendar();
