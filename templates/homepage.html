@@ -32,18 +32,25 @@
 	<body>
         <header>
 		<div id="header_wrapper">
-			<h1 id="logo"><a href="/"><img src="../public/images/logo.png"></a></h1>
-			<ul id="top_nav">
-				<li id="submit"><a href="submit">Submit</a></li>
-				<li id="search"><a href="search">Search</a></li>
-				<li id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></li>
-			</ul>
+			<div id="first_header">
+				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
+				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="second_header">
+					<ul id="second_nav">
+						<li id="submit"><a href="submit">Submit</a></li>
+						<li id="search">Search: 
+	 	       			<form method="POST" action="/search" id = "searchForm">
+						<input id="textsearch" type="text" name="textsearch" id="searchField">
+						</form>	
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		</header>
 		<div id="body_stuff">
 			<div id="left_sidebar">
-				<div id = "myCalendarContainer">
-					
+				<div id = "myCalendarContainer">	
 				</div>
 				<div id="blurb">
 				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
@@ -63,7 +70,6 @@
 					<li id="Tours"><a href="Tours">Tours</a></li>
 					</ul>
 				</div>
-
 			</div>
 			<div id="post_container">
 				<div id="sort_nav_container">
