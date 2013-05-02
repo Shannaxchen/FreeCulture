@@ -60,6 +60,7 @@ app.get('/',function(request,response){
 			console.log(q);
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
+					post_html += "<a href = 'http://"+row.linkto+"'>";
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
@@ -73,6 +74,7 @@ app.get('/',function(request,response){
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
 					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
 					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
@@ -105,6 +107,7 @@ app.post('/search',function(request,response){
 		var q = conn.query(sql,[]);
 		q.on('row', function(row){
 					post_html += "<div class ='post'>";
+					post_html += "<a href = 'http://"+row.linkto+"'>";
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
@@ -118,6 +121,7 @@ app.post('/search',function(request,response){
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
 					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</a>";
 					post_html += "</div>";
 		}).on('end',function() { 
 			if (post_html === "") {
@@ -259,6 +263,7 @@ app.get('/:Category',function(request,response){
 			var post_html='';
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
+					post_html += "<a href = 'http://"+row.linkto+"'>";
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
@@ -272,6 +277,7 @@ app.get('/:Category',function(request,response){
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
 					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
 					response.render('homepage.html',{title:cat, posts:post_html});
