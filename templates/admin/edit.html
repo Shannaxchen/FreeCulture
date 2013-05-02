@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type='text/css'>
+        	<link href="../../public/style.css" rel="stylesheet" type="text/css">
+        	<script type="text/javascript" src="/public/frontend.js"></script>
+		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script type="text/javascript">					 
+				var calJEC = new JEC('myCalendarContainer', {
+					weekdays: [
+					    "S",
+					    "M",
+					    "T",
+					    "W",
+					    "Th",
+					    "F",
+					    "S"
+					  ]
+				});
+				var temparray = [];
+				start = 20130101;
+				while (start <= 20501231){
+					temparray.push({linkedDate:start,dateLink:'/'+start});
+					start = start+1;
+				}
+				//calJEC.linkDates(temparray);
+				calJEC.showCalendar();
+		</script>
+		<script type="text/javascript">
+
+			/***********************************************
+			* Drop Down Date select script- by JavaScriptKit.com
+			* This notice MUST stay intact for use
+			* Visit JavaScript Kit at http://www.javascriptkit.com/ for this script and more
+			***********************************************/
+
+			var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+
+			function populatedropdown(dayfield, monthfield, yearfield){
+				var today=new Date()
+				var dayfield=document.getElementById(dayfield)
+				var monthfield=document.getElementById(monthfield)
+				var yearfield=document.getElementById(yearfield)
+				for (var i=0; i<31; i++)
+					dayfield.options[i]=new Option(i, i+1)
+				dayfield.options[today.getDate()]=new Option(today.getDate(), today.getDate(), true, true) //select today's day
+				for (var m=0; m<12; m++)
+					monthfield.options[m]=new Option(monthtext[m], monthtext[m])
+				monthfield.options[today.getMonth()]=new Option(monthtext[today.getMonth()], monthtext[today.getMonth()], true, true) //select today's month
+				var thisyear=today.getFullYear()
+				for (var y=0; y<20; y++){
+					yearfield.options[y]=new Option(thisyear, thisyear)
+					thisyear+=1
+				}
+				yearfield.options[0]=new Option(today.getFullYear(), today.getFullYear(), true, true) //select today's year
+			}
+
+		</script>
+
+
+
+		<title>{{title}}</title>
+	</head>
+	<body>
+        	<header>
+		<div id="header_wrapper">
+			<h1 id="logo"><a href="/"><img src="../../public/images/logo.png"></a></h1>
+			<ul id="top_nav">
+				<li id="submit"><a href="submit">Submit</a></li>
+				<li id="search"><a href="search">Search</a></li>
+				<li id="adspace"><img src="../../public/images/corner_ad.png"><a href="#"></a></li>
+			</ul>
+		</div>
+		</header>
+		<div id="body_stuff">
+			<div id="left_sidebar">
+				<div id = "myCalendarContainer">
+					
+				</div>
+				<div id="blurb">
+				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
+				</div>
+				<div id="categories">
+					<ul id = "category_list">
+					<li id="Architecture"><a href="Architecture">Architecture</a></li>
+					<li id="Art"><a href="Art">Art</a></li>
+					<li id="Dance"><a href="Dance">Dance</a></li>
+					<li id="Design"><a href="Design">Design</a></li>
+					<li id="Film"><a href="Film">Film</a></li>
+					<li id="Food"><a href="Food">Food</a></li>
+					<li id="Fun"><a href="Fun">Fun</a></li>
+					<li id="Lecture/Talk"><a href="LectureTalk">Lecture/Talk</a></li>
+					<li id="Music"><a href="Music">Music</a></li>
+					<li id="Theater"><a href="Theater">Theater</a></li>
+					<li id="Tours"><a href="Tours">Tours</a></li>
+					</ul>
+				</div>
+
+			</div>
+
+			<div id="submitbox">
+	       			 <form method="POST" action="/edit/submit" id = "messageForm">
+					<!--Figure out what should go in the submit post box -->
+					Name of Event:<br />
+					<input id="message" type="text" name="title" id="titleField" size="38"> <br />
+					Link to Image:<br />
+					<input id="message" type="text" name="image" id="imageField" size="38"> <br />
+					Link to Event:<br />
+					<input id="message" type="text" name="linkto" id="linkField" size="38"> <br />
+					Description of Event:<br />
+					<textarea cols="40" rows="5" name="description"></textarea><br />
+					Start Date:<br />
+						<select id="startday" name="startday">
+						</select> 
+						<select id="startmonth" name="startmonth">
+						</select> 
+						<select id="startyear" name="startyear">
+						</select> <br />
+					End Date: <br />
+						<select id="endday" name="endday">
+						</select> 
+						<select id="endmonth" name="endmonth">
+						</select> 
+						<select id="endyear" name="endyear">
+						</select> 
+
+						<script type="text/javascript">
+
+						window.onload=function(){
+						populatedropdown("startday", "startmonth", "startyear")
+						populatedropdown("endday", "endmonth", "endyear")
+						}
+						</script> <br />
+					Category: <br />
+					<select name="category" id="category">
+					  <option>Architecture</option>
+					  <option>Art</option>
+					  <option>Dance</option>
+					  <option>Design</option>
+					  <option>Film</option>
+					  <option>Food</option>
+					  <option>Fun</option>
+					  <option>Lecture/Talk</option>
+					  <option>Music</option>
+					  <option>Theater</option>
+					  <option>Tours</option>
+					</select> 
+
+					<input id="send" type="submit" value="Send"> <br/>
+				</form>
+			</div>
+		</div>
+		<div id="footer_nav">
+			<div id="footer_nav_wrapper">
+				<ul>
+					<li><a href="about.html">About Us</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

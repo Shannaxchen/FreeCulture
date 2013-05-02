@@ -350,7 +350,8 @@ div#footer_nav {
 	margin-top: 15px;
 	margin-bottom: 20px;
 	color: black;
-	}
+}
+
 .hover:hover {
 	background-color:white;
 	opacity:.8;
@@ -361,6 +362,22 @@ div#footer_nav {
 .description{
 	height: 70%;
 }
+
+
+.hover:hover .admin{
+	text-transform: uppercase;
+	font-weight: bold;
+        font-size:10px;
+	color: black;
+}
+
+.hover:hover .admin a{
+	text-transform: uppercase;
+	font-weight: bold;
+        font-size:10px;
+	color: black;
+}
+
 h1, h2, h3, h4 {
 	margin-left: 18px;
 	display:block;
@@ -375,7 +392,7 @@ h1, h2, h3, h4 {
 	display: none;
 }
 
-.post h1,h2,h3,h4{
+.post h1,h2,h3,h4,.admin{
 	margin-left: 15px;
 }
 
@@ -394,4 +411,18 @@ h2{
 h3, h4{
 	display:inline;
 	color:gray;
+}
+
+.admin {
+	float: right;
+	margin-top: -20px;
+	text-transform: capitalize;
+	height:7px;
+	color: transparent;
+}
+
+.admin a {
+	text-decoration: none;
+	color: transparent;
+
 }

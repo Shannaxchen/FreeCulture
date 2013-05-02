@@ -30,11 +30,10 @@
 		<title>{{title}}</title>
 	</head>
 	<body>
-        	<header>
+        <header>
 		<div id="header_wrapper">
 			<h1 id="logo"><a href="/"><img src="../public/images/logo.png"></a></h1>
 			<ul id="top_nav">
-				<!-- <li id="sort_by"><a href="#">Sort By</a></li> -->
 				<li id="submit"><a href="submit">Submit</a></li>
 				<li id="search"><a href="search">Search</a></li>
 				<li id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></li>
@@ -67,8 +66,25 @@
 
 			</div>
 			<div id="post_container">
-				 <p>This is the list of unapproved events: Please click on one of them to approve them.</p>
-	       			 {{{posts}}}
+				<div id="sort_nav_container">
+					<ul id="sort_nav">
+					<li id="sort_by">Preview: </li>
+					<li id="price_low_high"><a href="#">Unapproved Posts</a></li>
+					<li id="event_date"><a href="#">Approved Posts</a></li>
+					<li id="event_date"><a href="#">Rejected Posts</a></li>
+					<li id="most_popular"><a href="#">All Posts</a></li>
+					</ul>
+				</div>
+				<div id="sort_nav_container">
+					<ul id="sort_nav">
+					<li id="sort_by">Sort By: </li>
+					<li id="most_popular"><a href="#">Most Popular</a></li>
+					<li id="price_low_high"><a href="#">Price: Low to High</a></li>
+					<li id="event_date"><a href="#">Event Date</a></li>
+					<li id="post_date"><a href="#">Post Date</a></li>
+					</ul>
+				</div>
+	       		{{{posts}}}
 			</div>
 		</div>
 		<div id="footer_nav">
