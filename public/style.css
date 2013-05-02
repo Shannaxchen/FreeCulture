@@ -60,7 +60,7 @@ head, body, header, a, li, p, textarea {
 	display: block;
 }
 
-li#sort_by {
+/*li#sort_by {
 	padding-left: 35px;
 	width: 90px;
 	height: 59px;
@@ -69,7 +69,7 @@ li#sort_by {
 
 li#sort_by:hover{
 	background-position: 0 -59px;
-}
+}*/
 
 li#submit {
 	width: 80px;
@@ -258,6 +258,7 @@ table.JEC thead tr *, table.JEC thead *{
 
 #post_container{
 	margin-left: 200px;
+	padding-bottom: 50px;
 }
 
 #about_us, #contact, #error_message{
@@ -281,10 +282,16 @@ table.JEC thead tr *, table.JEC thead *{
 	padding-left: 1px;
 }
 
-
+#sort_nav_container h2{
+	font-size: medium;
+	margin-left: 10px;
+	display: inline;
+}
+select{
+	font-family: 'Roboto Condensed', sans-serif;
+}
 div#body_stuff{
 	display: inline-block;
-
 }
 
 div#footer_nav {
@@ -316,7 +323,7 @@ div#footer_nav {
 	display:inline-block;
 	text-decoration: none;
 	padding:.2em 1em;
-        color:white;
+    color:white;
 }
 
 .post {
@@ -325,6 +332,7 @@ div#footer_nav {
 	width: 320px;
 	background-image: url("/public/images/post.png");
 	background-repeat: no-repeat;
+	position: relative;
 }
 
 .post img{
@@ -334,7 +342,43 @@ div#footer_nav {
 	margin-top: 11px;
 	margin-left: 11px;
 }
+.corner{
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	right:0;
+	bottom:0;
+	z-index: 10;
+}
+.hover{
+	width:90%;
+	height: 90%;
+	color: transparent;
+	position: absolute;
+	padding: 15px;
+}
 
+.hover:hover p {
+	color:black;
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: small;
+	display: inherit;
+}
+.hover:hover h2 {
+	margin-top: 15px;
+	margin-bottom: 20px;
+	color: black;
+	}
+.hover:hover {
+	background-color:white;
+	opacity:.8;
+}
+.hover:hover .description{
+	overflow-y: auto;
+}
+.description{
+	height: 70%;
+}
 h1, h2, h3, h4 {
 	margin-left: 18px;
 	display:block;
@@ -342,9 +386,11 @@ h1, h2, h3, h4 {
 	font-size: small;
 }
 
-.post p{
-	position:absolute;
+.hover p{
+	margin-left: 10px;
+	margin-right: 10px;
 	color: transparent;
+	display: none;
 }
 
 .post h1,h2,h3,h4{
