@@ -102,15 +102,21 @@ app.post('/search',function(request,response){
 		var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%') ORDER BY startdate DESC";
 		var q = conn.query(sql,[]);
 		q.on('row', function(row){
-			post_html += "<div class ='post'>";
-			post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-			post_html += "<p>" + row.body + "</p>";
-			post_html += "<h1>" + row.category + "</h1>";
-			post_html += "<h2>" + row.title + "</h2>";
-			post_html += "<h3>" + row.startdate + "</h3>";
-			post_html += "<h3>" + row.enddate + "</h3>";
-			post_html += "<h4>" + row.time + "</h4>";
-			post_html += "</div>";
+					post_html += "<div class ='post'>";
+					post_html += "<div class ='corner'></div>";
+					post_html += "<div class ='hover'>";
+					post_html += "<h2>Event Description</h2>";
+					post_html += "<div class ='description'>";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "</div>";
+					post_html += "</div>";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</div>";
 		}).on('end',function() { 
 			if (post_html === "") {
 				post_html = "<div class='noresult'><p><b>No results found.</p></div>";
@@ -167,14 +173,20 @@ app.get('/:Category',function(request,response){
 			var post_html='';
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+					post_html += "<div class ='corner'></div>";
+					post_html += "<div class ='hover'>";
+					post_html += "<h2>Event Description</h2>";
+					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
+					post_html += "</div>";
+					post_html += "</div>";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
 					post_html += "<h4>" + row.time + "</h4>";
-					post_html += "</div>"
+					post_html += "</div>";
 				}).on('end',function(){
 					response.render('homepage.html',{title:cat, posts:post_html});
 			});
