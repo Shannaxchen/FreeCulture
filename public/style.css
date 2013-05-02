@@ -44,7 +44,7 @@ head, body, header, a, li, p, textarea {
 	float: left;
 	text-align: center;
 	text-transform: uppercase;
-	font-size: 20px;
+	font-size: 18px;
 }
 
 #top_nav li:last-child{
@@ -246,8 +246,27 @@ table.JEC thead tr *, table.JEC thead *{
 	margin-left: 10px;
 	display: inline;
 }
-select{
+
+#sort_nav{
+	padding-left: 5px;
+	list-style: none;
+	display: inline;
+	font-size: 15px;
+}
+#sort_nav li{
 	font-family: 'Roboto Condensed', sans-serif;
+	display: inline-block;
+	margin:5px;
+}
+#sort_nav a{
+	font-family: 'Roboto Condensed', sans-serif;
+	font-size: 90%;
+	color:gray;
+	text-decoration: none;
+	font-size: 14px;
+}
+#sort_nav a:hover {
+	text-decoration: underline;
 }
 div#body_stuff{
 	display: inline-block;
