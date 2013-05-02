@@ -17,20 +17,14 @@
 					    "S"
 					  ]
 				});
+				var temparray = [];
+				start = 20130101;
+				while (start <= 20501231){
+					temparray.push({linkedDate:start,dateLink:'/'+start});
+					start = start+1;
+				}
+				calJEC.linkDates(temparray);
 				calJEC.showCalendar();
-
-				calJEC.linkDates(
-				  [
-				    {
-				      linkedDate: 20130413,
-				      dateLink: 'http://calendar.ilsen.net'
-				    },
-				    {
-				      linkedDate: 20130442,
-				      dateLink: 'http://monkeystapping.com'
-				    }
-				  ]
-				);
 		</script>
 		<title>{{title}}</title>
 	</head>
@@ -72,7 +66,7 @@
 
 			</div>
 			<div id="searchbox">
-	 	       		<form method="POST" action="/search/form" id = "searchForm">
+	 	       		<form method="POST" action="/search" id = "searchForm">
 					<input id="textsearch" type="text" name="textsearch" id="searchField">
 					<input id="send" type="submit" value="Search">
 				</form>

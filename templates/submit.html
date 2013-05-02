@@ -17,20 +17,14 @@
 					    "S"
 					  ]
 				});
+				var temparray = [];
+				start = 20130101;
+				while (start <= 20501231){
+					temparray.push({linkedDate:start,dateLink:'/'+start});
+					start = start+1;
+				}
+				//calJEC.linkDates(temparray);
 				calJEC.showCalendar();
-
-				calJEC.linkDates(
-				  [
-				    {
-				      linkedDate: 20130413,
-				      dateLink: 'http://calendar.ilsen.net'
-				    },
-				    {
-				      linkedDate: 20130442,
-				      dateLink: 'http://monkeystapping.com'
-				    }
-				  ]
-				);
 		</script>
 		<script type="text/javascript">
 
