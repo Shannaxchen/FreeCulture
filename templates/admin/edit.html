@@ -66,8 +66,8 @@
 		<div id="header_wrapper">
 			<h1 id="logo"><a href="/"><img src="../../public/images/logo.png"></a></h1>
 			<ul id="top_nav">
-				<li id="submit"><a href="submit">Submit</a></li>
-				<li id="search"><a href="search">Search</a></li>
+				<li id="submit"><a href="../submit">Submit</a></li>
+				<li id="search"><a href="../search">Search</a></li>
 				<li id="adspace"><img src="../../public/images/corner_ad.png"><a href="#"></a></li>
 			</ul>
 		</div>
@@ -82,17 +82,17 @@
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
-					<li id="Architecture"><a href="Architecture">Architecture</a></li>
-					<li id="Art"><a href="Art">Art</a></li>
-					<li id="Dance"><a href="Dance">Dance</a></li>
-					<li id="Design"><a href="Design">Design</a></li>
-					<li id="Film"><a href="Film">Film</a></li>
-					<li id="Food"><a href="Food">Food</a></li>
-					<li id="Fun"><a href="Fun">Fun</a></li>
-					<li id="Lecture/Talk"><a href="LectureTalk">Lecture/Talk</a></li>
-					<li id="Music"><a href="Music">Music</a></li>
-					<li id="Theater"><a href="Theater">Theater</a></li>
-					<li id="Tours"><a href="Tours">Tours</a></li>
+					<li id="Architecture"><a href="../Architecture">Architecture</a></li>
+					<li id="Art"><a href="../Art">Art</a></li>
+					<li id="Dance"><a href="../Dance">Dance</a></li>
+					<li id="Design"><a href="../Design">Design</a></li>
+					<li id="Film"><a href="../Film">Film</a></li>
+					<li id="Food"><a href="../Food">Food</a></li>
+					<li id="Fun"><a href="../Fun">Fun</a></li>
+					<li id="Lecture/Talk"><a href="../LectureTalk">Lecture/Talk</a></li>
+					<li id="Music"><a href="../Music">Music</a></li>
+					<li id="Theater"><a href="../Theater">Theater</a></li>
+					<li id="Tours"><a href="../Tours">Tours</a></li>
 					</ul>
 				</div>
 
@@ -102,13 +102,13 @@
 	       			 <form method="POST" action="/edit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					Name of Event:<br />
-					<input id="message" type="text" name="title" id="titleField" size="38"> <br />
+					<input id="message" type="text" name="title" id="titleField" size="38" value={{{eventtitle}}}> <br />
 					Link to Image:<br />
-					<input id="message" type="text" name="image" id="imageField" size="38"> <br />
+					<input id="message" type="text" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
 					Link to Event:<br />
-					<input id="message" type="text" name="linkto" id="linkField" size="38"> <br />
+					<input id="message" type="text" name="linkto" id="linkField" size="38" value={{{eventlinkto}}}> <br />
 					Description of Event:<br />
-					<textarea cols="40" rows="5" name="description"></textarea><br />
+					<textarea cols="40" rows="5" name="description">{{eventbody}}</textarea><br />
 					Start Date:<br />
 						<select id="startday" name="startday">
 						</select> 
@@ -132,7 +132,7 @@
 						}
 						</script> <br />
 					Category: <br />
-					<select name="category" id="category">
+					<select name="category" id="category" value={{eventcategory}}>
 					  <option>Architecture</option>
 					  <option>Art</option>
 					  <option>Dance</option>
@@ -146,6 +146,18 @@
 					  <option>Tours</option>
 					</select> 
 
+					<script>
+					function setSelectedIndex(s, v) {
+					for ( var i = 0; i < s.options.length; i++ ) {
+					if ( s.options[i].text == v ) {
+					s.options[i].selected = true;
+					return;
+					}
+					}
+					}
+					setSelectedIndex(document.getElementById('category'),{{eventcategory}});
+					</script>
+
 					<input id="send" type="submit" value="Send"> <br/>
 				</form>
 			</div>
@@ -153,8 +165,8 @@
 		<div id="footer_nav">
 			<div id="footer_nav_wrapper">
 				<ul>
-					<li><a href="about.html">About Us</a></li>
-					<li><a href="contact.html">Contact</a></li>
+					<li><a href="../about.html">About Us</a></li>
+					<li><a href="../contact.html">Contact</a></li>
 				</ul>
 			</div>
 		</div>

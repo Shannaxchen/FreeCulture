@@ -158,7 +158,7 @@ app.get('/admin',function(request,response){
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
-					post_html += "<div class ='admin'><a href='edit/123'>Edit</a>";
+					post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
 					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
 					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
 					post_html += "<div class ='description'>";
@@ -179,9 +179,18 @@ app.get('/admin',function(request,response){
 });
 
 app.get('/edit/:postid',function(request,response){
-		//var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE postid == "+request.params.postid+" ORDER BY startdate DESC";
-		//var q = conn_admin.query(sql);
-		response.render('admin/edit.html',{title:"Edit A Post!"});
+		var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
+		var q = conn_admin.query(sql);
+		var item = {};
+
+		q.on('row', function(row){
+			item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate, enddate: row.enddate, time: row.time, body: row.body, linkto: row.linkto};
+			}).on('end',function(){
+			var find = ' ';
+			var re = new RegExp(find, 'g');
+
+			response.render('admin/edit.html',{title:"Edit A Post!", eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate});
+		});
 });
 
 
