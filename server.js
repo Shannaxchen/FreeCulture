@@ -5,10 +5,12 @@ var moment = require('moment');
 var app = express();
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
+var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
 
 //make db
 conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
-conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
+conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT)');
+conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT)');
 
 //configuration
 app.configure(function(){
@@ -144,6 +146,90 @@ app.get('/contact.html',function(request,response){
 		response.render('contact.html',{title:"Contact Us"});
 });
 
+app.get('/admin',function(request,response){
+			var today = new Date();
+			var modify_d = moment(today).format('YYYYMMDD')
+			var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
+			var q = conn_admin.query(sql);
+			var post_html='';
+			q.on('row', function(row){
+					post_html += "<div class ='post'>";
+					post_html += "<div class ='corner'></div>";
+					post_html += "<div class ='hover'>";
+					post_html += "<h2>Event Description</h2>";
+					post_html += "<div class ='admin'><a href='edit/123'>Edit</a>";
+					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
+					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
+					post_html += "<div class ='description'>";
+					post_html += "<p>" + row.body + "</p>";
+					post_html += "</div>";
+					post_html += "</div>";
+					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
+					post_html += "<h1>" + row.category + "</h1>";
+					post_html += "<h2>" + row.title + "</h2>";
+					post_html += "<h3>" + row.startdate + "</h3>";
+					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h4>" + row.time + "</h4>";
+					post_html += "</div>";
+				}).on('end',function(){
+					response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Side", posts:post_html});
+			});
+
+});
+
+app.get('/edit/:postid',function(request,response){
+		//var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE postid == "+request.params.postid+" ORDER BY startdate DESC";
+		//var q = conn_admin.query(sql);
+		response.render('admin/edit.html',{title:"Edit A Post!"});
+});
+
+
+app.post('/edit/form',function(request,response){
+    		response.redirect('/admin');
+		});
+
+app.get('/approve/:postid',function(request,response){
+	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var q = conn_admin.query(sql);
+
+	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
+	var q2 = conn_admin.query(sql2);
+	q.on('row', function(row){
+
+			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+
+			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto]);
+			q.on('error', console.error);
+
+		}).on('end',function(){
+			response.redirect('/admin');
+	});
+
+
+
+});
+
+app.get('/reject/:postid',function(request,response){
+	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var q = conn_admin.query(sql);
+
+	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
+	var q2 = conn_admin.query(sql2);
+
+	console.log(q2);
+	q.on('row', function(row){
+
+			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+
+			var q = conn_trash.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto]);
+			q.on('error', console.error);
+
+		}).on('end',function(){
+			response.redirect('/admin');
+	});
+});
+
+
 app.get('/:Category',function(request,response){
 		var cat;
 		var isDate = false;
@@ -246,72 +332,17 @@ console.log(startmonth + " " + startday);
     q.on('error', console.error);
 });
 
-app.get('/admin',function(request,response){
-  /* if(!request.session.password){
-
-    }
-
-    if(request.session.password){
-	   //Read values from your form
-	    var password = request.param('password');
-
-		//marks that they aren't british, mark it again or remove that session cookie
-
-	    //Show the list of documents or an error,
-	    //depending on whether they're British.
-	    request.session.username = username;
-	    request.session.password = password;
-	    request.session.brit = brit;
-
-	var today = new Date();
-	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
-	var q = conn_admin.query(sql);
-	var post_html='';
-	console.log(q);
-	q.on('row', function(row){
-			post_html += "<div class ='post'>";
-			post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-			post_html += "<p>" + row.body + "</p>";
-			post_html += "<h1>" + row.category + "</h1>";
-			post_html += "<h2>" + row.title + "</h2>";
-			post_html += "<h3>" + row.startdate + "</h3>";
-			post_html += "<h3>" + row.enddate + "</h3>";
-			post_html += "<h4>" + row.time + "</h4>";
-			post_html += "</div>"
-		}).on('end',function(){
-			response.render('admin.html',{title:"Culture on The Cheap", posts:post_html});
-	});
-
-    }
-    else {
-			var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD')
-			console.log(modify_d)
-			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
-			var q = conn.query(sql);
-			var post_html='';
-			console.log(q);
-			q.on('row', function(row){
-					post_html += "<div class ='post'>";
-					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
-					post_html += "</div>"
-				}).on('end',function(){
-					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
-			});
-
-
-    }*/
-
-
-});
-
 app.listen(8080, function(){
   console.log("FreeCulture server listening on 8080");
 });
+
+function generatePostIdentifier() {
+    // make a list of legal characters
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+    var result = '';
+    for (var i = 0; i < 15; i++)
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    return result;
+}
