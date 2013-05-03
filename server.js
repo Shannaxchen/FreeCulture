@@ -60,7 +60,7 @@ app.get('/',function(request,response){
 			console.log(q);
 			q.on('row', function(row){
 					post_html += "<div class ='post'>";
-					post_html += "<a href = 'http://"+row.linkto+"'>";
+					post_html += "<a href = 'http://"+row.linkto+"' target='"+row.title+"'>";
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
@@ -81,7 +81,6 @@ app.get('/',function(request,response){
 			});
 
 		});
-
 
 
 app.get('/submit',function(request,response){
