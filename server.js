@@ -91,6 +91,12 @@ app.get('/',function(request,response){
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
 					}	
 					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -170,6 +176,12 @@ app.post('/search',function(request,response){
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
 					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -209,6 +221,13 @@ app.get('/mp',function(request,response){
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
 					}	
+					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -218,7 +237,6 @@ app.get('/mp',function(request,response){
 					post_html += "<h2>" + row.title + "</h2>";
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
@@ -246,6 +264,13 @@ app.get('/l2h',function(request,response){
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
 					}	
+					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -255,7 +280,6 @@ app.get('/l2h',function(request,response){
 					post_html += "<h2>" + row.title + "</h2>";
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
@@ -283,6 +307,13 @@ app.get('/pd',function(request,response){
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
 						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
 					}	
+					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -292,7 +323,6 @@ app.get('/pd',function(request,response){
 					post_html += "<h2>" + row.title + "</h2>";
 					post_html += "<h3>" + row.startdate + "</h3>";
 					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
@@ -443,6 +473,12 @@ app.get('/:Category',function(request,response){
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
 					post_html += "<h4>" + convertTime(row.time) + "</h4>";
+					if (row.price == 0){
+						post_html += "<h4> Free </h4>";
+					}
+					else{
+						post_html += "<h4>$" + row.price + "</h4>";
+					}
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
