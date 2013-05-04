@@ -543,7 +543,7 @@ app.post('/edit/submit', function(request, response){
 });
 
 app.listen(3000, function(){
-  console.log("FreeCulture server listening on 8080");
+  console.log("FreeCulture server listening on 3000");
 });
 
 function generatePostIdentifier() {
