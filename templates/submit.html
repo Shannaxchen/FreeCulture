@@ -55,6 +55,25 @@
 				yearfield.options[0]=new Option(today.getFullYear(), today.getFullYear(), true, true) //select today's year
 			}
 
+			function populateTime(hourfield,minutesfield) {
+				var hours = document.getElementById(hourfield)
+				var minutes = document.getElementById(minutesfield)
+				for (var h=0; h<10; h++) {
+					var hr = "0"+(h+1);
+					hours.options[h] = new Option(h+1,hr);
+				}
+				for (var h=10;h<12;h++) {
+					hours.options[h]= new Option(h+1,h+1)
+				}
+				for (var i=0; i<10; i++) {
+					var time = "0" + i;
+					minutes.options[i] = new Option(time,time)
+				}
+				for (var m=10; m<60; m++) {
+					minutes.options[m] = new Option(m,m)
+				}
+			}
+
 		</script>
 
 
@@ -132,16 +151,23 @@
 						</select> 
 						<select id="endyear" name="endyear">
 						</select> 
-
+						<br />
+					Time: <br />
+						<select id="hour" name ="hour">
+						</select>
+						<select id="minutes" name = "minutes">
+						</select>
+						<select id="ampm" name="ampm">
+							<option>AM</option>
+							<option>PM</option>
+						</select>
 						<script type="text/javascript">
-
 						window.onload=function(){
-						populatedropdown("startday", "startmonth", "startyear")
-						populatedropdown("endday", "endmonth", "endyear")
+							populatedropdown("startday", "startmonth", "startyear")
+							populatedropdown("endday", "endmonth", "endyear")
+							populateTime("hour","minutes")
 						}
 						</script> <br />
-					Time: <br />
-						<input id="message" type="time" name ="time" id = "timeField" size = "38"><br/>
 					Category: <br />
 					<select name="category" id="category">
 					  <option>Architecture</option>
