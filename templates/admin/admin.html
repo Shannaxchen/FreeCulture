@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type='text/css'>
+        	<link href="../public/style.css" rel="stylesheet" type="text/css">
+        	<script type="text/javascript" src="/public/frontend.js"></script>
+		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script type="text/javascript">					 
+				var calJEC = new JEC('myCalendarContainer', {
+					weekdays: [
+					    "S",
+					    "M",
+					    "T",
+					    "W",
+					    "Th",
+					    "F",
+					    "S"
+					  ]
+				});
+				var temparray = [];
+				start = 20130101;
+				while (start <= 20501231){
+					temparray.push({linkedDate:start,dateLink:'/'+start});
+					start = start+1;
+				}
+				calJEC.linkDates(temparray);
+				calJEC.showCalendar();
+		</script>
+
+		<title>{{title}}</title>
+	</head>
+	<body>
+        <header>
+		<div id="header_wrapper">
+			<div id="first_header">
+				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
+				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="second_header">
+					<ul id="second_nav">
+						<li id="submit"><a href="submit">Submit</a></li>
+						<li id="search">Search: 
+	 	       			<form method="POST" action="/search" id = "searchForm">
+						<input id="textsearch" type="text" name="textsearch" id="searchField">
+						</form>	
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		</header>
+		<div id="body_stuff">
+			<div id="left_sidebar">
+				<div id = "myCalendarContainer">
+					
+				</div>
+				<div id="blurb">
+				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
+				</div>
+				<div id="categories">
+					<ul id = "category_list">
+					<li id="Architecture"><a href="Architecture">Architecture</a></li>
+					<li id="Art"><a href="Art">Art</a></li>
+					<li id="Dance"><a href="Dance">Dance</a></li>
+					<li id="Design"><a href="Design">Design</a></li>
+					<li id="Film"><a href="Film">Film</a></li>
+					<li id="Food"><a href="Food">Food</a></li>
+					<li id="Fun"><a href="Fun">Fun</a></li>
+					<li id="Lecture/Talk"><a href="LectureTalk">Lecture/Talk</a></li>
+					<li id="Music"><a href="Music">Music</a></li>
+					<li id="Theater"><a href="Theater">Theater</a></li>
+					<li id="Tours"><a href="Tours">Tours</a></li>
+					</ul>
+				</div>
+
+			</div>
+			<div id="post_container">
+				{{{preview}}}
+				<div id="sort_nav_container">
+					<ul id="sort_nav">
+					<li id="sort_by">Sort By: </li>
+					<li id="most_popular"><a href="#">Most Popular</a></li>
+					<li id="price_low_high"><a href="#">Price: Low to High</a></li>
+					<li id="event_date"><a href="#">Event Date</a></li>
+					<li id="post_date"><a href="#">Post Date</a></li>
+					</ul>
+				</div>
+	       		{{{posts}}}
+			</div>
+		</div>
+		<div id="footer_nav">
+			<div id="footer_nav_wrapper">
+				<ul>
+					<li><a href="about.html">About Us</a></li>
+					<li><a href="contact.html">Contact</a></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
