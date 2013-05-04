@@ -235,8 +235,7 @@ app.get('/l2h',function(request,response){
 					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
@@ -278,8 +277,7 @@ app.get('/pd',function(request,response){
 					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
 					post_html += "<h1>" + row.category + "</h1>";
 					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
+					post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
