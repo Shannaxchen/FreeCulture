@@ -7,6 +7,8 @@ var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
 var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
 
+var email = "john_tran@brown.edu";
+
 //make db
 conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT)');
 conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT)');
@@ -64,6 +66,11 @@ app.get('/',function(request,response){
 					post_html += "<div class ='corner'></div>";
 					post_html += "<div class ='hover'>";
 					post_html += "<h2>Event Description</h2>";
+					if('email' in request.session && request.session.email.localeCompare(email) == 0){
+						post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
+						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
+						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
+					}	
 					post_html += "<div class ='description'>";
 					post_html += "<p>" + row.body + "</p>";
 					post_html += "</div>";
@@ -77,7 +84,8 @@ app.get('/',function(request,response){
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
-					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html});
+
+					response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request)});
 			});
 
 		});
@@ -101,23 +109,23 @@ app.post('/auth/login', function(request, response){
         'Content-Type': 'application/json'
       }
     };
-    return makeRequest(requestHeaders, requestBody, function(responseBody) {
+    makeRequest(requestHeaders, requestBody, function(responseBody) {
       var res;
 
       res = JSON.parse(responseBody);
-      if (res.status === 'okay' && res.email == "john_trasdan@brown.edu") {
+      if (res.status === 'okay' && res.email.localeCompare(email) == 0) {
         request.session.email = res.email;
-        return response.send('yes');
+	response.send('yes');
       } else {
         request.session = null;
         response.send('no');
         return console.log(res);
       }
-    });
+    }); 
 });
 
 app.post('/auth/logout', function(request, response){
-    request.session = null;
+    request.session.email = '';
     return response.send('done');
 });
 
@@ -164,7 +172,8 @@ app.post('/search',function(request,response){
 			if (post_html === "") {
 				post_html = "<div class='noresult'><p><b>No results found.</p></div>";
 			}
-			response.render('homepage.html',{title:"Search Results", posts:post_html});
+
+			response.render('homepage.html',{title:"Search Results", posts:post_html,preview:getPreviewHTML(request)});
 		});
 });
 
@@ -188,37 +197,6 @@ app.get('/login',function(request,response){
 		response.render('login.html',{title:"Login"});
 });
 
-app.get('/admin',function(request,response){
-			var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD')
-			var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE enddate >= "+modify_d+" ORDER BY startdate DESC";
-			var q = conn_admin.query(sql);
-			var post_html='';
-			q.on('row', function(row){
-					post_html += "<div class ='post'>";
-					post_html += "<div class ='corner'></div>";
-					post_html += "<div class ='hover'>";
-					post_html += "<h2>Event Description</h2>";
-					post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
-					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
-					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
-					post_html += "<div class ='description'>";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "</div>";
-					post_html += "</div>";
-					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
-					post_html += "</div>";
-				}).on('end',function(){
-					response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Side", posts:post_html});
-			});
-
-});
-
 app.get('/edit/:postid',function(request,response){
 		var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
 		var q = conn_admin.query(sql);
@@ -237,8 +215,8 @@ app.get('/edit/:postid',function(request,response){
 
 
 app.post('/edit/form',function(request,response){
-    		response.redirect('/admin');
-		});
+    		response.redirect('/');
+	});
 
 app.get('/approve/:postid',function(request,response){
 	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
@@ -254,7 +232,7 @@ app.get('/approve/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-			response.redirect('/admin');
+			response.redirect('/');
 	});
 });
 
@@ -273,7 +251,7 @@ app.get('/reject/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-			response.redirect('/admin');
+			response.redirect('/');
 	});
 });
 
@@ -292,14 +270,14 @@ app.get('/restore/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-			response.redirect('/admin');
+			response.redirect('/');
 	});
 });
 
 app.get('/delete/:postid',function(request,response){
 	var sql = "DELETE FROM posts WHERE id == "+request.params.postid;
 	var q = conn_trash.query(sql);
-	response.redirect('/admin');
+	response.redirect('/');
 });
 
 
@@ -352,7 +330,7 @@ app.get('/:Category',function(request,response){
 					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
-					response.render('homepage.html',{title:cat, posts:post_html});
+					response.render('homepage.html',{title:cat, posts:post_html,preview:getPreviewHTML(request)});
 			});
 		}
 });
@@ -407,7 +385,7 @@ console.log(startmonth + " " + startday);
 
 app.post('/edit/submit', function(request, response){
     // post everything to the database, then...
-    response.redirect('/admin');
+    response.redirect('/');
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
@@ -468,6 +446,27 @@ function generatePostIdentifier() {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
 
     return result;
+}
+
+function getPreviewHTML(request){
+
+	var preview_html = '';
+
+	console.log(request.session);
+
+	if('email' in request.session && request.session.email.localeCompare(email) == 0){
+		preview_html += "<div id='sort_nav_container'>";
+		preview_html +=	"<ul id='sort_nav'>";
+		preview_html += "<li id='sort_by'>Preview: </li>";
+		preview_html += "<li id='price_low_high'><a href='#'>Unapproved Posts</a></li>";
+		preview_html +=	"<li id='event_date'><a href='#'>Approved Posts</a></li>";
+		preview_html += "<li id='event_date'><a href='#'>Rejected Posts</a></li>";
+		preview_html += "<li id='most_popular'><a href='#'>All Posts</a></li>";
+		preview_html += "</ul></div>";
+	}
+	console.log(preview_html);
+	return preview_html;
+
 }
 
 
