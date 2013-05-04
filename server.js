@@ -83,6 +83,44 @@ app.get('/',function(request,response){
 		});
 
 
+
+app.post('/auth/login', function(request, response){
+    var assertion, requestBody, requestHeaders;
+
+    assertion = request.body.assertion;
+    requestBody = JSON.stringify({
+      assertion: assertion,
+      audience: process.env.AUDIENCE || 'localhost:' + 8080
+    });
+    requestHeaders = {
+      host: 'verifier.login.persona.org',
+      path: '/verify',
+      method: 'POST',
+      headers: {
+        'Content-Length': requestBody.length,
+        'Content-Type': 'application/json'
+      }
+    };
+    return makeRequest(requestHeaders, requestBody, function(responseBody) {
+      var res;
+
+      res = JSON.parse(responseBody);
+      if (res.status === 'okay' && res.email == "john_trasdan@brown.edu") {
+        request.session.email = res.email;
+        return response.send('yes');
+      } else {
+        request.session = null;
+        response.send('no');
+        return console.log(res);
+      }
+    });
+});
+
+app.post('/auth/logout', function(request, response){
+    request.session = null;
+    return response.send('done');
+});
+
 app.get('/submit',function(request,response){
 		response.render('submit.html',{title:"Submit A Post!"});
 });
@@ -146,6 +184,10 @@ app.get('/contact.html',function(request,response){
 		response.render('contact.html',{title:"Contact Us"});
 });
 
+app.get('/login',function(request,response){
+		response.render('login.html',{title:"Login"});
+});
+
 app.get('/admin',function(request,response){
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD')
@@ -183,12 +225,13 @@ app.get('/edit/:postid',function(request,response){
 		var item = {};
 
 		q.on('row', function(row){
-			item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate, enddate: row.enddate, time: row.time, body: row.body, linkto: row.linkto};
+			item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto};
 			}).on('end',function(){
 			var find = ' ';
 			var re = new RegExp(find, 'g');
 
-			response.render('admin/edit.html',{title:"Edit A Post!", eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate});
+			console.log(item);
+			response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate});
 		});
 });
 
@@ -213,9 +256,6 @@ app.get('/approve/:postid',function(request,response){
 		}).on('end',function(){
 			response.redirect('/admin');
 	});
-
-
-
 });
 
 app.get('/reject/:postid',function(request,response){
@@ -225,7 +265,6 @@ app.get('/reject/:postid',function(request,response){
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
 	var q2 = conn_admin.query(sql2);
 
-	console.log(q2);
 	q.on('row', function(row){
 
 			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
@@ -236,6 +275,31 @@ app.get('/reject/:postid',function(request,response){
 		}).on('end',function(){
 			response.redirect('/admin');
 	});
+});
+
+app.get('/restore/:postid',function(request,response){
+	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var q = conn_trash.query(sql);
+
+	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
+	var q2 = conn_trash.query(sql2);
+
+	q.on('row', function(row){
+
+			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+
+			var q = conn_admin.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto]);
+			q.on('error', console.error);
+
+		}).on('end',function(){
+			response.redirect('/admin');
+	});
+});
+
+app.get('/delete/:postid',function(request,response){
+	var sql = "DELETE FROM posts WHERE id == "+request.params.postid;
+	var q = conn_trash.query(sql);
+	response.redirect('/admin');
 });
 
 
@@ -337,6 +401,56 @@ console.log(startmonth + " " + startday);
 
     var q = conn_admin.query(sql, [category, title, image, startdate, enddate, time, body, linkto]);
 
+    q.on('error', console.error);
+});
+
+
+app.post('/edit/submit', function(request, response){
+    // post everything to the database, then...
+    response.redirect('/admin');
+
+    var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+
+    var category = request.body.category;
+    var title = request.body.title;
+    var image = request.body.image;
+    
+    var startmonth = monthtext.indexOf(request.body.startmonth);
+    var startday = request.body.startday;
+
+    if(startmonth < 10){
+    	startmonth = '0' + startmonth;
+    }
+    if(startday < 10){
+    	startday = '0' + startday;
+    }
+    var startdate = request.body.startyear + request.body.startmonth + request.body.startday; 
+
+    var endmonth = monthtext.indexOf(request.body.endmonth);
+    var endday = request.body.endday;
+
+    if(endmonth < 10){
+    	endmonth = '0' + endmonth;
+    }
+    if(endday < 10){
+    	endday = '0' + endday;
+    }
+    var enddate = request.body.endyear + request.body.endmonth + request.body.endday; 
+    var startdate = "20130520"
+    var enddate = "20130520"
+    var time = "2400";
+    var body = request.body.description;
+    var linkto = request.body.link;
+
+    var postid = request.body.postid;
+
+
+    var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto) VALUES($1,$2,$3,$4,$5,$6,$7,$8)';
+
+    var q = conn_admin.query(sql, [category, title, image, startdate, enddate, time, body, linkto]);
+
+    var sql2 = "DELETE FROM posts WHERE id == " + postid;
+    var q2 = conn_admin.query(sql2);
 
     q.on('error', console.error);
 });
@@ -355,3 +469,27 @@ function generatePostIdentifier() {
 
     return result;
 }
+
+
+var  https = require('https');
+
+function makeRequest(headers, body, callback) {
+    var vreq;
+
+    vreq = https.request(headers, handleResponse(callback));
+    return vreq.write(body);
+  };
+
+  function handleResponse(callback) {
+    return function(vres) {
+      var responseBody;
+
+      responseBody = '';
+      vres.on('data', function(chunk) {
+        return responseBody += chunk;
+      });
+      return vres.on('end', function() {
+        return callback(responseBody);
+      });
+    };
+  };

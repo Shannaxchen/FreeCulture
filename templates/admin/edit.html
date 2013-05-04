@@ -36,13 +36,28 @@
 
 			var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
-			function populatedropdown(dayfield, monthfield, yearfield){
+			function setSelectedTime(s, v) {
+				console.log(s);
+				console.log(v);
+				s.options[v].selected = true;
+			}
+
+			function setSelectedYear(s, v) {
+				for ( var i = 0; i < s.options.length; i++ ) {
+					if ( s.options[i].value == v ) {
+					s.options[i].selected = true;
+					return;
+					}
+				}
+			}
+
+			function populatedropdown(dayfield, monthfield, yearfield, eventdate){
 				var today=new Date()
 				var dayfield=document.getElementById(dayfield)
 				var monthfield=document.getElementById(monthfield)
 				var yearfield=document.getElementById(yearfield)
-				for (var i=0; i<31; i++)
-					dayfield.options[i]=new Option(i, i+1)
+				for (var i=1; i<=31; i++)
+					dayfield.options[i-1]=new Option(i, i)
 				dayfield.options[today.getDate()]=new Option(today.getDate(), today.getDate(), true, true) //select today's day
 				for (var m=0; m<12; m++)
 					monthfield.options[m]=new Option(monthtext[m], monthtext[m])
@@ -53,7 +68,13 @@
 					thisyear+=1
 				}
 				yearfield.options[0]=new Option(today.getFullYear(), today.getFullYear(), true, true) //select today's year
+
+				setSelectedYear(yearfield, parseInt( (eventdate + '').substring(0, 4)));
+				setSelectedTime(monthfield, parseInt((eventdate + '').substring(4, 6) - 1));
+				setSelectedTime(dayfield, parseInt((eventdate + '').substring(6, 8) -1));
 			}
+
+
 
 		</script>
 
@@ -62,14 +83,22 @@
 		<title>{{title}}</title>
 	</head>
 	<body>
-        	<header>
+        <header>
 		<div id="header_wrapper">
-			<h1 id="logo"><a href="/"><img src="../../public/images/logo.png"></a></h1>
-			<ul id="top_nav">
-				<li id="submit"><a href="../submit">Submit</a></li>
-				<li id="search"><a href="../search">Search</a></li>
-				<li id="adspace"><img src="../../public/images/corner_ad.png"><a href="#"></a></li>
-			</ul>
+			<div id="first_header">
+				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
+				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="second_header">
+					<ul id="second_nav">
+						<li id="submit"><a href="submit">Submit</a></li>
+						<li id="search">Search: 
+	 	       			<form method="POST" action="/search" id = "searchForm">
+						<input id="textsearch" type="text" name="textsearch" id="searchField">
+						</form>	
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		</header>
 		<div id="body_stuff">
@@ -101,6 +130,7 @@
 			<div id="submitbox">
 	       			 <form method="POST" action="/edit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
+					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>
 					Name of Event:<br />
 					<input id="message" type="text" name="title" id="titleField" size="38" value={{{eventtitle}}}> <br />
 					Link to Image:<br />
@@ -127,12 +157,12 @@
 						<script type="text/javascript">
 
 						window.onload=function(){
-						populatedropdown("startday", "startmonth", "startyear")
-						populatedropdown("endday", "endmonth", "endyear")
+						populatedropdown("startday", "startmonth", "startyear", {{eventstartdate}})
+						populatedropdown("endday", "endmonth", "endyear", {{eventenddate}})
 						}
 						</script> <br />
 					Category: <br />
-					<select name="category" id="category" value={{eventcategory}}>
+					<select name="category" id="category">
 					  <option>Architecture</option>
 					  <option>Art</option>
 					  <option>Dance</option>
@@ -147,15 +177,15 @@
 					</select> 
 
 					<script>
-					function setSelectedIndex(s, v) {
-					for ( var i = 0; i < s.options.length; i++ ) {
-					if ( s.options[i].text == v ) {
-					s.options[i].selected = true;
-					return;
-					}
-					}
-					}
-					setSelectedIndex(document.getElementById('category'),{{eventcategory}});
+						function setSelectedIndex(s, v) {
+							for ( var i = 0; i < s.options.length; i++ ) {
+								if ( s.options[i].text == v.id ) {
+								s.options[i].selected = true;
+								return;
+								}
+							}
+						}
+						setSelectedIndex(document.getElementById('category'),{{eventcategory}});
 					</script>
 
 					<input id="send" type="submit" value="Send"> <br/>
