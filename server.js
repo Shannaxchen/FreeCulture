@@ -202,52 +202,6 @@ app.post('/search',function(request,response){
 		});
 });
 
-<<<<<<< HEAD
-app.get('/mp',function(request,response){
-		//display them by popularity
-		var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD')
-			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE enddate >= "+modify_d+" ORDER BY clickcount DESC";
-			var q = conn.query(sql);
-			var post_html='';
-			console.log(q);
-			q.on('row', function(row){
-					post_html += "<div class ='post'>";
-					post_html += "<a href = 'http://"+row.linkto+"' target='"+row.title+"'>";
-					post_html += "<div class ='corner'></div>";
-					post_html += "<div class ='hover'>";
-					post_html += "<h2>Event Description</h2>";
-					if('email' in request.session && request.session.email.localeCompare(email) == 0){
-						post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
-					}	
-					post_html += "<h4>" + convertTime(row.time) + "</h4>";
-					if (row.price == 0){
-						post_html += "<h4> Free </h4>";
-					}
-					else{
-						post_html += "<h4>$" + row.price + "</h4>";
-					}
-					post_html += "<div class ='description'>";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "</div>";
-					post_html += "</div>";
-					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "</a>";
-					post_html += "</div>";
-				}).on('end',function(){
-
-					response.render('homepage.html',{title:"Culture on The Cheap : Popularity", posts:post_html,preview:getPreviewHTML(request)});
-			});
-});
-
-=======
->>>>>>> 57631d671b1a1d72212d0809fda750a3f9b0f041
 app.get('/l2h',function(request,response){
 			//sort by low to high prices
 			var today = new Date();
@@ -492,6 +446,9 @@ app.get('/:Category',function(request,response){
 					post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
 					post_html += "</div>";
 				}).on('end',function(){
+					if (post_html==''){
+						post_html = "No results found.";
+					}
 					response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request)});
 			});
 		}
