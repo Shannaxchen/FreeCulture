@@ -433,7 +433,7 @@ app.post('/edit/submit', function(request, response){
     q.on('error', console.error);
 });
 
-app.listen(8080, function(){
+app.listen(3000, function(){
   console.log("FreeCulture server listening on 8080");
 });
 
