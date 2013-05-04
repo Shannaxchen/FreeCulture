@@ -10,7 +10,7 @@ var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
 var email = "john_tran@brown.edu";
 
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, clickcount INTEGER)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER)');
 conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT, price INTEGER)');
 conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT, price INTEGER)');
 
@@ -190,43 +190,6 @@ app.post('/search',function(request,response){
 		});
 });
 
-app.get('/mp',function(request,response){
-		//display them by popularity
-		var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD')
-			var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE enddate >= "+modify_d+" ORDER BY clickcount DESC";
-			var q = conn.query(sql);
-			var post_html='';
-			console.log(q);
-			q.on('row', function(row){
-					post_html += "<div class ='post'>";
-					post_html += "<a href = 'http://"+row.linkto+"' target='"+row.title+"'>";
-					post_html += "<div class ='corner'></div>";
-					post_html += "<div class ='hover'>";
-					post_html += "<h2>Event Description</h2>";
-					if('email' in request.session && request.session.email.localeCompare(email) == 0){
-						post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
-					}	
-					post_html += "<div class ='description'>";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "</div>";
-					post_html += "</div>";
-					post_html += "<img src =\"" + row.image + "\"" + " onerror=\"this.src='http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg'\" >";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate + "</h3>";
-					post_html += "<h3>" + row.enddate + "</h3>";
-					post_html += "<h4>" + row.time + "</h4>";
-					post_html += "</a>";
-					post_html += "</div>";
-				}).on('end',function(){
-
-					response.render('homepage.html',{title:"Culture on The Cheap : Popularity", posts:post_html,preview:getPreviewHTML(request)});
-			});
-});
-
 app.get('/l2h',function(request,response){
 			//sort by low to high prices
 			var today = new Date();
@@ -351,9 +314,9 @@ app.get('/approve/:postid',function(request,response){
 	q.on('row', function(row){
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD');
-			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,0]);
+			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
