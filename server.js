@@ -156,11 +156,6 @@ app.get('/submit',function(request,response){
 		response.render('submit.html',{title:"Submit A Post!"});
 });
 
-app.post('/submit/form',function(request,response){
-		//DO MORE THINGS TO HANDLE THE POST SUBMISSION
-		response.render('homepage.html',{title:"Your post has been submitted!",posts:"<p>Your event has been submitted! We are reviewing it right now.</p>"});
-		});
-
 app.post('/search',function(request,response){
 		//DO MORE THINGS TO lace the sql query together from the request
 		var keyword = request.body.textsearch;
