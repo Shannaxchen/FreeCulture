@@ -10,7 +10,7 @@ var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
 var email = "john_tran@brown.edu";
 
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, clickcount INTEGER)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER)');
 conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT, price INTEGER)');
 conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT postid TEXT, price INTEGER)');
 
@@ -202,6 +202,7 @@ app.post('/search',function(request,response){
 		});
 });
 
+<<<<<<< HEAD
 app.get('/mp',function(request,response){
 		//display them by popularity
 		var today = new Date();
@@ -245,6 +246,8 @@ app.get('/mp',function(request,response){
 			});
 });
 
+=======
+>>>>>>> 57631d671b1a1d72212d0809fda750a3f9b0f041
 app.get('/l2h',function(request,response){
 			//sort by low to high prices
 			var today = new Date();
@@ -381,9 +384,9 @@ app.get('/approve/:postid',function(request,response){
 	q.on('row', function(row){
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD');
-			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,0]);
+			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
