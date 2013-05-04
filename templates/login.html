@@ -5,6 +5,8 @@
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script src="https://login.persona.org/include.js"></script>
+	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
 					weekdays: [
@@ -30,15 +32,22 @@
 		<title>{{title}}</title>
 	</head>
 	<body>
-        	<header>
+        <header>
 		<div id="header_wrapper">
-			<h1 id="logo"><a href="/"><img src="../public/images/logo.png"></a></h1>
-			<ul id="top_nav">
-				<!-- <li id="sort_by"><a href="#">Sort By</a></li> -->
-				<li id="submit"><a href="submit">Submit</a></li>
-				<li id="search"><a href="search">Search</a></li>
-				<li id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></li>
-			</ul>
+			<div id="first_header">
+				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
+				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="second_header">
+					<ul id="second_nav">
+						<li id="submit"><a href="submit">Submit</a></li>
+						<li id="search">Search: 
+	 	       			<form method="POST" action="/search" id = "searchForm">
+						<input id="textsearch" type="text" name="textsearch" id="searchField">
+						</form>	
+						</li>
+					</ul>
+				</div>
+			</div>
 		</div>
 		</header>
 		<div id="body_stuff">
@@ -67,13 +76,11 @@
 
 			</div>
 			<div id="post_container">
-				<form method="POST" action="/admin" id = "messageForm">
-					<!--Figure out what should go in the submit post box -->
-					Password:<br />
-					<input id="message" type="text" name="password" id="passwordField" size="38"> <br />
-					<input id="send" type="submit" value="Send"> 
-				</form>
-				
+			<!-- Displayed only when user is logged out. -->
+			<img id="signin"  src="https://developer.mozilla.org/files/3961/persona_sign_in_black.png" alt="Sign in with Persona" />
+
+			<!-- Displayed only when user is logged in. -->
+			<button id="signout" class="hidden">Sign out</button>
 			</div>
 		</div>
 		<div id="footer_nav">

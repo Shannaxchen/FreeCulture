@@ -304,8 +304,8 @@ div#footer_nav {
 
 .post {
 	display:inline-block;
-	height: 320px;
-	width: 320px;
+	height: 224px;
+	width: 224px;
 	background-image: url("/public/images/post.png");
 	background-repeat: no-repeat;
 	position: relative;
@@ -316,8 +316,8 @@ div#footer_nav {
 }
 .post img{
 	display:block;
-	height: 180px;
-	width: 298px;
+	height: 120px;
+	width: 202px;
 	margin-top: 11px;
 	margin-left: 11px;
 }
@@ -351,6 +351,9 @@ div#footer_nav {
 	margin-bottom: 20px;
 	display: inherit;
 	color: black;
+}
+.hover:hover h4{
+	color:black;
 }
 
 .hover:hover {
@@ -403,7 +406,7 @@ h1{
 }
 
 h2{
-	margin-top: 50px;
+	margin-top: 20px;
 	text-transform: capitalize;
 	font-size: large;
 	height:7px;
@@ -412,6 +415,9 @@ h2{
 h3, h4{
 	display:inline;
 	color:gray;
+}
+h4{
+	color:transparent;
 }
 
 .admin {
