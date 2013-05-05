@@ -37,8 +37,6 @@
 			var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
 			function setSelectedTime(s, v) {
-				console.log(s);
-				console.log(v);
 				s.options[v].selected = true;
 			}
 
@@ -74,7 +72,75 @@
 				setSelectedTime(dayfield, parseInt((eventdate + '').substring(6, 8) -1));
 			}
 
+			function convertTime(time){
+				var timestr = time.toString();
+	
+				while(timestr.length < 4){
+					timestr = '0' + timestr;
+				}
+				if (time < 1200){
+					if (time < 100){
+						return "12:" + timestr.substring(2) + " AM";
+					}
+					else{
+						return timestr.substring(0,2) + ":" + time.toString().substring(2) + " AM";
+					}
+				}
+				else{
+					if (time < 1300){
+						return "12:" + timestr.substring(2) + " PM";
+					}
+					else{
+						timestr = (time - 1200).toString();
+	
+						while(timestr.length < 4){
+							timestr = '0' + timestr;
+						}		
+						return timestr.toString().substring(0,2) + ":" + timestr.substring(2) + " PM";
+					}	
+				}
+			}
 
+			function populateTime(hourfield,minutesfield,ampmfield, eventtime) {
+				console.log(eventtime);
+				var timestr = convertTime(eventtime);
+				var hours = document.getElementById(hourfield);
+				var minutes = document.getElementById(minutesfield);
+				var ampm = document.getElementById(ampmfield);
+				for (var h=0; h<10; h++) {
+					var hr = "0"+(h+1);
+					hours.options[h] = new Option(h+1,hr);
+				}
+				for (var h=10;h<12;h++) {
+					hours.options[h]= new Option(h+1,h+1)
+				}
+				for (var i=0; i<10; i++) {
+					var time = "0" + i;
+					minutes.options[i] = new Option(time,time)
+				}
+				for (var m=10; m<60; m++) {
+					minutes.options[m] = new Option(m,m)
+				}
+				for (var h = 0; h < 12; h++){
+					if( (h+1) == parseInt(timestr.substring(0, timestr.indexOf(":")))){
+						hours.options[h].selected = true;					
+						break;
+					}
+				}
+				for (var i = 0; i < 60; i++){
+					if( (i) == parseInt(timestr.substring(timestr.indexOf(":")+1, timestr.indexOf(":")+3))){
+						minutes.options[i].selected = true;					
+						break;
+					}
+				}
+				if(timestr.substring(timestr.length - 2).localeCompare("AM") == 0){
+					ampm.options[0].selected = true;
+				}
+				else{
+					ampm.options[1].selected = true;
+				}
+				
+			}
 
 		</script>
 
@@ -86,7 +152,7 @@
         <header>
 		<div id="header_wrapper">
 			<div id="first_header">
-				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
+				<div id="logo"><a href="/home"><img src="../public/images/logo.png"></a></div>
 				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
@@ -153,12 +219,21 @@
 						</select> 
 						<select id="endyear" name="endyear">
 						</select> 
-
+						<br />
+					Time: <br />
+						<select id="hour" name ="hour">
+						</select>
+						<select id="minutes" name = "minutes">
+						</select>
+						<select id="ampm" name="ampm">
+							<option>AM</option>
+							<option>PM</option>
+						</select>
 						<script type="text/javascript">
-
 						window.onload=function(){
-						populatedropdown("startday", "startmonth", "startyear", {{eventstartdate}})
-						populatedropdown("endday", "endmonth", "endyear", {{eventenddate}})
+							populatedropdown("startday", "startmonth", "startyear", {{{eventstartdate}}})
+							populatedropdown("endday", "endmonth", "endyear", {{{eventenddate}}})
+							populateTime("hour","minutes", "ampm",{{{eventtime}}})
 						}
 						</script> <br />
 					Category: <br />
