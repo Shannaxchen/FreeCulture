@@ -68,7 +68,7 @@ function convertTime(time){
 			return "12:" + timestr.substring(2) + " AM";
 		}
 		else{
-			return timestr.substring(0,2) + ":" + time.toString().substring(2) + " AM";
+			return timestr.substring(0,2) + ":" + timestr.substring(2) + " AM";
 		}
 	}
 	else{
@@ -437,9 +437,9 @@ app.post('/submit/submit', function(request, response){
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
     var category = request.body.category;
-    var title = request.body.title;
+    var title = verifyString(request.body.title);
     var image = request.body.image;
-    var price = request.body.price;
+    var price = verifyString(request.body.price);
     
     var startmonth = monthtext.indexOf(request.body.startmonth);
     var startday = request.body.startday;
@@ -450,7 +450,6 @@ app.post('/submit/submit', function(request, response){
     if (ampm === "PM") {
     	hour = parseInt(hour) + 12;
     }
-    console.log("Time: "+hour+minute);
 
     if(startmonth < 10){
     	startmonth = '0' + startmonth;
@@ -458,7 +457,7 @@ app.post('/submit/submit', function(request, response){
     if(startday < 10){
     	startday = '0' + startday;
     }
-    var startdate = request.body.startyear + request.body.startmonth + request.body.startday; 
+    var startdate = parseInt(request.body.startyear + startmonth + startday); 
 
     var endmonth = monthtext.indexOf(request.body.endmonth);
     var endday = request.body.endday;
@@ -469,11 +468,9 @@ app.post('/submit/submit', function(request, response){
     if(endday < 10){
     	endday = '0' + endday;
     }
-    var enddate = request.body.endyear + request.body.endmonth + request.body.endday; 
-    var startdate = "20130520"
-    var enddate = "20130520"
+    var enddate = parseInt(request.body.endyear + endmonth + endday); 
     var time = hour+minute;
-    var body = request.body.description;
+    var body = verifyString(request.body.description);
     var linkto = request.body.link;
 
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)';
@@ -504,7 +501,7 @@ app.post('/edit/submit', function(request, response){
     if(startday < 10){
     	startday = '0' + startday;
     }
-    var startdate = request.body.startyear + request.body.startmonth + request.body.startday; 
+    var startdate = request.body.startyear + startmonth + startday; 
 
     var endmonth = monthtext.indexOf(request.body.endmonth);
     var endday = request.body.endday;
@@ -515,7 +512,7 @@ app.post('/edit/submit', function(request, response){
     if(endday < 10){
     	endday = '0' + endday;
     }
-    var enddate = request.body.endyear + request.body.endmonth + request.body.endday; 
+    var enddate = request.body.endyear + endmonth + endday; 
     var startdate = "20130520"
     var enddate = "20130520"
     var time = "2400";
@@ -573,8 +570,14 @@ function getEditHTML(request, postid){
 	}
 
 	return post_html;
+}
 
-
+function verifyString(str){
+	var convert = "";	
+	if(!str){
+		return convert;
+	}
+	return str;
 }
 
 
