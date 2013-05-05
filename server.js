@@ -387,10 +387,10 @@ app.get('/:Category',function(request,response){
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD')
 			if (isDate){
-				var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE startdate<=$1 AND enddate >=$1 ORDER BY startdate DESC";
+				var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE startdate<=$1 AND enddate >=$1 ORDER BY startdate DESC";
 			}
 			else{
-				var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE category=$1 AND enddate > "+modify_d+" ORDER BY startdate DESC";
+				var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE category=$1 AND enddate > "+modify_d+" ORDER BY startdate DESC";
 			}
 			var q = preview.database.query(sql,[cat]);
 			var post_html='';
@@ -539,6 +539,7 @@ function getPreviewHTML(request){
 	var preview_html = '';
 
 	if('email' in request.session && request.session.email.localeCompare(email) == 0){
+		preview_html += "<button id='signout' class='hidden'>Sign out</button><br />";
 		preview_html += "<div id='sort_nav_container'>";
 		preview_html +=	"<ul id='sort_nav'>";
 		preview_html += "<li id='sort_by'>Preview: </li>";
