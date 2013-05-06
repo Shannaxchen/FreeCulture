@@ -21,8 +21,8 @@ var ORDER = {
 };
 
 var email = "john_tran@brown.edu";
-var hostname = "localhost:"; //ec2-54-234-63-63.compute-1.amazonaws.com
-var PORT = 3000; //80
+var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //localhost
+var PORT = 80; ///3000; //80
 
 var preview = PREVIEW.APPROVED;
 var order = ORDER.ED;
