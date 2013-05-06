@@ -5,6 +5,8 @@
         	<link href="../../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script src="https://login.persona.org/include.js"></script>
+	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
 					weekdays: [
@@ -153,9 +155,10 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/home"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
+						{{{admin}}}
 						<li id="submit"><a href="submit">Submit</a></li>
 						<li id="search">Search: 
 	 	       			<form method="POST" action="/search" id = "searchForm">
@@ -194,6 +197,7 @@
 			</div>
 
 			<div id="submitbox">
+				<button disabled = 'disabled'>
 	       			 <form method="POST" action="/edit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>
@@ -203,6 +207,8 @@
 					<input id="message" type="text" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
 					Link to Event:<br />
 					<input id="message" type="text" name="linkto" id="linkField" size="38" value={{{eventlinkto}}}> <br />
+					Price of Event:<br />
+					<input id="message" type="number" name="price" id="priceField" size="38" value={{{eventprice}}}> <br />
 					Description of Event:<br />
 					<textarea cols="40" rows="5" name="description">{{eventbody}}</textarea><br />
 					Start Date:<br />
@@ -264,7 +270,7 @@
 					</script>
 
 					<input id="send" type="submit" value="Edit"> <br/>
-				</form>
+				</form></button>
 			</div>
 		</div>
 		<div id="footer_nav">

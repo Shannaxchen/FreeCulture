@@ -5,6 +5,8 @@
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script src="https://login.persona.org/include.js"></script>
+	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
 					weekdays: [
@@ -41,8 +43,8 @@
 				var dayfield=document.getElementById(dayfield)
 				var monthfield=document.getElementById(monthfield)
 				var yearfield=document.getElementById(yearfield)
-				for (var i=0; i<31; i++)
-					dayfield.options[i]=new Option(i, i+1)
+				for (var i=1; i<=31; i++)
+					dayfield.options[i-1]=new Option(i, i)
 				dayfield.options[today.getDate()]=new Option(today.getDate(), today.getDate(), true, true) //select today's day
 				for (var m=0; m<12; m++)
 					monthfield.options[m]=new Option(monthtext[m], monthtext[m])
@@ -85,9 +87,10 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/home"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
+						{{{admin}}}
 						<li id="submit"><a href="submit">Submit</a></li>
 						<li id="search">Search: 
 	 	       			<form method="POST" action="/search" id = "searchForm">
@@ -125,6 +128,7 @@
 			</div>
 
 			<div id="submitbox">
+				<button disabled = 'disabled'>
 	       			 <form method="POST" action="/submit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					Name of Event:<br />
@@ -184,7 +188,7 @@
 					</select> 
 
 					<input id="send" type="submit" value="Send"> <br/>
-				</form>
+				</form></button>
 			</div>
 		</div>
 		<div id="footer_nav">

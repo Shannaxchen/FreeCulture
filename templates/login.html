@@ -36,9 +36,10 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/home"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
+						{{{admin}}}
 						<li id="submit"><a href="submit">Submit</a></li>
 						<li id="search">Search: 
 	 	       			<form method="POST" action="/search" id = "searchForm">
@@ -56,7 +57,7 @@
 					
 				</div>
 				<div id="blurb">
-				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
+				<p> {{{description}}} </p>
 				</div>
 				<div id="categories">
 					<ul id = "category_list">

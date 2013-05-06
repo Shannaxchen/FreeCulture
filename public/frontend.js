@@ -6,9 +6,7 @@ window.addEventListener('load', function(){
 	var signoutLink = document.getElementById('signout');
 
 
-	if(signoutLink){
-
-
+	if(signoutLink && signinLink){
 
 	// You need to call navigator.id.watch for login/logout, and current user events. 
 	navigator.id.watch({
@@ -21,10 +19,11 @@ window.addEventListener('load', function(){
 	      type: 'POST',
 	      url: '/auth/login', // This is a URL on your website.
 	      data: {assertion: assertion},
-	      success: function(res, status, xhr) { if(res == 'yes') {console.log(res);} else {console.log("no");} },
+	      success: function(res, status, xhr) { if(res == 'yes') {console.log(res);  } else {console.log("no");} },
 	      error: function(xhr, status, err) {
 		navigator.id.logout();
 		alert("Login failure: " + err);
+		console.log(status);
 	      }
 	    });
 	  },
@@ -40,6 +39,27 @@ window.addEventListener('load', function(){
 	      error: function(xhr, status, err) { alert("Logout failure: " + err); }
 	    });
 
+	  }
+	});
+
+	}
+	else if(signoutLink){
+	// You need to call navigator.id.watch for login/logout, and current user events. 
+	navigator.id.watch({
+	  loggedInUser: currentUser,
+	  onlogin: function(assertion) {
+	  },
+	  onlogout: function() {
+	    // A user has logged out! Here you need to:
+	    // Tear down the user's session by redirecting the user or making a call to your backend.
+	    // Also, make sure loggedInUser will get set to null on the next page load.
+	    // (That's a literal JavaScript null. Not false, 0, or undefined. null.)
+	    $.ajax({
+	      type: 'POST',
+	      url: '/auth/logout', // This is a URL on your website.
+	      success: function(res, status, xhr) { console.log("log out yeah"); window.location.reload(); },
+	      error: function(xhr, status, err) { alert("Logout failure: " + err); }
+	    });
 	  }
 	});
 

@@ -5,6 +5,8 @@
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/frontend.js"></script>
 		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+		<script src="https://login.persona.org/include.js"></script>
+	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
 					weekdays: [
@@ -34,9 +36,10 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><img src="../public/images/corner_ad.png"><a href="#"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
+						{{{admin}}}
 						<li id="submit"><a href="submit">Submit</a></li>
 						<li id="search">Search: 
 	 	       			<form method="POST" action="/search" id = "searchForm">
@@ -54,7 +57,7 @@
 					
 				</div>
 				<div id="blurb">
-				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
+				<p> {{{description}}} </p>
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
@@ -74,17 +77,22 @@
 
 			</div>
 			<div id="post_container">
-				{{{preview}}}
-				<div id="sort_nav_container">
-					<ul id="sort_nav">
-					<li id="sort_by">Sort By: </li>
-					<li id="most_popular"><a href="#">Most Popular</a></li>
-					<li id="price_low_high"><a href="#">Price: Low to High</a></li>
-					<li id="event_date"><a href="#">Event Date</a></li>
-					<li id="post_date"><a href="#">Post Date</a></li>
-					</ul>
-				</div>
-	       		{{{posts}}}
+				<p>Welcome back, Debbie! :) <button id='signout' class='hidden'>Sign out</button></p>
+ 				<button disabled = 'disabled'>
+	       			 <form method="POST" action="/admin/submit" id = "messageForm">
+					Your Login Email:<br />
+					<textarea cols="40" rows="1" name="email">{{{email}}}</textarea><br />
+					About Us:<br />
+					<textarea cols="40" rows="9" name="aboutus">{{{aboutus}}}</textarea><br />
+					Contact:<br />
+					<textarea cols="40" rows="3" name="contact">{{{contact}}}</textarea><br />
+					Description:<br />
+					<textarea cols="40" rows="4" name="description">{{{description}}}</textarea><br />
+					Ad Link:<br />
+					<textarea cols="40" rows="2" name="adlink">{{{adlink}}}</textarea><br />
+
+					<input id="send" type="submit" value="Update Information"> <br/>
+				</form></button>
 			</div>
 		</div>
 		<div id="footer_nav">
