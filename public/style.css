@@ -119,8 +119,7 @@ textarea{
 }
 
 div#left_sidebar{
-	position: fixed;
-	display: block;
+	float:left;
 	margin-top: 150px;
 	width: 180px;
 	height:80%;
