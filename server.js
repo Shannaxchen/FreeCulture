@@ -66,34 +66,6 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-function convertTime(time){
-	var timestr = time.toString();
-	
-	while(timestr.length < 4){
-		timestr = '0' + timestr;
-	}
-	if (time < 1200){
-		if (time < 100){
-			return "12:" + timestr.substring(2) + " AM";
-		}
-		else{
-			return timestr.substring(0,2) + ":" + timestr.substring(2) + " AM";
-		}
-	}
-	else{
-		if (time < 1300){
-			return "12:" + timestr.substring(2) + " PM";
-		}
-		else{
-			timestr = (time - 1200).toString();
-	
-			while(timestr.length < 4){
-				timestr = '0' + timestr;
-			}		
-			return timestr.toString().substring(0,2) + ":" + timestr.substring(2) + " PM";
-		}	
-	}
-}
 
 //all possible category IDs.
 var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
@@ -473,42 +445,41 @@ app.get('/:Category',function(request,response){
 			var q = preview.database.query(sql, [cat]);
 			var post_html='';
 			q.on('row', function(row){
-				if(row.category.localeCompare(cat) == 0){
-					var linkto = row.linkto;
-					if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
-						linkto = "http://" + linkto;
-					}
-					post_html += "<div class ='post'>";
-					post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
-					post_html += "<div class ='corner'></div>";
-					post_html += "<div class ='hover'>";
-					if('email' in request.session && request.session.email.localeCompare(email) == 0){
-						post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
-						post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
-					}
-					post_html += "<h2>Event Description</h2>";
-					post_html += "<h4>" + convertTime(row.time) + "</h4>";
-					if (row.price == 0){
-						post_html += "<h4> Free </h4>";
-					}
-					else{
-						post_html += "<h4>$" + row.price + "</h4>";
-					}
-					post_html += "<div class ='description'>";
-					post_html += "<p>" + row.body + "</p>";
-					post_html += "</div>";
-					post_html += "</div>";
-					var image = row.image;
-					if(!row.image || row.image.localeCompare("") == 0){
-						image = defaultimage;
-					}
-					post_html += "<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-					post_html += "<h1>" + row.category + "</h1>";
-					post_html += "<h2>" + row.title + "</h2>";
-					post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
-					post_html += "</div>";
+				var linkto = row.linkto;
+				if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
+					linkto = "http://" + linkto;
 				}
+				post_html += "<div class ='post'>";
+				post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
+				post_html += "<div class ='corner'></div>";
+				post_html += "<div class ='hover'>";
+				if('email' in request.session && request.session.email.localeCompare(email) == 0){
+					post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
+					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
+					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
+				}
+				post_html += "<h2>Event Description</h2>";
+				post_html += "<h4>" + convertTime(row.time) + "</h4>";
+				if (row.price == 0){
+					post_html += "<h4> Free </h4>";
+				}
+				else{
+					post_html += "<h4>$" + row.price + "</h4>";
+				}
+				post_html += "<div class ='description'>";
+				post_html += "<p>" + row.body + "</p>";
+				post_html += "</div>";
+				post_html += "</div>";
+				var image = row.image;
+				if(!row.image || row.image.localeCompare("") == 0){
+					image = defaultimage;
+				}
+				post_html += "<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >";
+				post_html += "<h1>" + row.category + "</h1>";
+				post_html += "<h2>" + row.title + "</h2>";
+				post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
+				post_html += "</div>";
+				
 					
 				}).on('end',function(){
 					if (post_html==''){
@@ -641,6 +612,7 @@ app.listen(3000, function(){
   console.log("FreeCulture server listening on 3000");
 });
 
+//functions
 function getPreviewHTML(request){
 	var preview_html = '';
 
@@ -744,4 +716,34 @@ function checkAdminAccess(request, response){
 	}	
 	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request)});
 	return false;
+}
+
+
+function convertTime(time){
+	var timestr = time.toString();
+	
+	while(timestr.length < 4){
+		timestr = '0' + timestr;
+	}
+	if (time < 1200){
+		if (time < 100){
+			return "12:" + timestr.substring(2) + " AM";
+		}
+		else{
+			return timestr.substring(0,2) + ":" + timestr.substring(2) + " AM";
+		}
+	}
+	else{
+		if (time < 1300){
+			return "12:" + timestr.substring(2) + " PM";
+		}
+		else{
+			timestr = (time - 1200).toString();
+	
+			while(timestr.length < 4){
+				timestr = '0' + timestr;
+			}		
+			return timestr.toString().substring(0,2) + ":" + timestr.substring(2) + " PM";
+		}	
+	}
 }
