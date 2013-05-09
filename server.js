@@ -605,7 +605,7 @@ app.post('/edit/submit', function(request, response){
 	if(!checkAdmin(request, response)){
 		return;
 	}
-    response.redirect('/'+category);
+    //response.redirect('/'+category);
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
@@ -650,28 +650,9 @@ app.post('/edit/submit', function(request, response){
     var body = verifyString(request.body.description);
     var linkto = request.body.linkto;
 
-    var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
-    var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
-    var imageshortcut = "";
-    if(imagefileformats.indexOf(ext) > -1){
-	    imageshortcut = 'public/images/uploads/' + title + image.substring(image.lastIndexOf('/')+1);
-	    http.get(image, imageshortcut, function (error, result) {
-		if (error) {
-		    console.error(error);
-		    imageshortcut = defaultimage;
-		} else {
-		    console.log('File downloaded at: ' + result.file);
-		}
-	    });
-    }
-    else{
-	console.log("Not a supported image file format. Using default picture instead. ");
-	imageshortcut = defaultimage;
-    }
-
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-    var q = preview.database.query(sql, [cat, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
+    var q = preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
 
     q.on('error', console.error);
 

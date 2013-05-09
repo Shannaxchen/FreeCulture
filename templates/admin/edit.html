@@ -9,7 +9,6 @@
 	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				function validateForm(){
-
 					var errors = 0;
 					var errorbox = document.getElementById("errorbox");
 				        var messageForm = document.getElementById('messageForm');
@@ -47,7 +46,7 @@
 						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
 						errors += 1;
 					}
-					else if(!parseInt(elements["price"].value)){
+					else if(!parseInt(elements["price"].value) && parseInt(elements["price"].value) != 0){
 						errorbox.innerHTML += "* Price could not be converted to a number <br // >";
 						errors += 1;
 					}
@@ -207,7 +206,6 @@
 			}
 
 			function populateTime(hourfield,minutesfield,ampmfield, eventtime) {
-				console.log(eventtime);
 				var timestr = convertTime(eventtime);
 				var hours = document.getElementById(hourfield);
 				var minutes = document.getElementById(minutesfield);
@@ -301,7 +299,7 @@
 
 			<div id="submitbox">
 				<button disabled = 'disabled'>
-	       			 <form method="POST" onsubmit="return validateForm()" action="/edit/submit" id = "messageForm">
+	       			 <form onsubmit="return validateForm()" method="POST" action="/edit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>
 					Name of Event:<br />
@@ -374,6 +372,10 @@
 
 					<input id="send" type="submit" value="Edit"> <br/>
 				</form></button>
+			</div>
+
+			<div id = 'errorbox'>
+					<!--Figure out what errors there are -->
 			</div>
 		</div>
 		<div id="footer_nav">

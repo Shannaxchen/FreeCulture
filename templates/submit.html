@@ -68,7 +68,8 @@
 						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
 						errors += 1;
 					}
-					else if(!parseInt(elements["price"].value)){
+					
+					else if(!parseInt(elements["price"].value) && parseInt(elements["price"].value) != 0){
 						errorbox.innerHTML += "* Price could not be converted to a number <br // >";
 						errors += 1;
 					}
