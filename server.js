@@ -21,15 +21,15 @@ var ORDER = {
 };
 
 var email = "john_tran@brown.edu";
-var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //localhost
-var PORT = 80; ///3000; //80
+var hostname = "localhost:";//"ec2-54-234-63-63.compute-1.amazonaws.com:" //localhost
+var PORT = 3000; ///3000; //80
 
 var preview = PREVIEW.APPROVED;
 var order = ORDER.ED;
 var category = "";
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
-var defaultimage = "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg";
+var defaultimage = "public/images/default.jpg";
 
 var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.";
 
@@ -139,7 +139,8 @@ app.get('/',function(request,response){
 			if(!row.image || row.image.localeCompare("") == 0){
 				image = defaultimage;
 			}
-			post_html += "<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >";
+			post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
+			console.log("<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >");
 			post_html += "<h1>" + row.category + "</h1>";
 			post_html += "<h2>" + row.title + "</h2>";
 			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
@@ -180,6 +181,7 @@ app.post('/admin/submit', function(request, response){
     aboutus = verifyString(request.body.aboutus).replace(re, "<br />");
     contact = verifyString(request.body.contact).replace(re, "<br />");
     description = verifyString(request.body.description).replace(re, "<br />");
+    adlink = verifyString(request.body.adlink);
 });
 
 
@@ -310,6 +312,9 @@ app.get('/pd',function(request,response){
 });
 
 app.get('/unappr',function(request,response){
+	if(!checkAdminAccess(request, response)){
+		return;
+	}
 	preview = PREVIEW.UNAPPROVED;
 	response.redirect('/'+category);
 });
@@ -320,6 +325,9 @@ app.get('/appr',function(request,response){
 });
 
 app.get('/reje',function(request,response){
+	if(!checkAdminAccess(request, response)){
+		return;
+	}
 	preview = PREVIEW.REJECTED;
 	response.redirect('/'+category);
 });
@@ -521,7 +529,6 @@ app.get('/:Category',function(request,response){
 
 app.post('/submit/submit', function(request, response){
     // post everything to the database, then...
-    response.redirect('/'+category);
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
@@ -533,7 +540,6 @@ app.post('/submit/submit', function(request, response){
 	price = 0;
     }
 
-    
     var startmonth = monthtext.indexOf(request.body.startmonth) + 1;
     var startday = request.body.startday;
 
@@ -566,11 +572,32 @@ app.post('/submit/submit', function(request, response){
     var body = verifyString(request.body.description);
     var linkto = request.body.linkto;
 
+    var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
+    var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
+    var imageshortcut = "";
+    if(imagefileformats.indexOf(ext) > -1){
+	    imageshortcut = 'public/images/uploads/' + title + image.substring(image.lastIndexOf('/')+1);
+	    http.get(image, imageshortcut, function (error, result) {
+		if (error) {
+		    console.error(error);
+		    imageshortcut = defaultimage;
+		} else {
+		    console.log('File downloaded at: ' + result.file);
+		}
+	    });
+    }
+    else{
+	console.log("Not a supported image file format. Using default picture instead. ");
+	imageshortcut = defaultimage;
+    }
+
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-    var q = conn_admin.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+    var q = conn_admin.query(sql, [cat, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
 
     q.on('error', console.error);
+
+    response.redirect('/'+category);
 });
 
 
@@ -623,9 +650,28 @@ app.post('/edit/submit', function(request, response){
     var body = verifyString(request.body.description);
     var linkto = request.body.linkto;
 
+    var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
+    var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
+    var imageshortcut = "";
+    if(imagefileformats.indexOf(ext) > -1){
+	    imageshortcut = 'public/images/uploads/' + title + image.substring(image.lastIndexOf('/')+1);
+	    http.get(image, imageshortcut, function (error, result) {
+		if (error) {
+		    console.error(error);
+		    imageshortcut = defaultimage;
+		} else {
+		    console.log('File downloaded at: ' + result.file);
+		}
+	    });
+    }
+    else{
+	console.log("Not a supported image file format. Using default picture instead. ");
+	imageshortcut = defaultimage;
+    }
+
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-    var q = preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+    var q = preview.database.query(sql, [cat, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
 
     q.on('error', console.error);
 
@@ -636,6 +682,10 @@ app.post('/edit/submit', function(request, response){
 
     q.on('error', console.error);
 });
+var  https = require('https');
+
+var http = require('http-get');
+
 
 app.listen(3000, function(){
   console.log("FreeCulture server listening on 3000");
@@ -696,7 +746,7 @@ function verifyString(str){
 }
 
 
-var  https = require('https');
+
 
 function makeRequest(headers, body, callback) {
     var vreq;
@@ -718,6 +768,8 @@ function makeRequest(headers, body, callback) {
       });
     };
   };
+
+
 
 function generateData(){
 conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Architecture", "Architecture event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130620", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdklsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl dhfjkdhlfkjhd dfhjlaj djhfal djsjdhfkj djhfjkd eirjlk lsjfh hdsjfl khdljshfla hdjsahfldkls jahflkdjashf hjadhfldhaslf hadjsflhjasdhl f djfhlkjdshk dhfjdskfjhdj free and cheap things to do in NYC", "google.com",0,0,0]).on('error',console.error);

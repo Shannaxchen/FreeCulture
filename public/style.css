@@ -237,6 +237,17 @@ table.JEC thead tr *, table.JEC thead *{
 	padding-left: 1px;
 }
 
+#errorbox {
+	margin-left: 500px;
+	margin-top: 160px;
+	font-size: 12px;
+	text-align: left;
+	margin-right: 150px;
+	position:absolute;
+	color: #F00
+}
+
+
 #sort_nav_container h2{
 	font-size: medium;
 	margin-left: 10px;
@@ -433,4 +444,8 @@ h4{
 	text-decoration: none;
 	color: transparent;
 
+}
+
+button .error {
+	color: #FF0000
 }

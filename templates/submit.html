@@ -28,6 +28,109 @@
 				//calJEC.linkDates(temparray);
 				calJEC.showCalendar();
 		</script>
+		<script type="text/javascript">					 
+				function validateForm(){
+
+					var errors = 0;
+					var errorbox = document.getElementById("errorbox");
+				        var messageForm = document.getElementById('messageForm');
+				        //var fd = new FormData(messageForm);
+				        var elements = messageForm.elements;
+				        errorbox.innerHTML = "";
+
+					if(elements["title"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a name for the event! <br // >";
+						errors += 1;
+					}
+					
+					if(elements["image"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a link to the event image! <br // >";	
+					}
+					else{
+						var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
+						var ext = elements["image"].value.substring(elements["image"].value.lastIndexOf('.'));
+						if(imagefileformats.indexOf(ext) < 0){
+							errorbox.innerHTML += "* Image file format not supported. <br // >";
+							errors += 1;
+						}
+					}
+
+					if(elements["linkto"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a link for the event! <br // >";
+						errors += 1;
+					}
+
+					if(elements["linkto"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a link for the event! <br // >";
+						errors += 1;
+					}
+					if(elements["price"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
+						errors += 1;
+					}
+					else if(!parseInt(elements["price"].value)){
+						errorbox.innerHTML += "* Price could not be converted to a number <br // >";
+						errors += 1;
+					}
+					else if(parseInt(elements["price"].value) < 0){
+						errorbox.innerHTML += "* Price cannot be negative. <br // >";
+						errors += 1;
+					}
+
+
+					if(elements["description"].value.length == 0){
+						errorbox.innerHTML += "* Please provide a description for the event! <br // >";
+						errors += 1;
+					}
+
+					    var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+
+					    var startmonth = monthtext.indexOf(elements["startmonth"].value) + 1;
+					    var startday = elements["startday"].value;
+
+					    if(startmonth < 10){
+					    	startmonth = '0' + startmonth;
+					    }
+					    if(startday < 10){
+					    	startday = '0' + startday;
+					    }
+					    var startdate = parseInt(elements["startyear"].value + startmonth + startday); 
+
+					    var endmonth = monthtext.indexOf(elements["endmonth"].value) + 1;
+					    var endday = elements["endday"].value;
+
+					    if(endmonth < 10){
+					    	endmonth = '0' + endmonth;
+					    }
+					    if(endday < 10){
+					    	endday = '0' + endday;
+					    }
+					    var enddate = parseInt(elements["endyear"].value + endmonth + endday); 
+
+					if(startdate > enddate){
+						errorbox.innerHTML += "* End date cannot be earlier than start date <br // >";
+						errors += 1;
+					}
+					var today = new Date();
+					var modify_month = parseInt(today.getMonth()+1);
+					if(modify_month < 10){
+						modify_month = '0' + modify_month;
+					}
+
+					var modify_date = parseInt(today.getDate());
+					if(modify_date < 10){
+						modify_date = '0' + modify_date;
+					}
+					var modify_d = parseInt(today.getFullYear() + '' + modify_month + '' + modify_date);
+					if(modify_d > enddate){
+						errorbox.innerHTML += "* End date cannot be earlier than today <br // >";
+						errors += 1;
+
+					}
+
+					return errors == 0;
+				}
+		</script>
 		<script type="text/javascript">
 
 			/***********************************************
@@ -45,7 +148,7 @@
 				var yearfield=document.getElementById(yearfield)
 				for (var i=1; i<=31; i++)
 					dayfield.options[i-1]=new Option(i, i)
-				dayfield.options[today.getDate()]=new Option(today.getDate(), today.getDate(), true, true) //select today's day
+				dayfield.options[today.getDate()-1]=new Option(today.getDate(), today.getDate(), true, true) //select today's day
 				for (var m=0; m<12; m++)
 					monthfield.options[m]=new Option(monthtext[m], monthtext[m])
 				monthfield.options[today.getMonth()]=new Option(monthtext[today.getMonth()], monthtext[today.getMonth()], true, true) //select today's month
@@ -129,7 +232,7 @@
 
 			<div id="submitbox">
 				<button disabled = 'disabled'>
-	       			 <form method="POST" action="/submit/submit" id = "messageForm">
+	       			 <form onsubmit="return validateForm()" method="POST" action="/submit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					Name of Event:<br />
 					<input id="message" type="text" name="title" id="titleField" size="38"> <br />
@@ -189,6 +292,10 @@
 
 					<input id="send" type="submit" value="Send"> <br/>
 				</form></button>
+
+			</div>
+			<div id = 'errorbox'>
+					<!--Figure out what errors there are -->
 			</div>
 		</div>
 		<div id="footer_nav">
