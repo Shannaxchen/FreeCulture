@@ -8,9 +8,9 @@ var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
 var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
 
 var PREVIEW = {
-  APPROVED : {value: 0, database: conn}, 
-  REJECTED: {value: 1, database: conn_trash}, 
-  UNAPPROVED : {value: 2, database: conn_admin}
+  APPROVED : {value: 0}, 
+  REJECTED: {value: 1}, 
+  UNAPPROVED : {value: 2}
 };
 
 var ORDER = {
@@ -21,12 +21,8 @@ var ORDER = {
 };
 
 var email = "john_tran@brown.edu";
-var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //localhost
-var PORT = 80; ///3000; //80
-
-var preview = PREVIEW.APPROVED;
-var order = ORDER.ED;
-var category = "";
+var hostname = "localhost:";//"ec2-54-234-63-63.compute-1.amazonaws.com:" //
+var PORT = 3000; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
@@ -73,17 +69,36 @@ var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","Le
 //route
 
 app.get('/home',function(request,response){
-	category = "";
-	preview = PREVIEW.APPROVED;
-	order = ORDER.ED;
+	request.session.category = "";
+	//request.session.preview = PREVIEW.APPROVED;
+	//request.session.order = ORDER.ED;
 	response.redirect('/');
 });
 
 app.get('/',function(request,response){
+	if(!('category' in request.session)){
+		request.session.category = "";
+	}
+	if(!('preview' in request.session)){
+		request.session.preview = PREVIEW.APPROVED;
+	}
+	if(!('order' in request.session)){
+		request.session.order = ORDER.ED;
+	}
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+order.sql;
-	var q = preview.database.query(sql);
+	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
+
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql);
+	}
 	var post_html='';
 	q.on('row', function(row){
 			var linkto = row.linkto;
@@ -112,7 +127,6 @@ app.get('/',function(request,response){
 				image = defaultimage;
 			}
 			post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-			console.log("<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >");
 			post_html += "<h1>" + row.category + "</h1>";
 			post_html += "<h2>" + row.title + "</h2>";
 			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
@@ -217,10 +231,20 @@ app.post('/search',function(request,response){
 	var post_html = '';
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	preview = PREVIEW.APPROVED;
-	order = ORDER.ED;
-	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')" + order.sql;
-	var q = preview.database.query(sql,[]);
+	request.session.preview = PREVIEW.APPROVED;
+	request.session.order = ORDER.ED;
+	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')" + request.session.order.sql;
+
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql,[]);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql,[]);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql,[]);
+	}
 	q.on('row', function(row){
 				post_html += "<div class ='post'>";
 				post_html += "<a href = 'http://"+row.linkto+"'>";
@@ -264,45 +288,47 @@ app.get('/login',function(request,response){
 });
 
 app.get('/mp',function(request,response){
-	order = ORDER.MP;
-	response.redirect('/'+category);
+	request.session.order = ORDER.MP;
+	//order = ORDER.MP;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/l2h',function(request,response){
-	order = ORDER.L2H;
-	response.redirect('/'+category);
+	request.session.order = ORDER.L2H;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/ed',function(request,response){
-	order = ORDER.ED;
-	response.redirect('/'+category);
+	request.session.order = ORDER.ED;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/pd',function(request,response){
-	order = ORDER.PD;
-	response.redirect('/'+category);
+	request.session.order = ORDER.PD;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/unappr',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	preview = PREVIEW.UNAPPROVED;
-	response.redirect('/'+category);
+	request.session.preview = PREVIEW.UNAPPROVED;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/appr',function(request,response){
-	preview = PREVIEW.APPROVED;
-	response.redirect('/'+category);
+	request.session.preview = PREVIEW.APPROVED;
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/reje',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	preview = PREVIEW.REJECTED;
-	response.redirect('/'+category);
+	request.session.preview = PREVIEW.REJECTED;
+	response.redirect('/'+request.session.category);
 });
+
 
 app.get('/about',function(request,response){
 	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request)});
@@ -325,7 +351,16 @@ app.get('/edit/:postid',function(request,response){
 		return;
 	}
 	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
-	var q = preview.database.query(sql);
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql);
+	}
 	var item = {};
 
 	q.on('row', function(row){
@@ -342,7 +377,7 @@ app.post('/edit/form',function(request,response){
 	if(!checkAdmin(request, response)){
 		return;
 	}
-	response.redirect('/'+category);
+	response.redirect('/'+request.session.category);
 });
 
 app.get('/approve/:postid',function(request,response){
@@ -363,7 +398,7 @@ app.get('/approve/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-    			response.redirect('/'+category);
+    			response.redirect('/'+request.session.category);
 	});
 });
 
@@ -372,10 +407,28 @@ app.get('/reject/:postid',function(request,response){
 		return;
 	}
 	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
-	var q = preview.database.query(sql);
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql);
+	}
 
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
-	var q2 = preview.database.query(sql2);
+	var q2;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q2 = conn.query(sql2);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q2 = conn_admin.query(sql2);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q2 = conn_trash.query(sql2);
+	}
 
 	q.on('row', function(row){
 
@@ -385,7 +438,7 @@ app.get('/reject/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-    			response.redirect('/'+category);
+    			response.redirect('/'+request.session.category);
 	});
 });
 
@@ -405,7 +458,7 @@ app.get('/restore/:postid',function(request,response){
 			q.on('error', console.error);
 
 		}).on('end',function(){
-    			response.redirect('/'+category);
+    			response.redirect('/'+request.session.category);
 	});
 });
 
@@ -415,7 +468,19 @@ app.get('/delete/:postid',function(request,response){
 	}
 	var sql = "DELETE FROM posts WHERE id == "+request.params.postid;
 	var q = conn_trash.query(sql);
-    	response.redirect('/'+category);
+    	response.redirect('/'+request.session.category);
+});
+
+app.get('/approveall',function(request,response){
+});
+
+app.get('/rejectall',function(request,response){
+});
+
+app.get('/restoreall',function(request,response){
+});
+
+app.get('/deleteall',function(request,response){
 });
 
 app.get('/:Category',function(request,response){
@@ -436,7 +501,7 @@ app.get('/:Category',function(request,response){
 			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request)});
 		}
 		else {
-			category = cat;
+			request.session.category = cat;
 			//format of the date will be 6 digits: YearMonthDay
 			//so keep this in mind for the "SUBMIT" option
 			var today = new Date();
@@ -445,12 +510,21 @@ app.get('/:Category',function(request,response){
 			//order = ORDER.ED;
 			var sql;
 			if (isDate){
-				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE startdate<=$1 AND enddate >=$1" + order.sql;
+				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE startdate<=$1 AND enddate >=$1" + request.session.order.sql;
 			}
 			else{
-				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE category=$1 AND enddate >= "+modify_d+order.sql;
+				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE category=$1 AND enddate >= "+modify_d+request.session.order.sql;
 			}
-			var q = preview.database.query(sql, [cat]);
+			var q;
+			if(request.session.preview.value == PREVIEW.APPROVED.value){
+				q = conn.query(sql, [cat]);
+			}
+			if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+				q = conn_admin.query(sql, [cat]);
+			}
+			if(request.session.preview.value == PREVIEW.REJECTED.value){
+				q = conn_trash.query(sql, [cat]);
+			}
 			var post_html='';
 			q.on('row', function(row){
 				var linkto = row.linkto;
@@ -568,7 +642,7 @@ app.post('/submit/submit', function(request, response){
 
     q.on('error', console.error);
 
-    response.redirect('/'+category);
+    response.redirect('/'+request.session.category);
 });
 
 
@@ -576,7 +650,7 @@ app.post('/edit/submit', function(request, response){
 	if(!checkAdmin(request, response)){
 		return;
 	}
-    //response.redirect('/'+category);
+    response.redirect('/'+request.session.category);
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
@@ -623,14 +697,34 @@ app.post('/edit/submit', function(request, response){
 
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-    var q = preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+	}
+    //var q = request.session.preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
 
     q.on('error', console.error);
 
     var postid = request.body.postid;
     
     var sql2 = "DELETE FROM posts WHERE id == " + postid;
-    var q2 = preview.database.query(sql2);
+    //var q2 = request.session.preview.database.query(sql2);
+	var q2;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q2 = conn.query(sql2);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q2 = conn_admin.query(sql2);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q2 = conn_trash.query(sql2);
+	}
 
     q.on('error', console.error);
 });
@@ -655,6 +749,12 @@ function getPreviewHTML(request){
 		preview_html += "<li id='price_low_high'><a href='/unappr'>Unapproved Posts</a></li>";
 		preview_html +=	"<li id='event_date'><a href='/appr'>Approved Posts</a></li>";
 		preview_html += "<li id='event_date'><a href='/reje'>Rejected Posts</a></li>";
+		if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+			preview_html += "<li id='event_date'><button id='delete' >Reject All</button></li>";
+		}
+		else if(request.session.preview.value == PREVIEW.REJECTED.value){
+			preview_html += "<li id='event_date'><button id='delete' >Delete All</button></li>";
+		}
 		preview_html += "</ul></div>";
 	}
 	return preview_html;
@@ -666,14 +766,14 @@ function getEditHTML(request, postid){
 		return post_html;
 	}
 
-	if(preview == PREVIEW.UNAPPROVED){
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
 		post_html += "<div class ='admin'><a href='edit/" + postid +"'>Edit</a>";
 		post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + postid +"'>Approve</a>";
 		post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + postid +  "'>Reject</a></div>";
-	} else if(preview == PREVIEW.APPROVED){
+	} else if(request.session.preview.value == PREVIEW.APPROVED.value){
 		post_html += "<div class ='admin'><a href='edit/" + postid +"'>Edit</a>";
 		post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + postid +  "'>Reject</a></div>";
-	} else if(preview == PREVIEW.REJECTED){
+	} else if(request.session.preview.value == PREVIEW.REJECTED.value){
 		post_html += "<div class ='admin'><a href='edit/" + postid +"'>Edit</a>";
 		post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/restore/" + postid +  "'>Restore</a>";
 		post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/delete/" + postid +  "'>Delete</a></div>";

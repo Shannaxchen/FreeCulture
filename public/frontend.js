@@ -1,6 +1,9 @@
 
+var alpha = 0;
 // This code will be executed when the page finishes loading
 window.addEventListener('load', function(){
+	alpha = alpha + 1;
+	console.log("HERE IS ALPHA: " + alpha);
 	var currentUser = null;
 	var signinLink = document.getElementById('signin');
 	var signoutLink = document.getElementById('signout');
