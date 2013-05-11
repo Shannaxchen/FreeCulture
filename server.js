@@ -20,7 +20,7 @@ var ORDER = {
   MP: {value: 3, sql: " ORDER BY clickcount DESC"}
 };
 
-var email = "john_tran@brown.edu";
+var email = "dglassdes@aol.com";
 var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //
 var PORT = 80; ///3000; //80
 
@@ -733,8 +733,8 @@ var  https = require('https');
 var http = require('http-get');
 
 
-app.listen(3000, function(){
-  console.log("FreeCulture server listening on 3000");
+app.listen(PORT, function(){
+  console.log("FreeCulture server listening on "+PORT);
 });
 
 //functions
@@ -749,12 +749,12 @@ function getPreviewHTML(request){
 		preview_html += "<li id='price_low_high'><a href='/unappr'>Unapproved Posts</a></li>";
 		preview_html +=	"<li id='event_date'><a href='/appr'>Approved Posts</a></li>";
 		preview_html += "<li id='event_date'><a href='/reje'>Rejected Posts</a></li>";
-		if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		/*if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
 			preview_html += "<li id='event_date'><button id='delete' >Reject All</button></li>";
 		}
 		else if(request.session.preview.value == PREVIEW.REJECTED.value){
 			preview_html += "<li id='event_date'><button id='delete' >Delete All</button></li>";
-		}
+		}*/
 		preview_html += "</ul></div>";
 	}
 	return preview_html;
