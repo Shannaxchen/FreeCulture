@@ -21,8 +21,8 @@ var ORDER = {
 };
 
 var email = "john_tran@brown.edu";
-var hostname = "localhost:";//"ec2-54-234-63-63.compute-1.amazonaws.com:" //
-var PORT = 3000; ///3000; //80
+var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //
+var PORT = 80; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
