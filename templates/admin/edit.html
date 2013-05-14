@@ -38,10 +38,6 @@
 						errors += 1;
 					}
 
-					if(elements["linkto"].value.length == 0){
-						errorbox.innerHTML += "* Please provide a link for the event! <br // >";
-						errors += 1;
-					}
 					if(elements["price"].value.length == 0){
 						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
 						errors += 1;
@@ -298,12 +294,13 @@
 			</div>
 
 			<div id="submitbox">
-				<button disabled = 'disabled'>
 	       			 <form onsubmit="return validateForm()" method="POST" action="/edit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>
 					Name of Event:<br />
 					<input id="message" type="text" name="title" id="titleField" size="38" value={{{eventtitle}}}> <br />
+					Position (ADS ONLY):<br />
+					<input id="message" type="number" name="adposition" id="adField" size="38" value={{{adposition}}}> <br />
 					Link to Image:<br />
 					<input id="message" type="text" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
 					Link to Event:<br />
@@ -356,6 +353,7 @@
 					  <option>Music</option>
 					  <option>Theater</option>
 					  <option>Tours</option>
+					  <option>Advertisement</option>
 					</select> 
 
 					<script>
@@ -371,7 +369,7 @@
 					</script>
 
 					<input id="send" type="submit" value="Edit"> <br/>
-				</form></button>
+				</form>
 			</div>
 
 			<div id = 'errorbox'>

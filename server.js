@@ -17,15 +17,15 @@ var ORDER = {
   L2H : {value: 0, sql: " ORDER BY price ASC"}, 
   ED : {value: 1, sql: " ORDER BY startdate DESC"}, 
   PD : {value: 2, sql: " ORDER BY postdate DESC"},
-  MP: {value: 3, sql: " ORDER BY clickcount DESC"}
 };
 
-var email = "dglassdes@aol.com";
-var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //
-var PORT = 80; ///3000; //80
+var email = "john_tran@brown.edu";
+var hostname = "localhost:" //
+var PORT = 3000; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
+var defaultadimage = "public/images/defaultad.png";
 
 var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.";
 
@@ -70,8 +70,6 @@ var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","Le
 
 app.get('/home',function(request,response){
 	request.session.category = "";
-	//request.session.preview = PREVIEW.APPROVED;
-	//request.session.order = ORDER.ED;
 	response.redirect('/');
 });
 
@@ -87,7 +85,7 @@ app.get('/',function(request,response){
 	}
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
+	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -100,38 +98,79 @@ app.get('/',function(request,response){
 		q = conn_trash.query(sql);
 	}
 	var post_html='';
+
+	var htmls = [];
+	console.log(q);
 	q.on('row', function(row){
+			var isAd = false; //let's figure out whether this is an ad or not
+
+			if(row.category.localeCompare("Advertisement") == 0){
+				isAd = true;
+			}
 			var linkto = row.linkto;
 			if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
 				linkto = "http://" + linkto;
 			}
+
+			post_html = '';
 			post_html += "<div class ='post'>";
 			post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
 			post_html += "<div class ='corner'></div>";
-			post_html += "<div class ='hover'>";
-			post_html += getEditHTML(request, row.id);
-			post_html += "<h2>Event Description</h2>";
-			post_html += "<h4>" + convertTime(row.time) + "</h4>";
-			if (row.price == 0){
-				post_html += "<h4> Free </h4>";
+			if(!isAd){
+				post_html += "<div class ='hover'>";
+				post_html += getEditHTML(request, row.id);
+				post_html += "<h2>Event Description</h2>";
+				post_html += "<h4>" + convertTime(row.time) + "</h4>";
+				if (row.price == 0){
+					post_html += "<h4> Free </h4>";
+				}
+				else{
+					post_html += "<h4>$" + row.price + "</h4>";
+				}
+				post_html += "<div class ='description'>";
+				post_html += "<p>" + row.body + "</p>";
+				post_html += "</div>";
+				post_html += "</div>";
 			}
-			else{
-				post_html += "<h4>$" + row.price + "</h4>";
+			else if(checkAdmin(request)){
+
+				post_html += "<div class ='hover'>";
+				post_html += getEditHTML(request, row.id);
+				post_html += "</div>";
 			}
-			post_html += "<div class ='description'>";
-			post_html += "<p>" + row.body + "</p>";
-			post_html += "</div>";
-			post_html += "</div>";
 			var image = row.image;
 			if(!row.image || row.image.localeCompare("") == 0){
 				image = defaultimage;
 			}
+			if(isAd){
+				post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultadimage + "'\" >";
+			}
+			else {
 			post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
+			}
 			post_html += "<h1>" + row.category + "</h1>";
 			post_html += "<h2>" + row.title + "</h2>";
+			if(!isAd){
+
 			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
+
+			}	
+			else{
+			post_html += "<h3>" +  "&nbsp;</h3>";	
+			}			
 			post_html += "</div>";
+
+			if(isAd){
+				htmls.splice(row.clickcount - 1, 0, post_html);
+			}
+			else{
+				htmls.push(post_html);
+			}
 		}).on('end',function(){
+			post_html = "";
+			for(var i = 0; i < htmls.length; i++){
+				post_html += htmls[i];
+			}
 			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request)});
 	});
 
@@ -245,7 +284,9 @@ app.post('/search',function(request,response){
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
 		q = conn_trash.query(sql,[]);
 	}
+
 	q.on('row', function(row){
+				post_html = "";
 				post_html += "<div class ='post'>";
 				post_html += "<a href = 'http://"+row.linkto+"'>";
 				post_html += "<div class ='corner'></div>";
@@ -274,6 +315,7 @@ app.post('/search',function(request,response){
 				post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";
 				post_html += "</a>";
 				post_html += "</div>";
+
 	}).on('end',function() { 
 		if (post_html === "") {
 			post_html = "<div class='noresult'><p><b>No results found.</p></div>";
@@ -364,11 +406,15 @@ app.get('/edit/:postid',function(request,response){
 	var item = {};
 
 	q.on('row', function(row){
-		item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price};
+		var adpos = row.clickcount;
+		if(!adpos || adpos == -1){
+			adpos = '';
+		}
+		item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
 		}).on('end',function(){
 		var find = ' ';
 		var re = new RegExp(find, 'g');
-		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request)});
+		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition});
 	});
 });
 
@@ -695,17 +741,22 @@ app.post('/edit/submit', function(request, response){
     var body = verifyString(request.body.description);
     var linkto = request.body.linkto;
 
+    var adpos = parseInt(verifyString(request.body.adposition));
+    if(!adpos){
+	adpos = -1;
+    }
+
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
-		q = conn.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+		q = conn.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
-		q = conn_admin.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+		q = conn_admin.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
-		q = conn_trash.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
+		q = conn_trash.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
     //var q = request.session.preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
 

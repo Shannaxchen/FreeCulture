@@ -25,7 +25,7 @@
 					temparray.push({linkedDate:start,dateLink:'/'+start});
 					start = start+1;
 				}
-				//calJEC.linkDates(temparray);
+				calJEC.linkDates(temparray);
 				calJEC.showCalendar();
 		</script>
 		<script type="text/javascript">					 
@@ -60,10 +60,6 @@
 						errors += 1;
 					}
 
-					if(elements["linkto"].value.length == 0){
-						errorbox.innerHTML += "* Please provide a link for the event! <br // >";
-						errors += 1;
-					}
 					if(elements["price"].value.length == 0){
 						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
 						errors += 1;
@@ -232,7 +228,6 @@
 			</div>
 
 			<div id="submitbox">
-				<button disabled = 'disabled'>
 	       			 <form onsubmit="return validateForm()" method="POST" action="/submit/submit" id = "messageForm">
 					<!--Figure out what should go in the submit post box -->
 					Name of Event:<br />
@@ -292,7 +287,7 @@
 					</select> 
 
 					<input id="send" type="submit" value="Send"> <br/>
-				</form></button>
+				</form>
 
 			</div>
 			<div id = 'errorbox'>

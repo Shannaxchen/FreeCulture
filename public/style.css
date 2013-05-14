@@ -131,6 +131,7 @@ div#left_sidebar{
 #myCalendarContainer{
 	margin-top: 24px;
 	margin-bottom:26px;
+	margin-right: 40px;
 	height: 175px;
 
 }
@@ -147,7 +148,6 @@ table.JEC {
 table.JEC a{
 	color: #696969;
 	text-decoration:none;
-	font-size: 15px;
 }
 
 table.JEC thead th {
@@ -156,6 +156,7 @@ table.JEC thead th {
   font-weight: bold;
   margin: 5px;
 }
+
 
 table.JEC tr{
 	display:inline;
@@ -170,7 +171,7 @@ table.JEC tr{
 }
 
 .date{
-	background-color: #eee;
+	background-color: #eeeeee;
 }
 
 tfoot{
@@ -228,9 +229,20 @@ table.JEC thead tr *, table.JEC thead *{
 	position:absolute;
 }
 
-#submitbox{
-	margin-top: 155px;
-	font-size: 12px;
+form{
+	padding-top: 3px;
+	padding-bottom: 3px;	
+	font-size: 13px;
+	border: 1px solid #aaaaaa;
+	text-align: center;
+	padding-left: 8px;
+	padding-right: 8px;
+	color: #888888;
+	background-color: #eeeeee;
+}
+
+#submitbox form{
+	margin-top: 25px;
 }
 
 #submitbox p{
