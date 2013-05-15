@@ -26,7 +26,7 @@ var PORT = 3000; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
-var defaultadimage = "public/images/defaultad.png";
+var defaultadimage = "public/images/Tile Ad.png";
 
 var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.";
 
@@ -683,11 +683,8 @@ app.post('/submit/submit', function(request, response){
     var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
     var imageshortcut = "";
     if(imagefileformats.indexOf(ext) > -1){
-	    imageshortcut = 'public/images/uploads/' + title + image.substring(image.lastIndexOf('/')+1);
+	    imageshortcut = 'public/images/uploads/' + generateImageIdentifier() + ext);
 
-	    var find = '%';
-	    var re = new RegExp(find, 'g');
-	    imageshortcut = imageshortcut.replace(re, "0");
 	    http.get(image, imageshortcut, function (error, result) {
 		if (error) {
 		    console.error(error);
@@ -968,4 +965,15 @@ function checkSession(request){
 	if(!('order' in request.session)){
 		request.session.order = ORDER.ED;
 	}
+}
+
+function generateImageIdentifier() {
+    // make a list of legal characters
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+
+    var result = '';
+    for (var i = 0; i < 24; i++)
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    return result;
 }

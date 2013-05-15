@@ -130,12 +130,13 @@ div#left_sidebar{
 
 #myCalendarContainer{
 	margin-top: 24px;
-	margin-bottom:26px;
+	margin-bottom:12px;
 	margin-right: 40px;
 	height: 175px;
 
 }
 table.JEC {
+	height: 170px;
 	margin-top: 10px;
 	margin-left: 15px;
 	text-align: center;
@@ -160,6 +161,19 @@ table.JEC thead th {
 
 table.JEC tr{
 	display:inline;
+}
+
+#leftarrow{
+	margin-top: 3px;
+	margin-left: 5px;	
+	float: left;
+
+}
+#rightarrow{
+	margin-top: 3px;
+	margin-right: 5px;	
+	float: right;
+
 }
 
 .date, th, .dayBlank{

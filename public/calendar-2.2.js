@@ -335,7 +335,7 @@
         _Event.add(elA, 'click', function() {
           showCalendar(_prevYearMonth(yearmonth));
         });
-        elA.innerHTML = '&larr;&nbsp;';
+        elA.innerHTML = "<div id = 'leftarrow'>&nbsp;&#9664;&nbsp;</div>";
         elThead.insertBefore(elA, elThead.childNodes[0]);
         //elThead.appendChild(elA);
       }
@@ -356,7 +356,7 @@
         _Event.add(elA, 'click', function() {
           showCalendar(_nextYearMonth(yearmonth));
         });
-        elA.innerHTML ='&nbsp;&rarr;';
+        elA.innerHTML ="<div id ='rightarrow'>&nbsp;&#9654;&nbsp;</div>";
         elThead.appendChild(elA);
       }
       elTr.appendChild(elTh);
