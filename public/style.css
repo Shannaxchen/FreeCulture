@@ -345,6 +345,29 @@ div#footer_nav {
 	margin-top: 11px;
 	margin-left: 11px;
 }
+
+
+.adpost {
+	display:inline-block;
+	height: 224px;
+	width: 224px;	
+	position: relative;
+}
+
+.adpost a{
+	text-decoration: none;
+	color:black;
+}
+
+.adpost img{
+	display:block;
+	height: 210px;
+	width: 208px;
+	margin-top: 6px;
+	margin-left: 8px;
+	margin-bottom: -24px;
+}
+
 .corner{
 	position: absolute;
 	width: 40px;
@@ -420,7 +443,7 @@ h1, h2, h3, h4 {
 	display: none;
 }
 
-.post h1,h2,h3,h4,.admin{
+h1,h2,h3,h4,.admin{
 	margin-left: 15px;
 }
 

@@ -21,6 +21,11 @@
 						errors += 1;
 					}
 					
+					if(elements["adposition"].value <= 0){
+						errorbox.innerHTML += "* Ad position should be greater than 0! <br // >";
+						errors += 1;
+					}
+
 					if(elements["image"].value.length == 0){
 						errorbox.innerHTML += "* Please provide a link to the event image! <br // >";	
 					}
@@ -277,17 +282,17 @@
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
-					<li id="Architecture"><a href="../Architecture">Architecture</a></li>
-					<li id="Art"><a href="../Art">Art</a></li>
-					<li id="Dance"><a href="../Dance">Dance</a></li>
-					<li id="Design"><a href="../Design">Design</a></li>
-					<li id="Film"><a href="../Film">Film</a></li>
-					<li id="Food"><a href="../Food">Food</a></li>
-					<li id="Fun"><a href="../Fun">Fun</a></li>
-					<li id="Lecture/Talk"><a href="../LectureTalk">Lecture/Talk</a></li>
-					<li id="Music"><a href="../Music">Music</a></li>
-					<li id="Theater"><a href="../Theater">Theater</a></li>
-					<li id="Tours"><a href="../Tours">Tours</a></li>
+					<li id="architecture"><a href="../Architecture">Architecture</a></li>
+					<li id="art"><a href="../Art">Art</a></li>
+					<li id="dance"><a href="../Dance">Dance</a></li>
+					<li id="design"><a href="../Design">Design</a></li>
+					<li id="film"><a href="../Film">Film</a></li>
+					<li id="food"><a href="../Food">Food</a></li>
+					<li id="fun"><a href="../Fun">Fun</a></li>
+					<li id="lecture/Talk"><a href="../LectureTalk">Lecture/Talk</a></li>
+					<li id="music"><a href="../Music">Music</a></li>
+					<li id="theater"><a href="../Theater">Theater</a></li>
+					<li id="tours"><a href="../Tours">Tours</a></li>
 					</ul>
 				</div>
 
@@ -341,7 +346,7 @@
 						}
 						</script> <br />
 					Category: <br />
-					<select name="category" id="category">
+					<select name="category" id="category" value= {{{eventcategory}}}>
 					  <option>Architecture</option>
 					  <option>Art</option>
 					  <option>Dance</option>
@@ -357,15 +362,18 @@
 					</select> 
 
 					<script>
-						function setSelectedIndex(s, v) {
-							for ( var i = 0; i < s.options.length; i++ ) {
-								if ( s.options[i].text == v.id ) {
+						var architecture = "Architecture";
+						function setSelectedIndex(s) {
+							s.options[{{{eventcategory}}}].selected = true;
+	
+/*							for ( var i = 0; i < s.options.length; i++ ) {
+								if ( s.options[i].text == {{eventcategory}} ) {
 								s.options[i].selected = true;
 								return;
 								}
-							}
+							}*/
 						}
-						setSelectedIndex(document.getElementById('category'),{{eventcategory}});
+						setSelectedIndex(document.getElementById('category'));
 					</script>
 
 					<input id="send" type="submit" value="Edit"> <br/>

@@ -3,6 +3,7 @@ var anyDB = require('any-db');
 var engines = require('consolidate');
 var moment = require('moment');
 var app = express();
+
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
 var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
@@ -74,15 +75,8 @@ app.get('/home',function(request,response){
 });
 
 app.get('/',function(request,response){
-	if(!('category' in request.session)){
-		request.session.category = "";
-	}
-	if(!('preview' in request.session)){
-		request.session.preview = PREVIEW.APPROVED;
-	}
-	if(!('order' in request.session)){
-		request.session.order = ORDER.ED;
-	}
+	checkSession(request);
+
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
 	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
@@ -100,7 +94,7 @@ app.get('/',function(request,response){
 	var post_html='';
 
 	var htmls = [];
-	console.log(q);
+	var adhtmls = [];
 	q.on('row', function(row){
 			var isAd = false; //let's figure out whether this is an ad or not
 
@@ -113,7 +107,12 @@ app.get('/',function(request,response){
 			}
 
 			post_html = '';
-			post_html += "<div class ='post'>";
+			if(isAd){
+				post_html += "<div class ='adpost'>";
+			}
+			else{
+				post_html += "<div class ='post'>";
+			}
 			post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
 			post_html += "<div class ='corner'></div>";
 			if(!isAd){
@@ -133,7 +132,6 @@ app.get('/',function(request,response){
 				post_html += "</div>";
 			}
 			else if(checkAdmin(request)){
-
 				post_html += "<div class ='hover'>";
 				post_html += getEditHTML(request, row.id);
 				post_html += "</div>";
@@ -147,12 +145,14 @@ app.get('/',function(request,response){
 			}
 			else {
 			post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-			}
 			post_html += "<h1>" + row.category + "</h1>";
 			post_html += "<h2>" + row.title + "</h2>";
+			}
 			if(!isAd){
 
-			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
+			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					
+			post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					
+			post_html += "</a>";
 
 			}	
 			else{
@@ -161,13 +161,19 @@ app.get('/',function(request,response){
 			post_html += "</div>";
 
 			if(isAd){
-				htmls.splice(row.clickcount - 1, 0, post_html);
+				adhtmls.push({html: post_html, adpos: row.clickcount});
 			}
 			else{
 				htmls.push(post_html);
 			}
 		}).on('end',function(){
 			post_html = "";
+
+			for(var i = 0; i < adhtmls.length; i++){
+				htmls.splice(adhtmls[i].adpos - 1, 0, adhtmls[i].html);	
+			}
+
+
 			for(var i = 0; i < htmls.length; i++){
 				post_html += htmls[i];
 			}
@@ -211,7 +217,6 @@ app.post('/admin/submit', function(request, response){
 
 
 app.post('/admin/form',function(request,response){
-
 	if(!checkAdmin(request, response)){
 		return;
 	}
@@ -265,6 +270,7 @@ app.get('/submit',function(request,response){
 });
 
 app.post('/search',function(request,response){
+	checkSession(request);
 	//DO MORE THINGS TO lace the sql query together from the request
 	var keyword = request.body.textsearch;
 	var post_html = '';
@@ -325,13 +331,15 @@ app.post('/search',function(request,response){
 });
 
 app.get('/login',function(request,response){
-	
 	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request)});
 });
 
+/**
+  * These following commands are used to help sort the events on the page.
+  */
+
 app.get('/mp',function(request,response){
 	request.session.order = ORDER.MP;
-	//order = ORDER.MP;
 	response.redirect('/'+request.session.category);
 });
 
@@ -392,7 +400,7 @@ app.get('/edit/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q = conn.query(sql);
@@ -407,14 +415,21 @@ app.get('/edit/:postid',function(request,response){
 
 	q.on('row', function(row){
 		var adpos = row.clickcount;
+		console.log(row);
+		console.log(row.clickcount);
 		if(!adpos || adpos == -1){
 			adpos = '';
 		}
-		item = {category: row.category, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
+
+		var categorypos = categoryIDS.indexOf(row.category);
+		if(row.category.localeCompare("Advertisement") == 0){
+			categorypos = categoryIDS.length;
+		}
+		item = {category: categorypos, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
 		}).on('end',function(){
 		var find = ' ';
 		var re = new RegExp(find, 'g');
-		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory:item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition});
+		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition});
 	});
 });
 
@@ -530,6 +545,7 @@ app.get('/deleteall',function(request,response){
 });
 
 app.get('/:Category',function(request,response){
+		checkSession(request);
 		var cat;
 		var isDate = false;
 		for (var i = 0; i < categoryIDS.length; i++){
@@ -668,6 +684,10 @@ app.post('/submit/submit', function(request, response){
     var imageshortcut = "";
     if(imagefileformats.indexOf(ext) > -1){
 	    imageshortcut = 'public/images/uploads/' + title + image.substring(image.lastIndexOf('/')+1);
+
+	    var find = '%';
+	    var re = new RegExp(find, 'g');
+	    imageshortcut = imageshortcut.replace(re, "0");
 	    http.get(image, imageshortcut, function (error, result) {
 		if (error) {
 		    console.error(error);
@@ -746,6 +766,8 @@ app.post('/edit/submit', function(request, response){
 	adpos = -1;
     }
 
+	console.log(adpos);
+
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
 	var q;
@@ -788,7 +810,11 @@ app.listen(PORT, function(){
   console.log("FreeCulture server listening on "+PORT);
 });
 
-//functions
+
+/**
+  * The following are additional functions to help with some server code stuffs.
+  */
+
 function getPreviewHTML(request){
 	var preview_html = '';
 
@@ -929,5 +955,17 @@ function convertTime(time){
 			}		
 			return timestr.toString().substring(0,2) + ":" + timestr.substring(2) + " PM";
 		}	
+	}
+}
+
+function checkSession(request){
+	if(!('category' in request.session)){
+		request.session.category = "";
+	}
+	if(!('preview' in request.session)){
+		request.session.preview = PREVIEW.APPROVED;
+	}
+	if(!('order' in request.session)){
+		request.session.order = ORDER.ED;
 	}
 }
