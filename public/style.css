@@ -130,7 +130,7 @@ div#left_sidebar{
 
 #myCalendarContainer{
 	margin-top: 24px;
-	margin-bottom:12px;
+	margin-bottom:16px;
 	margin-right: 40px;
 	height: 175px;
 
@@ -231,6 +231,28 @@ table.JEC thead tr *, table.JEC thead *{
 	padding-bottom: 50px;
 }
 
+#admin_container{
+	margin-left: 200px;
+	padding-bottom: 50px;
+	margin-top: 150px;
+	position:absolute;
+}
+
+#admin_container form{
+	vertical-align: top;
+	display: inline-block;
+}
+
+#admin_container #categoryForm{
+	height: 475px;
+}
+
+#admin_container #categoryForm #categoryBoxes{
+	text-align: left;
+	height: 357px;
+	overflow: auto;
+}
+
 #about_us, #contact, #error_message{
 	margin-top: 140px;
 }
@@ -243,17 +265,19 @@ table.JEC thead tr *, table.JEC thead *{
 	position:absolute;
 }
 
-form{
+#submitbox form, #admin_container form{
 	padding-top: 3px;
 	padding-bottom: 3px;	
 	font-size: 13px;
 	border: 1px solid #aaaaaa;
-	text-align: center;
 	padding-left: 8px;
 	padding-right: 8px;
 	color: #888888;
 	background-color: #eeeeee;
 }
+
+
+
 
 #submitbox form{
 	margin-top: 25px;
@@ -265,7 +289,7 @@ form{
 
 #errorbox {
 	margin-left: 500px;
-	margin-top: 160px;
+	margin-top: 175px;
 	font-size: 12px;
 	text-align: left;
 	margin-right: 150px;

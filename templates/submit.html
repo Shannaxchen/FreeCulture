@@ -124,6 +124,18 @@
 						errors += 1;
 
 					}
+					
+					var unchecked = true;
+					for(var i = 0; i < elements.length; i++){
+						if(elements[i].type == 'checkbox' && elements[i].checked){
+							unchecked = false;
+							break;
+						}
+					}
+					if(unchecked){
+						errorbox.innerHTML += "* Check off at least one category! <br // >";
+						errors += 1;
+					}
 
 					return errors == 0;
 				}
@@ -211,17 +223,7 @@
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
-					<li id="Architecture"><a href="Architecture">Architecture</a></li>
-					<li id="Art"><a href="Art">Art</a></li>
-					<li id="Dance"><a href="Dance">Dance</a></li>
-					<li id="Design"><a href="Design">Design</a></li>
-					<li id="Film"><a href="Film">Film</a></li>
-					<li id="Food"><a href="Food">Food</a></li>
-					<li id="Fun"><a href="Fun">Fun</a></li>
-					<li id="Lecture/Talk"><a href="LectureTalk">Lecture/Talk</a></li>
-					<li id="Music"><a href="Music">Music</a></li>
-					<li id="Theater"><a href="Theater">Theater</a></li>
-					<li id="Tours"><a href="Tours">Tours</a></li>
+					{{{categories}}}
 					</ul>
 				</div>
 
@@ -272,19 +274,7 @@
 						}
 						</script> <br />
 					Category: <br />
-					<select name="category" id="category">
-					  <option>Architecture</option>
-					  <option>Art</option>
-					  <option>Dance</option>
-					  <option>Design</option>
-					  <option>Film</option>
-					  <option>Food</option>
-					  <option>Fun</option>
-					  <option>Lecture/Talk</option>
-					  <option>Music</option>
-					  <option>Theater</option>
-					  <option>Tours</option>
-					</select> 
+					{{{categoryforms}}}
 
 					<input id="send" type="submit" value="Send"> <br/>
 				</form>

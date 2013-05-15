@@ -96,11 +96,14 @@ app.get('/',function(request,response){
 	var htmls = [];
 	var adhtmls = [];
 	q.on('row', function(row){
+	
+			post_html = generatePostHTML(request, row);
 			var isAd = false; //let's figure out whether this is an ad or not
 
 			if(row.category.localeCompare("Advertisement") == 0){
 				isAd = true;
 			}
+			/*
 			var linkto = row.linkto;
 			if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
 				linkto = "http://" + linkto;
@@ -159,7 +162,7 @@ app.get('/',function(request,response){
 			post_html += "<h3>" +  "&nbsp;</h3>";	
 			}			
 			post_html += "</div>";
-
+*/
 			if(isAd){
 				adhtmls.push({html: post_html, adpos: row.clickcount});
 			}
@@ -169,6 +172,7 @@ app.get('/',function(request,response){
 		}).on('end',function(){
 			post_html = "";
 
+			adhtmls.sort(function(a,b){return a.adpos-b.adpos});
 			for(var i = 0; i < adhtmls.length; i++){
 				htmls.splice(adhtmls[i].adpos - 1, 0, adhtmls[i].html);	
 			}
@@ -177,7 +181,7 @@ app.get('/',function(request,response){
 			for(var i = 0; i < htmls.length; i++){
 				post_html += htmls[i];
 			}
-			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request)});
+			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	});
 
 });
@@ -188,7 +192,7 @@ app.get('/admin',function(request,response){
 	}
 	var find = '<br />';
 	var re = new RegExp(find, 'g');
-	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, admin:getAdminHTML(request)});
+	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.post('/admin/submit', function(request, response){
@@ -266,7 +270,7 @@ app.post('/auth/logout', function(request, response){
 });
 
 app.get('/submit',function(request,response){
-	response.render('submit.html',{title:"Submit A Post!", description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('submit.html',{title:"Submit A Post!", description:description, adlink:adlink, admin:getAdminHTML(request), categoryforms:generateCategoryFormHTML(""), categories: generateCategoryHTML()});
 });
 
 app.post('/search',function(request,response){
@@ -326,12 +330,12 @@ app.post('/search',function(request,response){
 		if (post_html === "") {
 			post_html = "<div class='noresult'><p><b>No results found.</p></div>";
 		}
-		response.render('homepage.html',{title:"Search Results", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request)});
+		response.render('homepage.html',{title:"Search Results", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	});
 });
 
 app.get('/login',function(request,response){
-	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 /**
@@ -381,19 +385,19 @@ app.get('/reje',function(request,response){
 
 
 app.get('/about',function(request,response){
-	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/contact',function(request,response){
-	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/about.html',function(request,response){
-	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/contact.html',function(request,response){
-	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/edit/:postid',function(request,response){
@@ -415,8 +419,6 @@ app.get('/edit/:postid',function(request,response){
 
 	q.on('row', function(row){
 		var adpos = row.clickcount;
-		console.log(row);
-		console.log(row.clickcount);
 		if(!adpos || adpos == -1){
 			adpos = '';
 		}
@@ -429,7 +431,7 @@ app.get('/edit/:postid',function(request,response){
 		}).on('end',function(){
 		var find = ' ';
 		var re = new RegExp(find, 'g');
-		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition});
+		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML()});
 	});
 });
 
@@ -455,7 +457,7 @@ app.get('/approve/:postid',function(request,response){
 			var modify_d = moment(today).format('YYYYMMDD');
 			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,0]);
+			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,row.clickcount]); //I CHANGED THIS MAKE SURE IT WORKS
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -560,7 +562,7 @@ app.get('/:Category',function(request,response){
 			}
 		}
 		if (cat == null){
-			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request)});
+			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 		}
 		else {
 			request.session.category = cat;
@@ -629,7 +631,7 @@ app.get('/:Category',function(request,response){
 					if (post_html==''){
 						post_html = "No results found.";
 					}
-					response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request)});
+					response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 			});
 		}
 });
@@ -639,7 +641,20 @@ app.post('/submit/submit', function(request, response){
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
-    var cat = request.body.category;
+    //var cat = request.body.category;
+
+    var cat = "";
+    for(var i = 0; i < categoryIDS.length; i++){
+	if(request.body[categoryIDS[i]]){
+		cat = categoryIDS[i];
+		break;
+	}
+    }
+
+
+
+
+
     var title = verifyString(request.body.title);
     var image = request.body.image;
     var price = parseInt(verifyString(request.body.price));
@@ -683,7 +698,7 @@ app.post('/submit/submit', function(request, response){
     var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
     var imageshortcut = "";
     if(imagefileformats.indexOf(ext) > -1){
-	    imageshortcut = 'public/images/uploads/' + generateImageIdentifier() + ext);
+	    imageshortcut = 'public/images/uploads/' + generateImageIdentifier() + ext;
 
 	    http.get(image, imageshortcut, function (error, result) {
 		if (error) {
@@ -763,7 +778,6 @@ app.post('/edit/submit', function(request, response){
 	adpos = -1;
     }
 
-	console.log(adpos);
 
     var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
@@ -856,6 +870,76 @@ function getEditHTML(request, postid){
 	return post_html;
 }
 
+
+function generatePostHTML(request, row){
+	var post_html = "";
+	var isAd = false; //let's figure out whether this is an ad or not
+
+	if(row.category.localeCompare("Advertisement") == 0){
+		isAd = true;
+	}
+	var linkto = row.linkto;
+	if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
+		linkto = "http://" + linkto;
+	}
+
+	post_html = '';
+	if(isAd){
+		post_html += "<div class ='adpost'>";
+	}
+	else{
+		post_html += "<div class ='post'>";
+	}
+	post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
+	post_html += "<div class ='corner'></div>";
+	if(!isAd){
+		post_html += "<div class ='hover'>";
+		post_html += getEditHTML(request, row.id);
+		post_html += "<h2>Event Description</h2>";
+		post_html += "<h4>" + convertTime(row.time) + "</h4>";
+		if (row.price == 0){
+			post_html += "<h4> Free </h4>";
+		}
+		else{
+			post_html += "<h4>$" + row.price + "</h4>";
+		}
+		post_html += "<div class ='description'>";
+		post_html += "<p>" + row.body + "</p>";
+		post_html += "</div>";
+		post_html += "</div>";
+	}
+	else if(checkAdmin(request)){
+		post_html += "<div class ='hover'>";
+		post_html += getEditHTML(request, row.id);
+		post_html += "</div>";
+	}
+	var image = row.image;
+	if(!row.image || row.image.localeCompare("") == 0){
+		image = defaultimage;
+	}
+	if(isAd){
+		post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultadimage + "'\" >";
+	}
+	else {
+		post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
+		post_html += "<h1>" + row.category + "</h1>";
+		post_html += "<h2>" + row.title + "</h2>";
+	}
+	if(!isAd){
+
+		post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					
+		post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					
+		post_html += "</a>";
+
+	}	
+	else{
+		post_html += "<h3>" +  "&nbsp;</h3>";	
+	}			
+	post_html += "</div>";
+
+	return post_html;
+}
+
 function getAdminHTML(request){
 	var admin = '';
 	if(checkAdmin(request)){
@@ -921,7 +1005,7 @@ function checkAdminAccess(request, response){
 	if(checkAdmin(request)){
 		return true;
 	}	
-	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request)});
+	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	return false;
 }
 
@@ -976,4 +1060,24 @@ function generateImageIdentifier() {
         result += chars.charAt(Math.floor(Math.random() * chars.length));
 
     return result;
+}
+
+function generateCategoryHTML() {
+	var category_html = "";
+	for(var i = 0; i < categoryIDS.length; i++){
+		category_html += "<li id='" + categoryIDS[i] + "'><a href='" + categoryIDS[i] + "'>" + categoryIDS[i] + "</a></li>";
+	}
+	return category_html;
+}
+
+function generateCategoryFormHTML(category) {
+	var category_html = "";
+	for(var i = 0; i < categoryIDS.length; i++){
+		category_html += "<input type='checkbox' name='" + categoryIDS[i] + "' value='" + categoryIDS[i] + "'";
+		if(category.localeCompare(categoryIDS[i]) == 0){		
+			category_html += " checked";
+		}
+		category_html += "> " + categoryIDS[i] + "<br>"; 
+	}
+	return category_html;
 }

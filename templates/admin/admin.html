@@ -61,24 +61,13 @@
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
-					<li id="Architecture"><a href="Architecture">Architecture</a></li>
-					<li id="Art"><a href="Art">Art</a></li>
-					<li id="Dance"><a href="Dance">Dance</a></li>
-					<li id="Design"><a href="Design">Design</a></li>
-					<li id="Film"><a href="Film">Film</a></li>
-					<li id="Food"><a href="Food">Food</a></li>
-					<li id="Fun"><a href="Fun">Fun</a></li>
-					<li id="Lecture/Talk"><a href="LectureTalk">Lecture/Talk</a></li>
-					<li id="Music"><a href="Music">Music</a></li>
-					<li id="Theater"><a href="Theater">Theater</a></li>
-					<li id="Tours"><a href="Tours">Tours</a></li>
+					{{{categories}}}
 					</ul>
 				</div>
 
 			</div>
-			<div id="post_container">
+			<div id="admin_container">
 				<p>Welcome back, Debbie! :) <button id='signout' class='hidden'>Sign out</button></p>
- 				
 	       			 <form method="POST" action="/admin/submit" id = "messageForm">
 					Your Login Email:<br />
 					<textarea cols="40" rows="1" name="email">{{{email}}}</textarea><br />
@@ -90,9 +79,27 @@
 					<textarea cols="40" rows="4" name="description">{{{description}}}</textarea><br />
 					Ad Link:<br />
 					<textarea cols="40" rows="2" name="adlink">{{{adlink}}}</textarea><br />
-
 					<input id="send" type="submit" value="Update Information"> <br/>
-				</form>
+				</form> 
+	       			 <form method="POST" action="/admin/submit" id = "categoryForm">
+					Categories: <br />
+					<div id = "categoryBoxes">
+					<input type="checkbox" name="Architecture" value="Architecture" checked> Architecture<br>
+					<input type="checkbox" name="Art" value="Art" checked> Art<br>
+					<input type="checkbox" name="Dance" value="Dance" checked> Dance<br>
+					<input type="checkbox" name="Design" value="Design" checked> Design<br>
+					<input type="checkbox" name="Film" value="Film" checked> Film<br>
+					<input type="checkbox" name="Food" value="Food" checked> Food<br>
+					<input type="checkbox" name="Fun" value="Fun" checked> Fun<br>
+					<input type="checkbox" name="Lecture/Talk" value="Lecture/Talk" checked> Lecture/Talk<br>
+					<input type="checkbox" name="Music" value="Music" checked> Music<br>
+					<input type="checkbox" name="Theater" value="Theater" checked> Theater<br>
+					<input type="checkbox" name="Tours" value="Tours" checked> Tours<br>
+					</div><br />
+					Add New Category:<br />
+					<textarea cols="40" rows="1" name="category"></textarea><br />
+					<input id="send" type="submit" value="Update Information"> <br/>
+				</form> 
 			</div>
 		</div>
 		<div id="footer_nav">
