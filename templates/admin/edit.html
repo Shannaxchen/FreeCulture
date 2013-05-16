@@ -21,7 +21,7 @@
 						errors += 1;
 					}
 					
-					if(elements["adposition"].value <= 0){
+					if(elements["adposition"].value <= 0 && elements["Advertisement"].checked){
 						errorbox.innerHTML += "* Ad position should be greater than 0! <br // >";
 						errors += 1;
 					}
@@ -335,36 +335,9 @@
 							populateTime("hour","minutes", "ampm",{{{eventtime}}})
 						}
 						</script> <br />
-					Category: <br />
-					<select name="category" id="category" value= {{{eventcategory}}}>
-					  <option>Architecture</option>
-					  <option>Art</option>
-					  <option>Dance</option>
-					  <option>Design</option>
-					  <option>Film</option>
-					  <option>Food</option>
-					  <option>Fun</option>
-					  <option>Lecture/Talk</option>
-					  <option>Music</option>
-					  <option>Theater</option>
-					  <option>Tours</option>
-					  <option>Advertisement</option>
-					</select> 
+					Categories (Select up to two categories): <br />
+					{{{categoryforms}}}
 
-					<script>
-						var architecture = "Architecture";
-						function setSelectedIndex(s) {
-							s.options[{{{eventcategory}}}].selected = true;
-	
-/*							for ( var i = 0; i < s.options.length; i++ ) {
-								if ( s.options[i].text == {{eventcategory}} ) {
-								s.options[i].selected = true;
-								return;
-								}
-							}*/
-						}
-						setSelectedIndex(document.getElementById('category'));
-					</script>
 
 					<input id="send" type="submit" value="Edit"> <br/>
 				</form>

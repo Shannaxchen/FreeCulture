@@ -20,9 +20,9 @@ var ORDER = {
   PD : {value: 2, sql: " ORDER BY postdate DESC"},
 };
 
-var email = "john_tran@brown.edu";
-var hostname = "localhost:" //
-var PORT = 3000; ///3000; //80
+var email = "dglassdes@aol.com";
+var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //
+var PORT = 80; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
@@ -34,9 +34,9 @@ var contact = "You can follow Culture on the Cheap (COTC) on Twitter or like us 
 var description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
 
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, clickcount INTEGER)');
-conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, clickcount INTEGER)');
-conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, clickcount INTEGER)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
+conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
+conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
 
 //generateData();
 
@@ -79,7 +79,7 @@ app.get('/',function(request,response){
 
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -96,11 +96,10 @@ app.get('/',function(request,response){
 	var htmls = [];
 	var adhtmls = [];
 	q.on('row', function(row){
-	
 			post_html = generatePostHTML(request, row);
 			var isAd = false; //let's figure out whether this is an ad or not
 
-			if(row.category.localeCompare("Advertisement") == 0){
+			if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
 				isAd = true;
 			}
 			/*
@@ -164,7 +163,7 @@ app.get('/',function(request,response){
 			post_html += "</div>";
 */
 			if(isAd){
-				adhtmls.push({html: post_html, adpos: row.clickcount});
+				adhtmls.push({html: post_html, adpos: row.adpos});
 			}
 			else{
 				htmls.push(post_html);
@@ -192,7 +191,7 @@ app.get('/admin',function(request,response){
 	}
 	var find = '<br />';
 	var re = new RegExp(find, 'g');
-	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML(), categoryforms:generateCategoryFormHTML(true, false, "", "")});
 });
 
 app.post('/admin/submit', function(request, response){
@@ -217,6 +216,22 @@ app.post('/admin/submit', function(request, response){
     contact = verifyString(request.body.contact).replace(re, "<br />");
     description = verifyString(request.body.description).replace(re, "<br />");
     adlink = verifyString(request.body.adlink);
+});
+
+app.post('/admin/submit2', function(request, response){
+    for(var i = 0; i < categoryIDS.length; i++){
+	if(!request.body[categoryIDS[i]]){
+		categoryIDS.splice(i, 1);
+		i--;
+	}
+    }
+
+    if(request.body.newcategory && request.body.newcategory.replace(/\s/g, '').length != 0){
+	categoryIDS.push(request.body.newcategory);
+	categoryIDS.sort();
+    }
+
+    response.redirect('/admin');
 });
 
 
@@ -270,7 +285,7 @@ app.post('/auth/logout', function(request, response){
 });
 
 app.get('/submit',function(request,response){
-	response.render('submit.html',{title:"Submit A Post!", description:description, adlink:adlink, admin:getAdminHTML(request), categoryforms:generateCategoryFormHTML(""), categories: generateCategoryHTML()});
+	response.render('submit.html',{title:"Submit A Post!", description:description, adlink:adlink, admin:getAdminHTML(request), categoryforms:generateCategoryFormHTML(false, false, -1, -1), categories: generateCategoryHTML()});
 });
 
 app.post('/search',function(request,response){
@@ -282,7 +297,9 @@ app.post('/search',function(request,response){
 	var modify_d = moment(today).format('YYYYMMDD')
 	request.session.preview = PREVIEW.APPROVED;
 	request.session.order = ORDER.ED;
-	var sql = "SELECT DISTINCT category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')" + request.session.order.sql;
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')";
+
+	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -294,42 +311,36 @@ app.post('/search',function(request,response){
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
 		q = conn_trash.query(sql,[]);
 	}
-
+	
+	var htmls = [];
+	var adhtmls = [];
 	q.on('row', function(row){
-				post_html = "";
-				post_html += "<div class ='post'>";
-				post_html += "<a href = 'http://"+row.linkto+"'>";
-				post_html += "<div class ='corner'></div>";
-				post_html += "<div class ='hover'>";
-				post_html += getEditHTML(request, row.id);
-				post_html += "<h2>Event Description</h2>";
-				post_html += "<h4>" + convertTime(row.time) + "</h4>";
-				if (row.price == 0){
-					post_html += "<h4> Free </h4>";
-				}
-				else{
-					post_html += "<h4>$" + row.price + "</h4>";
-				}
-				post_html += "<div class ='description'>";
-				post_html += "<p>" + row.body + "</p>";
-				post_html += "</div>";
-				post_html += "</div>";
-				var image = row.image;
-				if(!row.image || row.image.localeCompare("") == 0){
-					image = defaultimage;
-				}
-				post_html += "<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-				post_html += "<h1>" + row.category + "</h1>";
-				post_html += "<h2>" + row.title + "</h2>";
-				post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";
-				post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";
-				post_html += "</a>";
-				post_html += "</div>";
+				
+			post_html = generatePostHTML(request, row);
+			var isAd = false; //let's figure out whether this is an ad or not
 
-	}).on('end',function() { 
-		if (post_html === "") {
-			post_html = "<div class='noresult'><p><b>No results found.</p></div>";
-		}
+			if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
+				isAd = true;
+			}
+
+			if(isAd){
+				adhtmls.push({html: post_html, adpos: row.adpos});
+			}
+			else{
+				htmls.push(post_html);
+			}
+		}).on('end',function(){
+			post_html = "";
+
+			adhtmls.sort(function(a,b){return a.adpos-b.adpos});
+			for(var i = 0; i < adhtmls.length; i++){
+				htmls.splice(adhtmls[i].adpos - 1, 0, adhtmls[i].html);	
+			}
+
+
+			for(var i = 0; i < htmls.length; i++){
+				post_html += htmls[i];
+			}
 		response.render('homepage.html',{title:"Search Results", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	});
 });
@@ -404,7 +415,7 @@ app.get('/edit/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price,clickcount FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q = conn.query(sql);
@@ -418,7 +429,7 @@ app.get('/edit/:postid',function(request,response){
 	var item = {};
 
 	q.on('row', function(row){
-		var adpos = row.clickcount;
+		var adpos = row.adpos;
 		if(!adpos || adpos == -1){
 			adpos = '';
 		}
@@ -427,11 +438,16 @@ app.get('/edit/:postid',function(request,response){
 		if(row.category.localeCompare("Advertisement") == 0){
 			categorypos = categoryIDS.length;
 		}
-		item = {category: categorypos, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
+
+		var categorypos2 = categoryIDS.indexOf(row.category2);
+		if(row.category2 && row.category2.localeCompare("Advertisement") == 0){
+			categorypos2 = categoryIDS.length;
+		}
+		item = {category: categorypos, category2: categorypos2, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
 		}).on('end',function(){
 		var find = ' ';
 		var re = new RegExp(find, 'g');
-		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML()});
+		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
 	});
 });
 
@@ -447,7 +463,7 @@ app.get('/approve/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q = conn_admin.query(sql);
 
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
@@ -455,9 +471,9 @@ app.get('/approve/:postid',function(request,response){
 	q.on('row', function(row){
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD');
-			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
-			var q = conn.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,row.clickcount]); //I CHANGED THIS MAKE SURE IT WORKS
+			var q = conn.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,row.adpos]); 
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -469,7 +485,7 @@ app.get('/reject/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q = conn.query(sql);
@@ -495,9 +511,9 @@ app.get('/reject/:postid',function(request,response){
 
 	q.on('row', function(row){
 
-			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)';
+			var sql = 'INSERT INTO posts (category,category2, title,image,startdate,enddate,time,body,linkto,price,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
 
-			var q = conn_trash.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price]);
+			var q = conn_trash.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price, row.adpos]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -509,15 +525,15 @@ app.get('/restore/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price, adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q = conn_trash.query(sql);
 
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
 	var q2 = conn_trash.query(sql2);
 
 	q.on('row', function(row){
-			var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)';
-			var q = conn_admin.query(sql, [row.category, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto, row.price]);
+			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9, $10,$11)';
+			var q = conn_admin.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto, row.price, row.adpos]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -570,15 +586,18 @@ app.get('/:Category',function(request,response){
 			//so keep this in mind for the "SUBMIT" option
 			var today = new Date();
 			var modify_d = moment(today).format('YYYYMMDD')
-			//preview = PREVIEW.APPROVED;
-			//order = ORDER.ED;
 			var sql;
 			if (isDate){
-				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE startdate<=$1 AND enddate >=$1" + request.session.order.sql;
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE startdate<=$1 AND enddate >=$1";
 			}
 			else{
-				sql = "SELECT DISTINCT id,category,title,image,startdate,enddate,time,body,linkto,price FROM posts WHERE category=$1 AND enddate >= "+modify_d+request.session.order.sql;
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE (category=$1 OR category2=$1) AND enddate >= "+modify_d;
 			}
+
+	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
+
+
+
 			var q;
 			if(request.session.preview.value == PREVIEW.APPROVED.value){
 				q = conn.query(sql, [cat]);
@@ -590,48 +609,38 @@ app.get('/:Category',function(request,response){
 				q = conn_trash.query(sql, [cat]);
 			}
 			var post_html='';
+			var htmls = [];
+			var adhtmls = [];
 			q.on('row', function(row){
-				var linkto = row.linkto;
-				if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
-					linkto = "http://" + linkto;
+				
+				post_html = generatePostHTML(request, row);
+				var isAd = false; //let's figure out whether this is an ad or not
+
+				if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
+					isAd = true;
 				}
-				post_html += "<div class ='post'>";
-				post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
-				post_html += "<div class ='corner'></div>";
-				post_html += "<div class ='hover'>";
-				if('email' in request.session && request.session.email.localeCompare(email) == 0){
-					post_html += "<div class ='admin'><a href='edit/" + row.id +"'>Edit</a>";
-					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/approve/" + row.id +"'>Approve</a>";
-					post_html += "&nbsp;&nbsp;&nbsp;&nbsp;<a href='/reject/" + row.id +  "'>Reject</a></div>";
-				}
-				post_html += "<h2>Event Description</h2>";
-				post_html += "<h4>" + convertTime(row.time) + "</h4>";
-				if (row.price == 0){
-					post_html += "<h4> Free </h4>";
+				if(isAd){
+					adhtmls.push({html: post_html, adpos: row.adpos});
 				}
 				else{
-					post_html += "<h4>$" + row.price + "</h4>";
+					htmls.push(post_html);
 				}
-				post_html += "<div class ='description'>";
-				post_html += "<p>" + row.body + "</p>";
-				post_html += "</div>";
-				post_html += "</div>";
-				var image = row.image;
-				if(!row.image || row.image.localeCompare("") == 0){
-					image = defaultimage;
+			}).on('end',function(){
+				post_html = "";
+
+				adhtmls.sort(function(a,b){return a.adpos-b.adpos});
+				for(var i = 0; i < adhtmls.length; i++){
+					htmls.splice(adhtmls[i].adpos - 1, 0, adhtmls[i].html);	
 				}
-				post_html += "<img src =\"" + image + "\"" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-				post_html += "<h1>" + row.category + "</h1>";
-				post_html += "<h2>" + row.title + "</h2>";
-				post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					post_html += "</a>";
-				post_html += "</div>";
-				
-					
-				}).on('end',function(){
-					if (post_html==''){
-						post_html = "No results found.";
-					}
-					response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+
+
+				for(var i = 0; i < htmls.length; i++){
+					post_html += htmls[i];
+				}
+				if (post_html==''){
+					post_html = "No results found.";
+				}
+				response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 			});
 		}
 });
@@ -641,18 +650,17 @@ app.post('/submit/submit', function(request, response){
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
-    //var cat = request.body.category;
-
     var cat = "";
+    var cat2 = "";
     for(var i = 0; i < categoryIDS.length; i++){
-	if(request.body[categoryIDS[i]]){
+	if(request.body[categoryIDS[i]] && cat.length == 0){
 		cat = categoryIDS[i];
+	}
+	else if(request.body[categoryIDS[i]]){
+		cat2 = categoryIDS[i];
 		break;
 	}
     }
-
-
-
 
 
     var title = verifyString(request.body.title);
@@ -714,9 +722,9 @@ app.post('/submit/submit', function(request, response){
 	imageshortcut = defaultimage;
     }
 
-    var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+    var sql = 'INSERT INTO posts (category, category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
-    var q = conn_admin.query(sql, [cat, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
+    var q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
 
     q.on('error', console.error);
 
@@ -732,7 +740,23 @@ app.post('/edit/submit', function(request, response){
 
     var monthtext=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
 
-    var cat = request.body.category;
+    var cat = "";
+    var cat2 = "";
+    for(var i = 0; i < categoryIDS.length; i++){
+	if(request.body[categoryIDS[i]] && cat.length == 0){
+		cat = categoryIDS[i];
+	}
+	else if(request.body[categoryIDS[i]]){
+		cat2 = categoryIDS[i];
+		break;
+	}
+    }
+
+    if(request.body["Advertisement"]){
+	cat = "Advertisement";
+	cat2 = "";
+    }
+
     var title = verifyString(request.body.title);
     var image = request.body.image;
     var price = parseInt(verifyString(request.body.price));
@@ -779,26 +803,9 @@ app.post('/edit/submit', function(request, response){
     }
 
 
-    var sql = 'INSERT INTO posts (category,title,image,startdate,enddate,time,body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
-
-	var q;
-	if(request.session.preview.value == PREVIEW.APPROVED.value){
-		q = conn.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
-	}
-	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
-		q = conn_admin.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
-	}
-	if(request.session.preview.value == PREVIEW.REJECTED.value){
-		q = conn_trash.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
-	}
-    //var q = request.session.preview.database.query(sql, [cat, title, image, startdate, enddate, time, body, linkto, price, 0, 0]);
-
-    q.on('error', console.error);
-
     var postid = request.body.postid;
     
     var sql2 = "DELETE FROM posts WHERE id == " + postid;
-    //var q2 = request.session.preview.database.query(sql2);
 	var q2;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q2 = conn.query(sql2);
@@ -809,6 +816,23 @@ app.post('/edit/submit', function(request, response){
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
 		q2 = conn_trash.query(sql2);
 	}
+
+    var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
+
+	var q;
+	if(request.session.preview.value == PREVIEW.APPROVED.value){
+		q = conn.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+	}
+	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
+		q = conn_admin.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+	}
+	if(request.session.preview.value == PREVIEW.REJECTED.value){
+		q = conn_trash.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+	}
+
+    q.on('error', console.error);
+
+
 
     q.on('error', console.error);
 });
@@ -875,7 +899,7 @@ function generatePostHTML(request, row){
 	var post_html = "";
 	var isAd = false; //let's figure out whether this is an ad or not
 
-	if(row.category.localeCompare("Advertisement") == 0){
+	if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
 		isAd = true;
 	}
 	var linkto = row.linkto;
@@ -922,7 +946,11 @@ function generatePostHTML(request, row){
 	}
 	else {
 		post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-		post_html += "<h1>" + row.category + "</h1>";
+		if(row.category2){
+			post_html += "<h1>" + row.category + "&nbsp;&#9642;&nbsp;" + row.category2 + "</h1>";		
+		} else{
+			post_html += "<h1>" + row.category + "</h1>";
+		}
 		post_html += "<h2>" + row.title + "</h2>";
 	}
 	if(!isAd){
@@ -983,16 +1011,16 @@ function makeRequest(headers, body, callback) {
 
 
 function generateData(){
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Architecture", "Architecture event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130620", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdklsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl dhfjkdhlfkjhd dfhjlaj djhfal djsjdhfkj djhfjkd eirjlk lsjfh hdsjfl khdljshfla hdjsahfldkls jahflkdjashf hjadhfldhaslf hadjsflhjasdhl f djfhlkjdshk dhfjdskfjhdj free and cheap things to do in NYC", "google.com",0,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Art", "Art event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130465","0000","hey", "google.com",1,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Dance", "Dance event", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Design", "Andy Warhol", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Film", "Gone with the wind", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",4,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Food", "Kabob and Curry", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhd heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdk lsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl klsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl", "google.com",0,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Fun", "Nothing", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["LectureTalk", "CS132 Lecture", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",6,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Music", "PSY", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
-conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,clickcount) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Theater", "I dunno", "http://d2tq98mqfjyz2l.cloudfront.net/image_cache/1355201898857930.jpg", "20130621", "20130625","1350","hey", "google.com",10,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,category2,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',["Architecture", "LectureTalk", "Architecture event", "public/images/default.jpg", "20130620", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdklsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl dhfjkdhlfkjhd dfhjlaj djhfal djsjdhfkj djhfjkd eirjlk lsjfh hdsjfl khdljshfla hdjsahfldkls jahflkdjashf hjadhfldhaslf hadjsflhjasdhl f djfhlkjdshk dhfjdskfjhdj free and cheap things to do in NYC", "google.com",0,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,category2,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',["Art", "Design", "Art event", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",1,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Dance", "Dance event", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Design", "Andy Warhol", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Film", "Gone with the wind", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",4,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Food", "Kabob and Curry", "public/images/default.jpg", "20130621", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhd heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdk lsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl klsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl", "google.com",0,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Fun", "Nothing", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["LectureTalk", "CS132 Lecture", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",6,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Music", "PSY", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
+	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Theater", "I dunno", "public/images/default.jpg", "20130621", "20130625","1350","hey", "google.com",10,0,0]).on('error',console.error);
 }
 
 function checkAdmin(request) {
@@ -1070,14 +1098,39 @@ function generateCategoryHTML() {
 	return category_html;
 }
 
-function generateCategoryFormHTML(category) {
+function generateCategoryFormHTML(selectall, includead, categoryID, categoryID2) {
 	var category_html = "";
+	var category = "";
+	var category2 = "";
+	if(categoryID == categoryIDS.length){
+		category = "Advertisement";
+	}
+	else if(categoryID > 0){
+		category = categoryIDS[categoryID];
+	}
+	if(categoryID2 == categoryIDS.length){
+		category2 = "Advertisement";
+	}
+	else if(categoryID2 > 0){
+		category2 = categoryIDS[categoryID2];
+	}
+
+	console.log(category + " " + category2 + " " + categoryID + " " + categoryID2);
 	for(var i = 0; i < categoryIDS.length; i++){
 		category_html += "<input type='checkbox' name='" + categoryIDS[i] + "' value='" + categoryIDS[i] + "'";
-		if(category.localeCompare(categoryIDS[i]) == 0){		
+		if(category.localeCompare(categoryIDS[i]) == 0 || category2.localeCompare(categoryIDS[i]) == 0 || selectall){		
 			category_html += " checked";
 		}
 		category_html += "> " + categoryIDS[i] + "<br>"; 
 	}
+
+	if(includead){
+		category_html += "<input type='checkbox' name='" + "Advertisement" + "' value='" + "Advertisement" + "'";
+		if(category.localeCompare("Advertisement") == 0 || category2.localeCompare("Advertisement") == 0 || selectall){		
+			category_html += " checked";
+		}
+		category_html += "> " + "Advertisement" + "<br>"
+	}
 	return category_html;
 }
+

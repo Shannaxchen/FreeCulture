@@ -125,15 +125,18 @@
 
 					}
 					
-					var unchecked = true;
+					var checks = 0;
 					for(var i = 0; i < elements.length; i++){
 						if(elements[i].type == 'checkbox' && elements[i].checked){
-							unchecked = false;
-							break;
+							checks++;
 						}
 					}
-					if(unchecked){
+					if(checks == 0){
 						errorbox.innerHTML += "* Check off at least one category! <br // >";
+						errors += 1;
+					}
+					else if(checks > 2){
+						errorbox.innerHTML += "* Check off only up to two categories! <br // >";
 						errors += 1;
 					}
 
@@ -219,7 +222,7 @@
 				<div id = "myCalendarContainer">	
 				</div>
 				<div id="blurb">
-				<p> FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more! </p>
+				<p> {{{description}}} </p>
 				</div>
 				<div id="categories">
 					<ul id = "category_list">
@@ -273,7 +276,7 @@
 							populateTime("hour","minutes")
 						}
 						</script> <br />
-					Category: <br />
+					Categories (Select up to two categories): <br />
 					{{{categoryforms}}}
 
 					<input id="send" type="submit" value="Send"> <br/>

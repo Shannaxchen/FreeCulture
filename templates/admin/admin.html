@@ -81,23 +81,13 @@
 					<textarea cols="40" rows="2" name="adlink">{{{adlink}}}</textarea><br />
 					<input id="send" type="submit" value="Update Information"> <br/>
 				</form> 
-	       			 <form method="POST" action="/admin/submit" id = "categoryForm">
-					Categories: <br />
+	       			 <form method="POST" action="/admin/submit2" id = "categoryForm">
+					Categories (Uncheck one to remove that field): <br />
 					<div id = "categoryBoxes">
-					<input type="checkbox" name="Architecture" value="Architecture" checked> Architecture<br>
-					<input type="checkbox" name="Art" value="Art" checked> Art<br>
-					<input type="checkbox" name="Dance" value="Dance" checked> Dance<br>
-					<input type="checkbox" name="Design" value="Design" checked> Design<br>
-					<input type="checkbox" name="Film" value="Film" checked> Film<br>
-					<input type="checkbox" name="Food" value="Food" checked> Food<br>
-					<input type="checkbox" name="Fun" value="Fun" checked> Fun<br>
-					<input type="checkbox" name="Lecture/Talk" value="Lecture/Talk" checked> Lecture/Talk<br>
-					<input type="checkbox" name="Music" value="Music" checked> Music<br>
-					<input type="checkbox" name="Theater" value="Theater" checked> Theater<br>
-					<input type="checkbox" name="Tours" value="Tours" checked> Tours<br>
+					{{{categoryforms}}}
 					</div><br />
 					Add New Category:<br />
-					<textarea cols="40" rows="1" name="category"></textarea><br />
+					<textarea cols="40" rows="2" name="newcategory"></textarea><br />
 					<input id="send" type="submit" value="Update Information"> <br/>
 				</form> 
 			</div>
