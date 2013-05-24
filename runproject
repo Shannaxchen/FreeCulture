@@ -9,7 +9,7 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-dir="/home/bitnami/FreeCulture"
+dir="/FreeCulture"
 user="root"
 cmd="PORT=80 node server.js"
 
