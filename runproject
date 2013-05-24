@@ -11,7 +11,7 @@
 
 dir="/home/bitnami/FreeCulture"
 user="root"
-cmd="node server.js"
+cmd="PORT=80 node server.js"
 
 name=`basename $0`
 pid_file="/var/run/$name.pid"
