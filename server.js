@@ -3,6 +3,7 @@ var anyDB = require('any-db');
 var engines = require('consolidate');
 var moment = require('moment');
 var app = express();
+var XMLHttpRequest = require('w3c-xmlhttprequest');
 
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
@@ -21,14 +22,14 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "ec2-54-234-63-63.compute-1.amazonaws.com:" //
+var hostname = "cultureonthecheap.com:" //
 var PORT = 80; ///3000; //80
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = "public/images/default.jpg";
 var defaultadimage = "public/images/Tile Ad.png";
 
-var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.";
+var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />Credits:<br />jqtran@cs.brown.edu || c  || a || shannaxchen@gmail.com || h";
 
 var contact = "You can follow Culture on the Cheap (COTC) on Twitter or like us on Facebook.";
 var description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
@@ -183,6 +184,12 @@ app.get('/',function(request,response){
 			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	});
 
+});
+
+app.get('/sitemap.xml',function(request,response){
+	var xml = '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"><!-- created with Free Online Sitemap Generator www.xml-sitemaps.com --><url><loc>http://www.cultureonthecheap.com/</loc></url><url><loc>http://www.cultureonthecheap.com/submit</loc></url><url><loc>http://www.cultureonthecheap.com/Architecture</loc></url><url><loc>http://www.cultureonthecheap.com/Art</loc></url><url><loc>http://www.cultureonthecheap.com/Dance</loc></url><url><loc>http://www.cultureonthecheap.com/Design</loc></url><url><loc>http://www.cultureonthecheap.com/Film</loc></url><url><loc>http://www.cultureonthecheap.com/Food</loc></url><url><loc>http://www.cultureonthecheap.com/Fun</loc></url><url><loc>http://www.cultureonthecheap.com/LectureTalk</loc></url><url><loc>http://www.cultureonthecheap.com/Music</loc></url><url><loc>http://www.cultureonthecheap.com/Theater</loc></url><url><loc>http://www.cultureonthecheap.com/Tours</loc></url></urlset>';
+	response.header('Content-Type','text/xml');
+	response.send(xml);
 });
 
 app.get('/admin',function(request,response){
@@ -428,6 +435,8 @@ app.get('/edit/:postid',function(request,response){
 	}
 	var item = {};
 
+	var count = 0;
+
 	q.on('row', function(row){
 		var adpos = row.adpos;
 		if(!adpos || adpos == -1){
@@ -443,11 +452,31 @@ app.get('/edit/:postid',function(request,response){
 		if(row.category2 && row.category2.localeCompare("Advertisement") == 0){
 			categorypos2 = categoryIDS.length;
 		}
+
+		var title = row.title;
+		if(!title){
+			title = '';
+		}
+
+		var img = row.image;
+		if(!img){
+			img = '';
+		}
+
+		
+		count++;
 		item = {category: categorypos, category2: categorypos2, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
+		
 		}).on('end',function(){
 		var find = ' ';
+		console.log(count);
 		var re = new RegExp(find, 'g');
-		response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
+		if(count > 0){
+			response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
+		}
+		else{
+			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});	
+		}
 	});
 });
 
@@ -677,7 +706,7 @@ app.post('/submit/submit', function(request, response){
     var minute = request.body.minutes;
     var ampm = request.body.ampm;
     if (ampm === "PM") {
-    	hour = parseInt(hour) + 12;
+    	hour = parseInt(hour, 10) + 12;
     }
 
     if(startmonth < 10){
@@ -702,6 +731,8 @@ app.post('/submit/submit', function(request, response){
     var body = verifyString(request.body.description);
     var linkto = request.body.linkto;
 
+    linkto = linkto.replace("https://", "");
+    linkto = linkto.replace("http://", "");
     var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
     var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
     var imageshortcut = "";
@@ -772,7 +803,7 @@ app.post('/edit/submit', function(request, response){
     var minute = request.body.minutes;
     var ampm = request.body.ampm;
     if (ampm === "PM") {
-    	hour = parseInt(hour) + 12;
+    	hour = parseInt(hour, 10) + 12;
     }
 
     if(startmonth < 10){

@@ -277,8 +277,6 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 
-
-
 #submitbox form{
 	margin-top: 25px;
 }
@@ -327,6 +325,7 @@ table.JEC thead tr *, table.JEC thead *{
 }
 div#body_stuff{
 	display: inline-block;
+	margin-bottom:125px;
 }
 
 div#footer_nav {
@@ -344,6 +343,14 @@ div#footer_nav {
 	list-style-type: none;
 	text-align: right;
 	padding-bottom:20px;
+}
+
+#footer_nav_wrapper ul li:first-child {
+	font-weight:normal;
+  	display:inline-block;
+	color:white;
+	font-size: 8px;
+	margin-right: 20px;
 }
 
 #footer_nav_wrapper ul li {

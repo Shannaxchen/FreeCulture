@@ -10,7 +10,8 @@
 		"sqlite3": "2.1.x",
 		"moment": "2.0.0",
 		"jade":"*",
-		"forever": "*"
+		"forever": "*",
+		"w3c-xmlhttprequest":"*"
 	}
 }
 

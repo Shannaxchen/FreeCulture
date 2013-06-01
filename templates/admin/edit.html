@@ -261,7 +261,7 @@
 				<div id="second_header">
 					<ul id="second_nav">
 						{{{admin}}}
-						<li id="submit"><a href="submit">Submit</a></li>
+						<li id="submit"><a href="../submit">Submit</a></li>
 						<li id="search">Search: 
 	 	       			<form method="POST" action="/search" id = "searchForm">
 						<input id="textsearch" type="text" name="textsearch" id="searchField">
@@ -297,7 +297,7 @@
 					Position (ADS ONLY):<br />
 					<input id="message" type="number" name="adposition" id="adField" size="38" value={{{adposition}}}> <br />
 					Link to Image:<br />
-					<input id="message" type="text" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
+					<input id="message" type="file" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
 					Link to Event:<br />
 					<input id="message" type="text" name="linkto" id="linkField" size="38" value={{{eventlinkto}}}> <br />
 					Price of Event:<br />
