@@ -75,6 +75,11 @@ head, body, header, a, li, p, textarea {
 	list-style: none;
 	display: inline;
 }
+
+#social{
+	padding: .4em 1em;
+}
+
 #second_nav li{
 	font-family: 'Roboto Condensed', sans-serif;
 	display: inline-block;
