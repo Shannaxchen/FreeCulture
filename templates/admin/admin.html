@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 	<head>
 		<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type='text/css'>
@@ -36,7 +36,7 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src={{{headerimage}}}></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
 						{{{admin}}}
@@ -68,17 +68,23 @@
 			</div>
 			<div id="admin_container">
 				<p>Welcome back, Debbie! :) <button id='signout' class='hidden'>Sign out</button></p>
-	       			 <form method="POST" action="/admin/submit" id = "messageForm">
-					Your Login Email:<br />
-					<textarea cols="40" rows="1" name="email">{{{email}}}</textarea><br />
+	       			 <form method="POST" action="/admin/submit" id = "messageForm" enctype="multipart/form-data">
+					<!--- Your Login Email:<br />
+					<textarea cols="40" rows="1" name="email">{{{email}}}</textarea><br /> -->
 					About Us:<br />
-					<textarea cols="40" rows="9" name="aboutus">{{{aboutus}}}</textarea><br />
+					<textarea cols="40" rows="6" name="aboutus">{{{aboutus}}}</textarea><br />
 					Contact:<br />
-					<textarea cols="40" rows="3" name="contact">{{{contact}}}</textarea><br />
+					<textarea cols="40" rows="2" name="contact">{{{contact}}}</textarea><br />
 					Description:<br />
 					<textarea cols="40" rows="4" name="description">{{{description}}}</textarea><br />
-					Ad Link:<br />
-					<textarea cols="40" rows="2" name="adlink">{{{adlink}}}</textarea><br />
+					Post Image: {{{postimage}}}<br />
+					<input id="message" type="file" name="postimage" id="postField" accept="image/* size="38"> <br />
+					Ad Post Image: {{{adimage}}}<br />
+					<input id="message" type="file" name="adimage" id="adField" accept="image/* size="38"> <br />
+					Header Ad Link:<br />
+					<textarea cols="40" rows="1" name="adlink">{{{adlink}}}</textarea><br />
+					Header Ad Image: {{{headeradimage}}}<br />
+					<input id="message" type="file" name="headerimage" id="headeradField" accept="image/* size="38"> <br />
 					<input id="send" type="submit" value="Update Information"> <br/>
 				</form> 
 	       			 <form method="POST" action="/admin/submit2" id = "categoryForm">

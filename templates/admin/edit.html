@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 	<head>
 		<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type='text/css'>
@@ -257,7 +257,7 @@
 		<div id="header_wrapper">
 			<div id="first_header">
 				<div id="logo"><a href="/home"><img src="../public/images/logo.png"></a></div>
-				<div id="adspace"><a href={{{adlink}}}><img src="../public/images/corner_ad.png"></a></div>
+				<div id="adspace"><a href={{{adlink}}}><img src={{{headerimage}}}></a></div>
 				<div id="second_header">
 					<ul id="second_nav">
 						{{{admin}}}
@@ -289,15 +289,17 @@
 			</div>
 
 			<div id="submitbox">
-	       			 <form onsubmit="return validateForm()" method="POST" action="/edit/submit" id = "messageForm">
+	       			 <form onsubmit="return validateForm()" method="POST" action="/edit/submit" id = "messageForm" enctype="multipart/form-data">
 					<!--Figure out what should go in the submit post box -->
-					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>
+					<input type="hidden" name="postid" id="idField" size="38" value={{{postid}}}>					
+					<input type="hidden" name="actualimage" id="actualimageField" size="38" value={{{actualeventimage}}}>
 					Name of Event:<br />
 					<input id="message" type="text" name="title" id="titleField" size="38" value={{{eventtitle}}}> <br />
 					Position (ADS ONLY):<br />
 					<input id="message" type="number" name="adposition" id="adField" size="38" value={{{adposition}}}> <br />
-					Link to Image:<br />
-					<input id="message" type="file" name="image" id="imageField" size="38" value={{{eventimage}}}> <br />
+					Image: {{{eventimage}}}<br />
+					<input id="message" type="file" name="image" id="imageField" size="38" accept="image/*" > <br />
+
 					Link to Event:<br />
 					<input id="message" type="text" name="linkto" id="linkField" size="38" value={{{eventlinkto}}}> <br />
 					Price of Event:<br />

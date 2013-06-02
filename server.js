@@ -2,12 +2,19 @@ var express = require('express');
 var anyDB = require('any-db');
 var engines = require('consolidate');
 var moment = require('moment');
+
+
+var path = require('path');
+var fs = require('fs');
+
 var app = express();
 var XMLHttpRequest = require('w3c-xmlhttprequest');
 
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
 var conn_trash = anyDB.createConnection('sqlite3://freeculture_trash.db');
+
+var IMAGEFILEFORMATS = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
 
 var PREVIEW = {
   APPROVED : {value: 0}, 
@@ -22,12 +29,18 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "cultureonthecheap.com:" //
-var PORT = 80; ///3000; //80
+var hostname = "localhost:" //
+var PORT = 3000; //80
+
+var DEFAULTIMAGE = "../public/images/default.jpg";
+var DEFAULTADIMAGE = "../public/images/Tile Ad.png";
+var DEFAULTHEADERIMAGE = "../public/images/corner_ad.png";
 
 var adlink = "http://cs.brown.edu/courses/csci1320/";
-var defaultimage = "public/images/default.jpg";
-var defaultadimage = "public/images/Tile Ad.png";
+
+var defaultimage = DEFAULTIMAGE;
+var defaultadimage = DEFAULTADIMAGE;
+var defaultheaderimage = DEFAULTHEADERIMAGE;
 
 var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />Credits:<br />jqtran@cs.brown.edu || c  || a || shannaxchen@gmail.com || h";
 
@@ -54,6 +67,10 @@ app.configure(function(){
 		}));
   	app.use(app.router);
 	app.use('/public',express.static(__dirname+'/public'));
+	app.use('/public/images',express.static(__dirname+'/public/images'));
+	app.use('/public/images/uploads',express.static(__dirname+'/public/images/uploads/ads'));
+	app.use('/public/images/uploads/ads',express.static(__dirname+'/public/images/uploads/ads'));
+
 });
 
 app.configure('development', function(){
@@ -103,66 +120,6 @@ app.get('/',function(request,response){
 			if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
 				isAd = true;
 			}
-			/*
-			var linkto = row.linkto;
-			if(linkto && linkto.substring(0,7).localeCompare("http://") != 0){
-				linkto = "http://" + linkto;
-			}
-
-			post_html = '';
-			if(isAd){
-				post_html += "<div class ='adpost'>";
-			}
-			else{
-				post_html += "<div class ='post'>";
-			}
-			post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
-			post_html += "<div class ='corner'></div>";
-			if(!isAd){
-				post_html += "<div class ='hover'>";
-				post_html += getEditHTML(request, row.id);
-				post_html += "<h2>Event Description</h2>";
-				post_html += "<h4>" + convertTime(row.time) + "</h4>";
-				if (row.price == 0){
-					post_html += "<h4> Free </h4>";
-				}
-				else{
-					post_html += "<h4>$" + row.price + "</h4>";
-				}
-				post_html += "<div class ='description'>";
-				post_html += "<p>" + row.body + "</p>";
-				post_html += "</div>";
-				post_html += "</div>";
-			}
-			else if(checkAdmin(request)){
-				post_html += "<div class ='hover'>";
-				post_html += getEditHTML(request, row.id);
-				post_html += "</div>";
-			}
-			var image = row.image;
-			if(!row.image || row.image.localeCompare("") == 0){
-				image = defaultimage;
-			}
-			if(isAd){
-				post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultadimage + "'\" >";
-			}
-			else {
-			post_html += "<img src ='" + image + "'" + " onerror=\"this.src ='" + defaultimage + "'\" >";
-			post_html += "<h1>" + row.category + "</h1>";
-			post_html += "<h2>" + row.title + "</h2>";
-			}
-			if(!isAd){
-
-			post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					
-			post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					
-			post_html += "</a>";
-
-			}	
-			else{
-			post_html += "<h3>" +  "&nbsp;</h3>";	
-			}			
-			post_html += "</div>";
-*/
 			if(isAd){
 				adhtmls.push({html: post_html, adpos: row.adpos});
 			}
@@ -181,7 +138,7 @@ app.get('/',function(request,response){
 			for(var i = 0; i < htmls.length; i++){
 				post_html += htmls[i];
 			}
-			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML(), headerimage: defaultheaderimage});
 	});
 
 });
@@ -196,26 +153,41 @@ app.get('/admin',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
+	
+	var p_image = defaultimage;
+	var ad_image = defaultadimage;
+	var h_image = defaultheaderimage;
+	if(p_image.length > 15){
+		p_image = p_image.substring(0, 15) + '...' + p_image.substring(p_image.lastIndexOf('.')).toLowerCase();
+	}	
+	if(ad_image.length > 15){
+		ad_image = ad_image.substring(0, 15) + '...' + ad_image.substring(ad_image.lastIndexOf('.')).toLowerCase();
+	}
+	if(h_image.length > 15){
+		h_image = h_image.substring(0, 15) + '...' + h_image.substring(h_image.lastIndexOf('.')).toLowerCase();
+	}
+
+
 	var find = '<br />';
 	var re = new RegExp(find, 'g');
-	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML(), categoryforms:generateCategoryFormHTML(true, false, "", "")});
+	response.render('admin/admin.html',{title:"Culture on The Cheap: Admin Hub", headerimage: '../'+defaultheaderimage, email:email, aboutus:aboutus.replace(re, "\n"), contact:contact.replace(re, "\n"), description:description.replace(re, "\n"), adlink:adlink, adimage:ad_image, postimage:p_image, headeradimage: h_image, admin:getAdminHTML(request), categories: generateCategoryHTML(), categoryforms:generateCategoryFormHTML(true, false, "", "")});
 });
 
 app.post('/admin/submit', function(request, response){
-    if(request.body.email && request.body.email.indexOf('@') != -1){
+   /* if(request.body.email && request.body.email.indexOf('@') != -1){
     	var newemail = request.body.email;
         if(newemail.localeCompare(email) != 0){
 		email = newemail;	
 	        delete request.session.email;
         	response.redirect('/home');
-	}
-	else{
-	    response.redirect('/admin');
-	}
+		}
+		else{
+	    	response.redirect('/admin');
+		}
     }
     else{
 	    response.redirect('/admin');
-    }
+    } */
 
     var find = '\n';
     var re = new RegExp(find, 'g');
@@ -223,6 +195,66 @@ app.post('/admin/submit', function(request, response){
     contact = verifyString(request.body.contact).replace(re, "<br />");
     description = verifyString(request.body.description).replace(re, "<br />");
     adlink = verifyString(request.body.adlink);
+        
+    var tempPath = request.files.adimage.path;
+    var ext = path.extname(request.files.adimage.name).toLowerCase();
+    var targetPath = 'public/images/uploads/ads/' + generateImageIdentifier() + ext;
+    
+    console.log(tempPath + " " + targetPath + request.files.adimage.name);
+    if(tempPath.length != 0){
+	    if (IMAGEFILEFORMATS.indexOf(ext) > -1) {
+	    	defaultadimage = targetPath;
+	        fs.rename(tempPath, targetPath, function(err) {
+	            if (err) console.error(err);
+	            console.log("Upload completed!");
+	        });
+	    } else {
+	        fs.unlink(tempPath, function (err) {
+	            if (err) console.error(err);
+			    //defaultadimage = DEFAULTADIMAGE;
+	        });
+    	}
+    }
+
+	var tempPath2 = request.files.postimage.path;
+    var ext2 = path.extname(request.files.postimage.name).toLowerCase();
+    var targetPath2 = 'public/images/uploads/' + generateImageIdentifier() + ext2;
+    console.log(tempPath2 + " " + targetPath2 + request.files.postimage.name);
+    if(tempPath2.length != 0){
+	    if (IMAGEFILEFORMATS.indexOf(ext2) > -1) {
+	        defaultimage = targetPath2;	    
+	        fs.rename(tempPath2, targetPath2, function(err) {
+	            if (err) console.error(err);
+	            console.log("Upload completed!");
+	        });
+	    } else {
+	        fs.unlink(tempPath2, function (err) {
+	            if (err) console.error(err);
+			    //defaultimage = DEFAULTIMAGE;
+	        });
+    	}
+    }
+
+    var tempPath3 = request.files.headerimage.path;
+    var ext3 = path.extname(request.files.headerimage.name).toLowerCase();
+    var targetPath3 = 'public/images/uploads/ads/' + generateImageIdentifier() + ext3;
+
+    console.log(tempPath3 + " " + targetPath3 + request.files.headerimage.name);
+    if(tempPath3.length != 0){
+	    if (IMAGEFILEFORMATS.indexOf(ext3) > -1) {
+	        defaultheaderimage =  targetPath3;
+	        fs.rename(tempPath3, targetPath3, function(err) {
+	            if (err) console.error(err);
+	            console.log("Upload completed!");
+	        });
+	    } else {
+	        fs.unlink(tempPath3, function (err) {
+	            if (err) console.error(err);
+			    //defaultheaderimage = DEFAULTHEADERIMAGE;
+	        });
+    	}
+    }
+    response.redirect('/admin'); 
 });
 
 app.post('/admin/submit2', function(request, response){
@@ -292,7 +324,7 @@ app.post('/auth/logout', function(request, response){
 });
 
 app.get('/submit',function(request,response){
-	response.render('submit.html',{title:"Submit A Post!", description:description, adlink:adlink, admin:getAdminHTML(request), categoryforms:generateCategoryFormHTML(false, false, -1, -1), categories: generateCategoryHTML()});
+	response.render('submit.html',{title:"Submit A Post!", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categoryforms:generateCategoryFormHTML(false, false, -1, -1), categories: generateCategoryHTML()});
 });
 
 app.post('/search',function(request,response){
@@ -348,12 +380,12 @@ app.post('/search',function(request,response){
 			for(var i = 0; i < htmls.length; i++){
 				post_html += htmls[i];
 			}
-		response.render('homepage.html',{title:"Search Results", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+		response.render('homepage.html',{title:"Search Results", headerimage:defaultheaderimage, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	});
 });
 
 app.get('/login',function(request,response){
-	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('login.html',{title:"Login", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 /**
@@ -403,19 +435,19 @@ app.get('/reje',function(request,response){
 
 
 app.get('/about',function(request,response){
-	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('about.html',{title:"About Us", headerimage:defaultheaderimage, aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/contact',function(request,response){
-	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('contact.html',{title:"Contact Us", headerimage:defaultheaderimage, contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/about.html',function(request,response){
-	response.render('about.html',{title:"About Us", aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('about.html',{title:"About Us", headerimage:defaultheaderimage, aboutus:aboutus, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/contact.html',function(request,response){
-	response.render('contact.html',{title:"Contact Us", contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('contact.html',{title:"Contact Us", headerimage:defaultheaderimage, contact:contact, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 });
 
 app.get('/edit/:postid',function(request,response){
@@ -463,20 +495,30 @@ app.get('/edit/:postid',function(request,response){
 			img = '';
 		}
 
-		
 		count++;
-		item = {category: categorypos, category2: categorypos2, title: row.title, image: row.image, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
+		item = {category: categorypos, category2: categorypos2, title: title, image: img, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
 		
 		}).on('end',function(){
-		var find = ' ';
-		console.log(count);
-		var re = new RegExp(find, 'g');
-		if(count > 0){
-			response.render('admin/edit.html',{title:"Edit A Post!", postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, eventimage: item.image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
-		}
-		else{
-			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});	
-		}
+			try{
+				var p_image = item.image;
+
+				if(p_image.length > 15){
+					p_image = p_image.substring(0, 15) + '...' + p_image.substring(p_image.lastIndexOf('.')).toLowerCase();
+				}	
+				
+				var find = ' ';
+				var re = new RegExp(find, 'g');
+				if(count > 0){
+				response.render('admin/edit.html',{title:"Edit A Post!", headerimage:'../'+defaultheaderimage, postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, actualeventimage: item.image.replace(re, "&nbsp;"), eventimage: p_image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
+				}
+				else{
+				response.render('error.html',{title:"Error", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});	
+				}
+			}
+			catch(e){
+				console.log(e);
+				response.render('error.html',{title:"Error", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});	
+			}
 	});
 });
 
@@ -579,18 +621,6 @@ app.get('/delete/:postid',function(request,response){
     	response.redirect('/'+request.session.category);
 });
 
-app.get('/approveall',function(request,response){
-});
-
-app.get('/rejectall',function(request,response){
-});
-
-app.get('/restoreall',function(request,response){
-});
-
-app.get('/deleteall',function(request,response){
-});
-
 app.get('/:Category',function(request,response){
 		checkSession(request);
 		var cat;
@@ -607,7 +637,7 @@ app.get('/:Category',function(request,response){
 			}
 		}
 		if (cat == null){
-			response.render('error.html',{title:"Error", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+			response.render('error.html',{title:"Error", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 		}
 		else {
 			request.session.category = cat;
@@ -669,7 +699,7 @@ app.get('/:Category',function(request,response){
 				if (post_html==''){
 					post_html = "No results found.";
 				}
-				response.render('results.html',{title:cat, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+				response.render('results.html',{title:cat, headerimage:defaultheaderimage, posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 			});
 		}
 });
@@ -693,10 +723,9 @@ app.post('/submit/submit', function(request, response){
 
 
     var title = verifyString(request.body.title);
-    var image = request.body.image;
     var price = parseInt(verifyString(request.body.price));
     if(!price){
-	price = 0;
+		price = 0;
     }
 
     var startmonth = monthtext.indexOf(request.body.startmonth) + 1;
@@ -733,10 +762,10 @@ app.post('/submit/submit', function(request, response){
 
     linkto = linkto.replace("https://", "");
     linkto = linkto.replace("http://", "");
-    var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
-    var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
+
+    /*var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
     var imageshortcut = "";
-    if(imagefileformats.indexOf(ext) > -1){
+    if(IMAGEFILEFORMATS.indexOf(ext) > -1){
 	    imageshortcut = 'public/images/uploads/' + generateImageIdentifier() + ext;
 
 	    http.get(image, imageshortcut, function (error, result) {
@@ -749,8 +778,27 @@ app.post('/submit/submit', function(request, response){
 	    });
     }
     else{
-	console.log("Not a supported image file format. Using default picture instead. ");
-	imageshortcut = defaultimage;
+		console.log("Not a supported image file format. Using default picture instead. ");
+		imageshortcut = defaultimage;
+    }*/
+    
+    var tempPath = request.files.image.path;
+    var ext = path.extname(request.files.image.name).toLowerCase();
+    var targetPath = 'public/images/uploads/' + generateImageIdentifier() + ext;
+    var imageshortcut = targetPath;
+    
+    if(tempPath.length != 0){
+	    if (IMAGEFILEFORMATS.indexOf(ext) > -1) {
+	        fs.rename(tempPath, targetPath, function(err) {
+	            if (err) console.error(error);
+	            console.log("Upload completed!");
+	        });
+	    } else {
+	    	imageshortcut = defaultimage;
+	        fs.unlink(tempPath, function (err) {
+	            if (err) console.error(error);
+	        });
+    	}
     }
 
     var sql = 'INSERT INTO posts (category, category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
@@ -774,28 +822,50 @@ app.post('/edit/submit', function(request, response){
     var cat = "";
     var cat2 = "";
     for(var i = 0; i < categoryIDS.length; i++){
-	if(request.body[categoryIDS[i]] && cat.length == 0){
-		cat = categoryIDS[i];
-	}
-	else if(request.body[categoryIDS[i]]){
-		cat2 = categoryIDS[i];
-		break;
-	}
+		if(request.body[categoryIDS[i]] && cat.length == 0){
+			cat = categoryIDS[i];
+		}
+		else if(request.body[categoryIDS[i]]){
+			cat2 = categoryIDS[i];
+			break;
+		}
     }
 
     if(request.body["Advertisement"]){
-	cat = "Advertisement";
-	cat2 = "";
+		cat = "Advertisement";
+		cat2 = "";
     }
 
     var title = verifyString(request.body.title);
-    var image = request.body.image;
     var price = parseInt(verifyString(request.body.price));
     if(!price){
-	price = 0;
+		price = 0;
     }
-
     
+
+
+    var tempPath = request.files.image.path;
+    var ext = path.extname(request.files.image.name).toLowerCase();
+    var targetPath = 'public/images/uploads/' + generateImageIdentifier() + ext;
+	var imageshortcut = targetPath;
+
+    if(tempPath.length != 0){
+	    if (IMAGEFILEFORMATS.indexOf(ext) > -1) {
+	        fs.rename(tempPath, targetPath, function(err) {
+	            if (err) console.error(err);
+	            console.log("Upload completed!");
+	        });
+	    } else {
+	    	imageshortcut = request.body.actualimage;
+	        fs.unlink(tempPath, function (err) {
+	            if (err) console.error(err);
+	        });
+    	}
+    }
+    else{
+    	imageshortcut = request.body.actualimage;
+    }
+   
     var startmonth = monthtext.indexOf(request.body.startmonth) + 1;
     var startday = request.body.startday;
 
@@ -830,7 +900,7 @@ app.post('/edit/submit', function(request, response){
 
     var adpos = parseInt(verifyString(request.body.adposition));
     if(!adpos){
-	adpos = -1;
+		adpos = -1;
     }
 
 
@@ -852,21 +922,18 @@ app.post('/edit/submit', function(request, response){
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
-		q = conn.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
-		q = conn_admin.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
-		q = conn_trash.query(sql, [cat, cat2, title, image, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn_trash.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
 	}
-
-    q.on('error', console.error);
-
-
-
     q.on('error', console.error);
 });
+
+
 var  https = require('https');
 
 var http = require('http-get');
@@ -1064,7 +1131,7 @@ function checkAdminAccess(request, response){
 	if(checkAdmin(request)){
 		return true;
 	}	
-	response.render('login.html',{title:"Login", description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
+	response.render('login.html',{title:"Login", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});
 	return false;
 }
 
