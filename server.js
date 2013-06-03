@@ -29,8 +29,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "localhost:" //
-var PORT = 3000; //80
+var hostname = "cultureonthecheap.com:" //
+var PORT = 80; //80
 
 var DEFAULTIMAGE = "../public/images/default.jpg";
 var DEFAULTADIMAGE = "../public/images/Tile Ad.png";
@@ -41,10 +41,19 @@ var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = DEFAULTIMAGE;
 var defaultadimage = DEFAULTADIMAGE;
 var defaultheaderimage = DEFAULTHEADERIMAGE;
+var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.
 
-var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />Credits:<br />jqtran@cs.brown.edu || c  || a || shannaxchen@gmail.com || h";
+If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.
 
-var contact = "You can follow Culture on the Cheap (COTC) on Twitter or like us on Facebook.";
+
+
+
+
+
+Web Design/Development:
+<a href="mailto:JQTRAN@CS.BROWN.EDU">John Tran</a> || <a href="mailto:CHRISTOPHER.M.PIETTE@GMAIL.COM ">Chris Piette</a> || <a href = "mailto:ANNALIASUNDERLAND@GMAIL.COM"> Annalia Sunderland </a> || <a href = "mailto:SHANNAXCHEN@GMAIL.COM">Shanna Chen </a> || <a href = "mailto:HYOJU_LIM@BROWN.EDU">Hyoju Lim </a>";
+
+var contact = "You can follow Culture on the Cheap (COTC) on <a href = "http://twitter.com/cultureonthecheap">Twitter</a> or like us on <a href = "http://facebook.com/cultureonthecheap">Facebook</a>."
 var description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
 
 //make db

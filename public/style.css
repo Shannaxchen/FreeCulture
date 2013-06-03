@@ -259,14 +259,14 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #about_us, #contact, #error_message{
-	margin-top: 140px;
+	margin-top: 160px;
 }
 
 
 #about_us, #contact, #error_message, #submitbox{
 	margin-left: 200px;
 	text-align: justify;
-	margin-right: 150px;
+	margin-right: 450px;
 	position:absolute;
 }
 
@@ -349,14 +349,6 @@ div#footer_nav {
 	list-style-type: none;
 	text-align: right;
 	padding-bottom:20px;
-}
-
-#footer_nav_wrapper ul li:first-child {
-	font-weight:normal;
-  	display:inline-block;
-	color:white;
-	font-size: 8px;
-	margin-right: 20px;
 }
 
 #footer_nav_wrapper ul li {
