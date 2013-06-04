@@ -29,8 +29,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "cultureonthecheap.com:" //
-var PORT = 80; //80
+var hostname = "localhost:" //
+var PORT = 3000; //80
 
 var DEFAULTIMAGE = "../public/images/default.jpg";
 var DEFAULTADIMAGE = "../public/images/Tile Ad.png";
@@ -41,27 +41,20 @@ var adlink = "http://cs.brown.edu/courses/csci1320/";
 var defaultimage = DEFAULTIMAGE;
 var defaultadimage = DEFAULTADIMAGE;
 var defaultheaderimage = DEFAULTHEADERIMAGE;
-var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money. Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.
+var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money." + 
+			  "Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. " + 
+			  "We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />" +
+			  "If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. " +
+			  "We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />" +
+			  "Web Design/Development:<a href='mailto:jqtran@cs.brown.edu'>John Tran</a> || <a href='mailto:christopher.m.piette@gmail.com'>Chris Piette</a> || <a href = 'mailto:annaliasunderland@gmail.com'> Annalia Sunderland </a> || <a href = 'mailto:shannaxchen@gmail.com'>Shanna Chen </a> || <a href = 'mailto:hyoju_lim@brown.edu'>Hyoju Lim </a>";
 
-If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.
-
-
-
-
-
-
-Web Design/Development:
-<a href="mailto:JQTRAN@CS.BROWN.EDU">John Tran</a> || <a href="mailto:CHRISTOPHER.M.PIETTE@GMAIL.COM ">Chris Piette</a> || <a href = "mailto:ANNALIASUNDERLAND@GMAIL.COM"> Annalia Sunderland </a> || <a href = "mailto:SHANNAXCHEN@GMAIL.COM">Shanna Chen </a> || <a href = "mailto:HYOJU_LIM@BROWN.EDU">Hyoju Lim </a>";
-
-var contact = "You can follow Culture on the Cheap (COTC) on <a href = "http://twitter.com/cultureonthecheap">Twitter</a> or like us on <a href = "http://facebook.com/cultureonthecheap">Facebook</a>."
+var contact = "You can follow Culture on the Cheap (COTC) on <a href = 'http://twitter.com/cultureonthecheap'>Twitter</a> or like us on <a href = 'http://facebook.com/cultureonthecheap'>Facebook</a>."
 var description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
 
 //make db
 conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
 conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
 conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
-
-//generateData();
 
 //configuration
 app.configure(function(){
@@ -106,7 +99,7 @@ app.get('/',function(request,response){
 
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -345,9 +338,9 @@ app.post('/search',function(request,response){
 	var modify_d = moment(today).format('YYYYMMDD')
 	request.session.preview = PREVIEW.APPROVED;
 	request.session.order = ORDER.ED;
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')";
 
-	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
+	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -656,17 +649,15 @@ app.get('/:Category',function(request,response){
 			var modify_d = moment(today).format('YYYYMMDD')
 			var sql;
 			if (isDate){
-				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE startdate<=$1 AND enddate >=$1";
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE startdate<=$1 AND enddate >=$1";
 			}
 			else{
-				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE (category=$1 OR category2=$1) AND enddate >= "+modify_d;
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE (category=$1 OR category2=$1) AND enddate >= "+modify_d;
 			}
-
-	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
-
-
-
+			sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
+			
 			var q;
+			
 			if(request.session.preview.value == PREVIEW.APPROVED.value){
 				q = conn.query(sql, [cat]);
 			}
