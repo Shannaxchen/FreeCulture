@@ -139,8 +139,8 @@ div#left_sidebar{
 	margin-bottom:16px;
 	margin-right: 40px;
 	height: 175px;
-
 }
+
 table.JEC {
 	height: 170px;
 	margin-top: 10px;
@@ -150,7 +150,7 @@ table.JEC {
 	border-style: solid none none solid;
 	border-width: 1px;
 	box-shadow: 3px 3px 4px #000;
-
+	background-color: white;
 }
 table.JEC a{
 	color: #696969;
@@ -330,9 +330,15 @@ table.JEC thead tr *, table.JEC thead *{
 #sort_nav a:hover {
 	text-decoration: underline;
 }
+
+body{
+	background-color: #808080;
+}
+
 div#body_stuff{
 	display: inline-block;
 	margin-bottom:125px;
+	background-color: #808080;
 }
 
 div#footer_nav {

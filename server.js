@@ -29,8 +29,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "localhost:" //
-var PORT = 3000; //80
+var hostname = "cultureonthecheap.com:" //
+var PORT = 80
 
 var DEFAULTIMAGE = "../public/images/default.jpg";
 var DEFAULTADIMAGE = "../public/images/Tile Ad.png";
