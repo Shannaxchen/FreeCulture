@@ -4,16 +4,12 @@ body{
 	margin-top: 0;
 	min-width:800px;
 	width:1024px;
-	background-color: #808080;
 }
 
 head, body, header, a, li, p, textarea {
 	font-family: sans-serif;
 }
 
-p{
-	color: white;
-}
 
 #header_wrapper {
 	position:fixed;
@@ -210,9 +206,13 @@ table.JEC thead tr *, table.JEC thead *{
 }
 
 #blurb{
-	border-top:1px solid white;
-	border-bottom:1px solid white;
+	font-weight: bold;
+	border-top:1px solid gray;
+	border-bottom:1px solid gray;
 	font-size: 15px;
+}
+#categories{
+	font-weight: bold;
 }
 
 #categories li {
@@ -223,7 +223,7 @@ table.JEC thead tr *, table.JEC thead *{
 #categories li a{
 	text-decoration: none;
 	font-size: 15px;
-	color: white;
+	color: #000;
 }
 
 #post_container, #submitbox{
@@ -329,6 +329,10 @@ table.JEC thead tr *, table.JEC thead *{
 }
 #sort_nav a:hover {
 	text-decoration: underline;
+}
+
+body{
+	background-color: #808080;
 }
 
 div#body_stuff{
