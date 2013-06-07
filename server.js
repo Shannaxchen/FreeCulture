@@ -24,7 +24,7 @@ var PREVIEW = {
 
 var ORDER = {
   L2H : {value: 0, sql: " ORDER BY price ASC"}, 
-  ED : {value: 1, sql: " ORDER BY startdate DESC"}, 
+  ED : {value: 1, sql: " ORDER BY startdate ASC"}, 
   PD : {value: 2, sql: " ORDER BY postdate DESC"},
 };
 
@@ -1053,9 +1053,11 @@ function generatePostHTML(request, row){
 	}
 	if(!isAd){
 
-		post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4) + " - ";					
-		post_html += row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4) + "</h3>";					
-		post_html += "</a>";
+		post_html += "<h3>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4);					
+		if(row.startdate != row.enddate){
+			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
+		} 					
+		post_html += "</h3></a>";
 
 	}	
 	else{
