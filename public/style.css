@@ -64,8 +64,9 @@ p{
 	display: block;
 }
 #second_header{
-	height: 24px;
+	height: 18px;
 	padding:3px;
+	margin-bottom:11px;
 	float:right;
 	position: absolute;
 	bottom:0;
@@ -81,7 +82,7 @@ p{
 }
 
 #social{
-	margin-right: 68px;
+	margin-right: 84px;
 	padding: .4em 1em;
 }
 
