@@ -77,10 +77,11 @@ p{
 #second_nav{
 	list-style: none;
 	display: inline;
+	padding-left: 0px;
 }
 
 #social{
-	margin-right: 10px;
+	margin-right: 68px;
 	padding: .4em 1em;
 }
 
@@ -398,9 +399,10 @@ div#footer_nav {
 
 .adpost {
 	display:inline-block;
-	height: 220px;
-	width: 220px;	
-	background-position: center;
+	height: 224px;
+	width: 224px;
+	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
 	position: relative;
 }
 
@@ -411,11 +413,11 @@ div#footer_nav {
 
 .adpost img{
 	display:block;
-	height: 210px;
+	height: 208px;
 	width: 208px;
-	margin-top: 6px;
+	margin-top: 8px;
 	margin-left: 8px;
-	margin-bottom: -24px;
+	margin-bottom: -26px;
 }
 
 .corner{
@@ -505,7 +507,8 @@ h1{
 h2{
 	margin-top: 20px;
 	text-transform: capitalize;
-	font-size: large;
+	font-size:medium;
+	font-weight:normal;
 	height:7px;
 }
 
