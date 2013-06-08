@@ -73,8 +73,9 @@ p{
 	display: block;
 }
 #second_header{
-	height: 24px;
+	height: 18px;
 	padding:3px;
+	margin-bottom:11px;
 	float:right;
 	position: absolute;
 	bottom:0;
@@ -90,10 +91,16 @@ p{
 
 }
 
+<<<<<<< HEAD
 #social img{
 	border: 0;
 	position: relative;
 	top: 6px;
+=======
+#social{
+	margin-right: 84px;
+	padding: .4em 1em;
+>>>>>>> 0ecfa7252c5290bf5bdab7ddbd3c1d23bfd8f8b1
 }
 
 #second_nav li{
@@ -394,6 +401,52 @@ div#footer_nav {
 
 }
 
+<<<<<<< HEAD
+=======
+.post {
+	display:inline-block;
+	height: 224px;
+	width: 224px;
+	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
+	position: relative;
+}
+.post a{
+	text-decoration: none;
+	color:black;
+}
+.post img{
+	display:block;
+	height: 120px;
+	width: 202px;
+	margin-top: 11px;
+	margin-left: 11px;
+}
+
+
+.adpost {
+	display:inline-block;
+	height: 224px;
+	width: 224px;
+	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
+	position: relative;
+}
+
+.adpost a{
+	text-decoration: none;
+	color:black;
+}
+
+.adpost img{
+	display:block;
+	height: 210px;
+	width: 210px;
+	margin-top: 7px;
+	margin-left: 7px;
+	margin-bottom: -27px;
+}
+>>>>>>> 0ecfa7252c5290bf5bdab7ddbd3c1d23bfd8f8b1
 
 .corner{
 	position: absolute;
