@@ -14,6 +14,11 @@ p{
 	color: white;
 }
 
+.adpost img{
+	margin: 0;
+	padding: 0;
+}
+
 #header_wrapper {
 	position:fixed;
 	z-index: 100;
@@ -35,6 +40,10 @@ p{
 	margin-top: 0;
 	margin-left: 0;
 	height:150px;
+}
+
+#logo img{
+	border: 0;
 }
 
 
@@ -76,13 +85,15 @@ p{
 
 #second_nav{
 	list-style: none;
-	display: inline;
+	display: inline-block;
 	padding-left: 0px;
+
 }
 
-#social{
-	margin-right: 68px;
-	padding: .4em 1em;
+#social img{
+	border: 0;
+	position: relative;
+	top: 6px;
 }
 
 #second_nav li{
@@ -90,6 +101,10 @@ p{
 	display: inline-block;
 	margin-right: 30px;
 	color: white;
+	vertical-align: middle;	
+	position: relative;
+	bottom: 26px;
+
 }
 #second_nav a{
 	font-family: 'Roboto Condensed', sans-serif;
@@ -117,7 +132,6 @@ textarea{
 	height:120px;
 	padding:0;
 	margin: 0;
-
 }
 
 #adspace img{
@@ -126,6 +140,7 @@ textarea{
 	z-index: 150;
 	padding:0;
 	margin: 0;
+	border: 0;
 }
 
 div#left_sidebar{
@@ -259,6 +274,9 @@ table.JEC thead tr *, table.JEC thead *{
 	overflow: auto;
 }
 
+#about_us a, #contact a:link{
+	color: #FFF;
+}
 #about_us, #contact, #error_message{
 	margin-top: 160px;
 }
@@ -376,49 +394,6 @@ div#footer_nav {
 
 }
 
-.post {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-}
-.post a{
-	text-decoration: none;
-	color:black;
-}
-.post img{
-	display:block;
-	height: 120px;
-	width: 202px;
-	margin-top: 11px;
-	margin-left: 11px;
-}
-
-
-.adpost {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-}
-
-.adpost a{
-	text-decoration: none;
-	color:black;
-}
-
-.adpost img{
-	display:block;
-	height: 208px;
-	width: 208px;
-	margin-top: 8px;
-	margin-left: 8px;
-	margin-bottom: -26px;
-}
 
 .corner{
 	position: absolute;
