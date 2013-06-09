@@ -1,0 +1,31 @@
+DEFAULTIMAGE
+public/images/default.jpg
+DEFAULTADIMAGE
+public/images/defaultad.png
+DEFAULTHEADERIMAGE
+public/images/uploads/ads/XK9VAULH2L2SC2CSWH5VUH9L.png
+ADLINK
+http://cs.brown.edu/courses/csci1320/
+ABOUTUS
+	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money.Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.
+<br />
+<br />If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.
+<br />
+<br />Web Design/Development: <a href='mailto:jqtran@cs.brown.edu'>John Tran</a> || <a href='mailto:christopher.m.piette@gmail.com'>Chris Piette</a> || <a href = 'mailto:annaliasunderland@gmail.com'> Annalia Sunderland </a> || <a href = 'mailto:shannaxchen@gmail.com'>Shanna Chen </a> || <a href = 'mailto:hyoju_lim@brown.edu'>Hyoju Lim </a>
+CONTACT
+You can follow Culture on the Cheap (COTC) on <a href = 'http://twitter.com/culturecheapNYC'>Twitter</a> or like us on <a href = 'http://facebook.com/cultureonthecheap'>Facebook</a>.
+DESCRIPTION
+FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!
+<br /> 
+CATEGORIES
+Architecture
+Art
+Dance
+Design
+Film
+Food
+Fun
+LectureTalk
+Music
+Theater
+Tours
