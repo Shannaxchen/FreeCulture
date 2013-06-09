@@ -11,3 +11,7 @@
 #second_nav li{
 	bottom: 25px;
 }
+
+#admin_container #categoryForm{
+	height: 503px;
+}

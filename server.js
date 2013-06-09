@@ -32,25 +32,74 @@ var email = "dglassdes@aol.com";
 var hostname = "localhost:" //
 var PORT = 3000
 
-var DEFAULTIMAGE = "../public/images/default.jpg";
-var DEFAULTADIMAGE = "../public/images/Tile Ad.png";
-var DEFAULTHEADERIMAGE = "../public/images/corner_ad.png";
+// Read the file and print its contents.
 
-var adlink = "http://cs.brown.edu/courses/csci1320/";
+var DEFAULTIMAGE = "";
+var DEFAULTADIMAGE = "";
+var DEFAULTHEADERIMAGE = "";
+
+var adlink = "";
+var aboutus = "";
+var contact = "";
+var description = "";
+
+//all possible category IDs.
+var categoryIDS = [];
+
+
+try{
+	var splits = fs.readFileSync('savedata.txt').toString().split("\n");
+	console.log(splits);
+	DEFAULTIMAGE = splits[1].replace(/(\r\n|\n|\r)/gm,"");
+	DEFAULTADIMAGE = splits[3].replace(/(\r\n|\n|\r)/gm,"");
+	DEFAULTHEADERIMAGE = splits[5].replace(/(\r\n|\n|\r)/gm,"");
+
+	adlink = splits[7].replace(/(\r\n|\n|\r)/gm,"");
+
+	var aboutus_index = splits.indexOf("ABOUTUS\r");
+	var contact_index = splits.indexOf("CONTACT\r");
+	var description_index = splits.indexOf("DESCRIPTION\r");
+	var categories_index = splits.indexOf("CATEGORIES\r");	
+
+	for(var i = aboutus_index +1; i < contact_index; i++){
+		aboutus += splits[i];
+	}
+
+	for(var i = contact_index +1; i < description_index; i++){
+		contact += splits[i];
+	}
+
+	for(var i = description_index +1; i < categories_index; i++){
+		description += splits[i];
+	}
+	
+	for(var i = categories_index +1; i < splits.length; i++){
+		if(splits[i].length != 0 && splits[i] != "\r\n" && splits[i] != "\n" && splits[i] != "\r"){
+			categoryIDS.push(splits[i].replace("\r", ""));
+		}
+	}
+
+} catch(e){
+console.log(e);
+	DEFAULTIMAGE = "../public/images/default.jpg";
+	DEFAULTADIMAGE = "../public/images/Tile Ad.png";
+	DEFAULTHEADERIMAGE = "../public/images/corner_ad.png";
+	adlink = "http://cs.brown.edu/courses/csci1320/";
+	aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money." + 
+				  "Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. " + 
+				  "We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />" +
+				  "If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. " +
+				  "We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />" +
+				  "Web Design/Development: <a href='mailto:jqtran@cs.brown.edu'>John Tran</a> || <a href='mailto:christopher.m.piette@gmail.com'>Chris Piette</a> || <a href = 'mailto:annaliasunderland@gmail.com'> Annalia Sunderland </a> || <a href = 'mailto:shannaxchen@gmail.com'>Shanna Chen </a> || <a href = 'mailto:hyoju_lim@brown.edu'>Hyoju Lim </a>";
+
+	contact = "You can follow Culture on the Cheap (COTC) on <a href = 'http://twitter.com/cultureonthecheap'>Twitter</a> or like us on <a href = 'http://facebook.com/cultureonthecheap'>Facebook</a>."
+	description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
+	categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
+}
 
 var defaultimage = DEFAULTIMAGE;
 var defaultadimage = DEFAULTADIMAGE;
 var defaultheaderimage = DEFAULTHEADERIMAGE;
-var aboutus = "	We are New York City enthusiasts who are always surprised by the constant stream of new and exciting things to discover throughout the city, and not all of them require a lot of money." + 
-			  "Culture on the Cheap is a guide to free and cheap cultural events ranging from art and music shows to performances, talks, walks, food and more. " + 
-			  "We curate this bulletin board based on what looks interesting to us, but it goes without saying that we cannot personally attend all that is listed.<br /><br />" +
-			  "If you would like to submit an event, please send a one- or two-sentence description with a link that includes all event information (date/time/location/cost) and a compelling image. " +
-			  "We cannot include all submissions, but will look at them all and post those that fit in well with Culture on the Cheap.<br /><br />" +
-			  "Web Design/Development: <a href='mailto:jqtran@cs.brown.edu'>John Tran</a> || <a href='mailto:christopher.m.piette@gmail.com'>Chris Piette</a> || <a href = 'mailto:annaliasunderland@gmail.com'> Annalia Sunderland </a> || <a href = 'mailto:shannaxchen@gmail.com'>Shanna Chen </a> || <a href = 'mailto:hyoju_lim@brown.edu'>Hyoju Lim </a>";
-
-var contact = "You can follow Culture on the Cheap (COTC) on <a href = 'http://twitter.com/cultureonthecheap'>Twitter</a> or like us on <a href = 'http://facebook.com/cultureonthecheap'>Facebook</a>."
-var description = "FREE & CHEAP Things to Do in NYC During the Recession and Beyond... Art, Music, Theater, Film, Dance, Food, Lectures, Tours and more!";
-
 //make db
 conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
 conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
@@ -84,8 +133,6 @@ app.configure('production', function(){
 });
 
 
-//all possible category IDs.
-var categoryIDS = ["Architecture","Art","Dance","Design","Film","Food","Fun","LectureTalk","Music","Theater","Tours"];
 
 //route
 
@@ -193,9 +240,11 @@ app.post('/admin/submit', function(request, response){
 
     var find = '\n';
     var re = new RegExp(find, 'g');
-    aboutus = verifyString(request.body.aboutus).replace(re, "<br />");
-    contact = verifyString(request.body.contact).replace(re, "<br />");
-    description = verifyString(request.body.description).replace(re, "<br />");
+    aboutus = verifyString(request.body.aboutus).replace(/\n$/, "").replace(re, "<br />");
+    contact = verifyString(request.body.contact).replace(/\n$/, "").replace(re, "<br />");
+    description = verifyString(request.body.description).replace(/\n$/, "").replace(re, "<br />");
+    
+    console.log(description);
     adlink = verifyString(request.body.adlink);
         
     var tempPath = request.files.adimage.path;
@@ -256,6 +305,36 @@ app.post('/admin/submit', function(request, response){
 	        });
     	}
     }
+    
+    try{
+	    var superstr = "";
+	  	superstr += "DEFAULTIMAGE\r\n";
+  		superstr += defaultimage + "\r\n";
+  		superstr += "DEFAULTADIMAGE\r\n";
+	  	superstr += defaultadimage + "\r\n";
+	  	superstr += "DEFAULTHEADERIMAGE\r\n";
+	  	superstr += defaultheaderimage + "\r\n";
+	  	superstr += "ADLINK\r\n";
+	  	superstr += adlink + "\r\n";
+	  	superstr += "ABOUTUS\r\n";
+	  	superstr += aboutus + "\r\n";
+	  	superstr += "CONTACT\r\n";
+	   	superstr += contact + "\r\n";
+	  	superstr += "DESCRIPTION\r\n";  
+	   	superstr += description + "\r\n";
+	   	superstr += "CATEGORIES\r\n";
+	   	for(i in categoryIDS){
+	   		superstr += categoryIDS[i].replace("\r", "") + "\n";
+	   	}
+	
+	    fs.writeFile('savedata.txt', superstr, function (err) {
+	    	if (err) return console.log(err);
+			console.log("Saved admin preferences!");
+    	});    
+    } catch(e){
+    	console.log(e);
+    }
+    
     response.redirect('/admin'); 
 });
 
@@ -271,6 +350,39 @@ app.post('/admin/submit2', function(request, response){
 	categoryIDS.push(request.body.newcategory);
 	categoryIDS.sort();
     }
+
+    try{
+	    var superstr = "";
+	  	superstr += "DEFAULTIMAGE\r\n";
+  		superstr += defaultimage + "\r\n";
+  		superstr += "DEFAULTADIMAGE\r\n";
+	  	superstr += defaultadimage + "\r\n";
+	  	superstr += "DEFAULTHEADERIMAGE\r\n";
+	  	superstr += defaultheaderimage + "\r\n";
+	  	superstr += "ADLINK\r\n";
+	  	superstr += adlink + "\r\n";
+	  	superstr += "ABOUTUS\r\n";
+	  	superstr += aboutus + "\r\n";
+	  	superstr += "CONTACT\r\n";
+	   	superstr += contact + "\r\n";
+	  	superstr += "DESCRIPTION\r\n";  
+	   	superstr += description + "\r\n";
+	   	superstr += "CATEGORIES\r\n";
+	   	for(i in categoryIDS){
+	   		superstr += categoryIDS[i].replace("\r", "");
+	   		if(i < categoryIDS.length - 1){
+		   		superstr += "\n";	   		
+	   		}
+	   	}
+	
+	    fs.writeFile('savedata.txt', superstr, function (err) {
+	    	if (err) return console.log(err);
+			console.log("Saved admin preferences!");
+    	});    
+    } catch(e){
+    	console.log(e);
+    }
+
 
     response.redirect('/admin');
 });
