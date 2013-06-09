@@ -1,57 +1,17 @@
 ﻿@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
-.post {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-	top: 0px;
-	padding: 0;
-	top: -20px;
-}
-.post a{
-	text-decoration: none;
-	color:black;
-}
-.post img{
-	display:inline-block;
-	height: 120px;
-	width: 202px;
-	margin-top: 11px;
-	margin-left: 11px;
-	border: 0;
-}
-
-.adpost {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-	padding: 0;
-	top: 4px;
-
-}
-
-.adpost a{
-	text-decoration: none;
-	color:black;
-}
-
 .adpost img{
-	display:inline-block;
-	height: 208px;
-	width: 208px;
-	margin-top: 8px;
-	margin-left: 8px;
-	border: 0;
+	margin-bottom: -26px;
 }
 
 #social{
-	margin-right: 68px;
-	padding: .4em 1em;	
-	position: relative;
-	bottom: 23px;
+	margin-right: 53px;
+	bottom: 21px;
+}
+
+#second_nav li{
+	bottom: 24px;
+}
+
+#second_nav #submit{
+	bottom: 26px;
 }

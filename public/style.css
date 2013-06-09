@@ -6,7 +6,7 @@ body{
 	width:1024px;
 }
 
-head, body, header, a, li, p, textarea {
+head, body, header, a, li, p, textarea, input {
 	font-family: sans-serif;
 }
 
@@ -88,19 +88,63 @@ p{
 	list-style: none;
 	display: inline-block;
 	padding-left: 0px;
-
 }
 
-<<<<<<< HEAD
 #social img{
 	border: 0;
 	position: relative;
 	top: 6px;
-=======
+}
+
+.post {
+	display:inline-block;
+	height: 224px;
+	width: 224px;
+	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
+	position: relative;
+	padding: 0;
+}
+.post a{
+	text-decoration: none;
+	color:black;
+}
+.post img{
+	display:inline-block;
+	height: 120px;
+	width: 202px;
+	margin-top: 11px;
+	margin-left: 11px;
+	border: 0;
+}
+
+.adpost {
+	display:inline-block;
+	height: 224px;
+	width: 224px;
+	background-image: url("/public/images/post.png");
+	background-repeat: no-repeat;
+	position: relative;
+	padding: 0;
+}
+
+.adpost a{
+	text-decoration: none;
+	color:black;
+}
+
+.adpost img{
+	display:inline-block;
+	height: 208px;
+	width: 209px;
+	margin-top: 8px;
+	margin-left: 8px;
+	border: 0;
+}
+
 #social{
-	margin-right: 84px;
-	padding: .4em 1em;
->>>>>>> 0ecfa7252c5290bf5bdab7ddbd3c1d23bfd8f8b1
+	padding: .4em 1em;	
+	position: relative;
 }
 
 #second_nav li{
@@ -110,7 +154,6 @@ p{
 	color: white;
 	vertical-align: middle;	
 	position: relative;
-	bottom: 26px;
 
 }
 #second_nav a{
@@ -127,10 +170,12 @@ p{
 input[type=text]{
 	border:1px solid #d0d0d0;
 	background-color:#fcfcfc;
+	font-size: 13px;
 }
 textarea{
 	border:1px solid #d0d0d0;
 	background-color:#fcfcfc;
+	font-size: 13px;
 }
 
 #adspace{
@@ -400,54 +445,6 @@ div#footer_nav {
 .noresult {
 
 }
-
-<<<<<<< HEAD
-=======
-.post {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-}
-.post a{
-	text-decoration: none;
-	color:black;
-}
-.post img{
-	display:block;
-	height: 120px;
-	width: 202px;
-	margin-top: 11px;
-	margin-left: 11px;
-}
-
-
-.adpost {
-	display:inline-block;
-	height: 224px;
-	width: 224px;
-	background-image: url("/public/images/post.png");
-	background-repeat: no-repeat;
-	position: relative;
-}
-
-.adpost a{
-	text-decoration: none;
-	color:black;
-}
-
-.adpost img{
-	display:block;
-	height: 210px;
-	width: 210px;
-	margin-top: 7px;
-	margin-left: 7px;
-	margin-bottom: -27px;
-}
->>>>>>> 0ecfa7252c5290bf5bdab7ddbd3c1d23bfd8f8b1
-
 .corner{
 	position: absolute;
 	width: 40px;
@@ -498,14 +495,18 @@ div#footer_nav {
 .hover:hover .admin{
 	text-transform: uppercase;
 	font-weight: bold;
-        font-size:10px;
+    font-size:10px;
 	color: black;
+}
+
+.hover .admin a{
+	color: transparent;
 }
 
 .hover:hover .admin a{
 	text-transform: uppercase;
 	font-weight: bold;
-        font-size:10px;
+     font-size:10px;
 	color: black;
 }
 
@@ -565,3 +566,4 @@ h4{
 button .error {
 	color: #FF0000
 }
+

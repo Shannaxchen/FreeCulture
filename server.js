@@ -543,7 +543,8 @@ app.get('/approve/:postid',function(request,response){
 	var q2 = conn_admin.query(sql2);
 	q.on('row', function(row){
 			var today = new Date();
-			var modify_d = moment(today).format('YYYYMMDD');
+			//var modify_d = moment(today).format('YYYYMMDDHHmmssSSS');
+			var modify_d = moment(today).format('X');
 			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
 			var q = conn.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,row.adpos]); 
@@ -994,10 +995,17 @@ function getEditHTML(request, postid){
 
 
 function generatePostHTML(request, row){
+	if(!row){
+		return;
+	}
 	var post_html = "";
 	var isAd = false; //let's figure out whether this is an ad or not
-
-	if(row.category.localeCompare("Advertisement") == 0 || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
+	
+	if(!row.category){
+		console.log("1st category not defined:");
+		console.log(row);
+	}
+	if((row.category && row.category.localeCompare("Advertisement") == 0) || (row.category2 && row.category2.localeCompare("Advertisement") == 0)){
 		isAd = true;
 	}
 	var linkto = row.linkto;
@@ -1107,21 +1115,6 @@ function makeRequest(headers, body, callback) {
       });
     };
   };
-
-
-
-function generateData(){
-	conn.query('INSERT INTO posts (category,category2,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',["Architecture", "LectureTalk", "Architecture event", "public/images/default.jpg", "20130620", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdklsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl dhfjkdhlfkjhd dfhjlaj djhfal djsjdhfkj djhfjkd eirjlk lsjfh hdsjfl khdljshfla hdjsahfldkls jahflkdjashf hjadhfldhaslf hadjsflhjasdhl f djfhlkjdshk dhfjdskfjhdj free and cheap things to do in NYC", "google.com",0,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,category2,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)',["Art", "Design", "Art event", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",1,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Dance", "Dance event", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Design", "Andy Warhol", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Film", "Gone with the wind", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",4,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Food", "Kabob and Curry", "public/images/default.jpg", "20130621", "20130625","0000","heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhd heythere this is the description hopefully this is long enough what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd h h what if its too longdsjfh h what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfd what if its too longdsjfh ladhsfkj dhas fjhdkj ashflkdj ashf lkdhjasf lkjdhaskl fjhdkjhdkjashfdjashfkl djshfkldjashfkl dashfjdhaslfkjhdk lsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl klsjhfdkjashflk dshfjahdlfkjhasdl  dashfjldjhlfkj hadjf khldkljshf hdjafkhl dkjshl", "google.com",0,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Fun", "Nothing", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",3,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["LectureTalk", "CS132 Lecture", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",6,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Music", "PSY", "public/images/default.jpg", "20130621", "20130625","0000","hey", "google.com",2,0,0]).on('error',console.error);
-	conn.query('INSERT INTO posts (category,title,image,startdate,enddate,time, body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',["Theater", "I dunno", "public/images/default.jpg", "20130621", "20130625","1350","hey", "google.com",10,0,0]).on('error',console.error);
-}
 
 function checkAdmin(request) {
 	if('email' in request.session && request.session.email.localeCompare(email) == 0){
