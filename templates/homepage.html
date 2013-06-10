@@ -5,9 +5,8 @@
 		<link href="../public/style.css" rel="stylesheet" type="text/css">
 		<script type="text/javascript" src="/public/browser.js"></script>
         	<script type="text/javascript" src="/public/frontend.js"></script>
-		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
 		<script src="https://login.persona.org/include.js"></script>
-	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
 					weekdays: [
@@ -21,10 +20,15 @@
 					  ]
 				});
 				var temparray = [];
-				start = 20130101;
-				while (start <= 20501231){
+				var d = new Date();
+				start = (d.getFullYear()-1)*10000+101;
+				end = (d.getFullYear()+1)*10000+1231;
+				while (start <= end){
 					temparray.push({linkedDate:start,dateLink:'/'+start});
 					start = start+1;
+					if(start % 100 >= 32){
+						start = start + (100 - 32);
+					}
 				}
 				calJEC.linkDates(temparray);
 				calJEC.showCalendar();

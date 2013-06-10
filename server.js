@@ -7,8 +7,10 @@ var moment = require('moment');
 var path = require('path');
 var fs = require('fs');
 
-var app = express();
-var XMLHttpRequest = require('w3c-xmlhttprequest');
+//var app = express();
+var app = express.createServer();
+app.use(express.compress());
+//var XMLHttpRequest = require('w3c-xmlhttprequest');
 
 var conn = anyDB.createConnection('sqlite3://freeculture.db');
 var conn_admin = anyDB.createConnection('sqlite3://freeculture_admin.db');
@@ -29,8 +31,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "localhost:" //
-var PORT = 3000
+var hostname = "cultureonthecheap.com:" //
+var PORT = 80;
 
 // Read the file and print its contents.
 
@@ -56,10 +58,22 @@ try{
 
 	adlink = splits[7].replace(/(\r\n|\n|\r)/gm,"");
 
-	var aboutus_index = splits.indexOf("ABOUTUS\r");
-	var contact_index = splits.indexOf("CONTACT\r");
-	var description_index = splits.indexOf("DESCRIPTION\r");
-	var categories_index = splits.indexOf("CATEGORIES\r");	
+	var aboutus_index = splits.indexOf("ABOUTUS");
+	if(aboutus_index == -1){
+		aboutus_index = splits.indexOf("ABOUTUS\r");
+	}
+	var contact_index = splits.indexOf("CONTACT");
+	if(contact_index == -1){
+		contact_index = splits.indexOf("CONTACT\r");
+	}
+	var description_index = splits.indexOf("DESCRIPTION");
+	if(description_index == -1){
+		description_index = splits.indexOf("DESCRIPTION\r");
+	}
+	var categories_index = splits.indexOf("CATEGORIES");	
+	if(categories_index == -1){
+		categories_index = splits.indexOf("CATEGORIES\r");
+	}
 
 	for(var i = aboutus_index +1; i < contact_index; i++){
 		aboutus += splits[i];
