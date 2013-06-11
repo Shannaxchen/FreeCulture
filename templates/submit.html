@@ -5,8 +5,8 @@
         	<link href="../public/style.css" rel="stylesheet" type="text/css">
         	<script type="text/javascript" src="/public/browser.js"></script>
         	<script type="text/javascript" src="/public/frontend.js"></script>
-		<script type="text/javascript" src="/public/calendar-2.2.js"></script>
-		<script src="https://login.persona.org/include.js"></script>
+			<script type="text/javascript" src="/public/calendar-2.2.js"></script>
+			<script src="https://login.persona.org/include.js"></script>
 	        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script type="text/javascript">					 
 				var calJEC = new JEC('myCalendarContainer', {
@@ -50,7 +50,8 @@
 					}
 					
 					if(elements["image"].value.length == 0){
-						errorbox.innerHTML += "* Please provide a link to the event image! <br // >";	
+						errorbox.innerHTML += "* Please provide a file for the event image! <br // >";	
+						errors += 1;
 					}
 					else{
 						var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
@@ -58,7 +59,19 @@
 						if(imagefileformats.indexOf(ext) < 0){
 							errorbox.innerHTML += "* Image file format not supported. <br // >";
 							errors += 1;
-						}
+						} else if(window.FileReader) {					
+				    		if (!elements["image"].files) {
+				    		}
+				    		else if (!elements["image"].files[0]) {
+				    			errorbox.innerHTML += "* Please provide a file for the event image! <br // >";	
+								errors += 1;	
+				    		}
+				    		else if(elements["image"].files[0].size * 0.000976562 > 200){
+				    			errorbox.innerHTML += "* File size greater than 200 kb. Size is: " + Math.ceil(elements["image"].files[0].size * 0.000976562)+" kb.<br // >";
+								errors += 1;
+				    		}
+				    	}
+
 					}
 
 					if(elements["linkto"].value.length == 0){
@@ -66,18 +79,39 @@
 						errors += 1;
 					}
 
-					if(elements["price"].value.length == 0){
-						errorbox.innerHTML += "* Please provide a price for the event! <br // >";
+					if(elements["price"].value.length == 0 && elements["price2"].value.length == 0){
+						errorbox.innerHTML += "* Please provide at least one price for the event! <br // >";
 						errors += 1;
 					}
+					else{
+						var price1 = parseInt(elements["price"].value);
+						var price2 = parseInt(elements["price2"].value);
+						if(elements["price"].value.length != 0){
+							if(!price1 && price1 != 0){
+								errorbox.innerHTML += "* Min price could not be converted to a number <br // >";
+								errors += 1;
+							}
+							else if(price1 < 0){
+								errorbox.innerHTML += "* Min price cannot be negative. <br // >";
+								errors += 1;
+							}						
+						}
+						if(elements["price2"].value.length != 0){
+							if(!price2 && price2 != 0){
+								errorbox.innerHTML += "* Max price could not be converted to a number <br // >";
+								errors += 1;
+							}
+							else if(price2 < 0){
+								errorbox.innerHTML += "* Max price cannot be negative. <br // >";
+								errors += 1;
+							}						
+						}
+						
+						if(elements["price"].value.length != 0 && elements["price2"].value.length != 0 && price1 > price2) {
+							errorbox.innerHTML += "* Max price must be greater than min price. <br // >";
+							errors += 1;			
+						}
 					
-					else if(!parseInt(elements["price"].value) && parseInt(elements["price"].value) != 0){
-						errorbox.innerHTML += "* Price could not be converted to a number <br // >";
-						errors += 1;
-					}
-					else if(parseInt(elements["price"].value) < 0){
-						errorbox.innerHTML += "* Price cannot be negative. <br // >";
-						errors += 1;
 					}
 
 
@@ -246,13 +280,15 @@
 					<!--Figure out what should go in the submit post box -->
 					Name of Event:<br />
 					<input id="message" type="text" name="title" id="titleField" size="29"> <br />
-					Image:<br /> Images that are not rectangles will be distorted
+					Image: (max size: 200 kb)<br /> Images that are not rectangles will be distorted
 					<br/>
 					<input id="message" type="file" name="image" id="imageField" size="25" accept="image/*"> <br />
 					Link to Event:<br />
 					<input id="message" type="text" name="linkto" id="linkField" size="29"> <br />
-					Price of Event:<br />
+					Min Price of Event:<br />
 					<input id="message" type="number" name="price" id="priceField" size="29"> <br />
+					Max Price of Event:<br />
+					<input id="message" type="number" name="price2" id="priceField2" size="29"> <br />
 					Description of Event:<br />
 					<textarea cols="30" rows="5" name="description"></textarea><br />
 					Start Date:<br />

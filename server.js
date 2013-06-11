@@ -31,8 +31,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "cultureonthecheap.com:" //
-var PORT = 80;
+var hostname = "localhost:" //
+var PORT = 3000;
 
 // Read the file and print its contents.
 
@@ -115,11 +115,15 @@ var defaultimage = DEFAULTIMAGE;
 var defaultadimage = DEFAULTADIMAGE;
 var defaultheaderimage = DEFAULTHEADERIMAGE;
 //make db
-conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
-conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
-conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, postdate INTEGER, adpos INTEGER)');
+conn.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, price2 INTEGER, postdate INTEGER, adpos INTEGER)');
+conn_admin.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, price2 INTEGER, postdate INTEGER, adpos INTEGER)');
+conn_trash.query('CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, category2 TEXT, title TEXT, image TEXT, startdate INTEGER, enddate INTEGER, time INTEGER, body TEXT, linkto TEXT, price INTEGER, price2 INTEGER, postdate INTEGER, adpos INTEGER)');
 
+//conn.query('ALTER TABLE posts ADD COLUMN price2 INTEGER DEFAULT(-1)');
+//conn_admin.query('ALTER TABLE posts ADD COLUMN price2 INTEGER DEFAULT(-1)');
+//conn_trash.query('ALTER TABLE posts ADD COLUMN price2 INTEGER DEFAULT(-1)');
 //configuration
+
 app.configure(function(){
 	app.engine('html',engines.hogan); //tell express to run .html files through Hogan
 	app.set('views',__dirname+'/templates'); //tell express where to find templates
@@ -160,7 +164,7 @@ app.get('/',function(request,response){
 
 	var today = new Date();
 	var modify_d = moment(today).format('YYYYMMDD')
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE enddate >= "+modify_d+request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -464,9 +468,9 @@ app.post('/search',function(request,response){
 	var modify_d = moment(today).format('YYYYMMDD')
 	request.session.preview = PREVIEW.APPROVED;
 	request.session.order = ORDER.ED;
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (title LIKE '%"+keyword+"%' OR body like '%"+keyword+"%')";
 
-	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
+	sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
@@ -582,7 +586,7 @@ app.get('/edit/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,adpos FROM posts WHERE id == "+request.params.postid+" ORDER BY startdate DESC";
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q = conn.query(sql);
@@ -622,9 +626,19 @@ app.get('/edit/:postid',function(request,response){
 		if(!img){
 			img = '';
 		}
+		
+		console.log(row.price + " " + row.price2);
+		var price = row.price;
+		if(price < 0){
+			price = '';
+		}
+		var price2 = row.price2;
+		if(price2 < 0){
+			price2 = '';
+		}
 
 		count++;
-		item = {category: categorypos, category2: categorypos2, title: title, image: img, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:row.price, adposition: adpos};
+		item = {category: categorypos, category2: categorypos2, title: title, image: img, startdate: row.startdate.toString(), enddate: row.enddate.toString(), time: row.time.toString(), body: row.body, linkto: row.linkto, price:price, price2:price2, adposition: adpos};
 		
 		}).on('end',function(){
 			try{
@@ -637,7 +651,7 @@ app.get('/edit/:postid',function(request,response){
 				var find = ' ';
 				var re = new RegExp(find, 'g');
 				if(count > 0){
-				response.render('admin/edit.html',{title:"Edit A Post!", headerimage:'../'+defaultheaderimage, postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, actualeventimage: item.image.replace(re, "&nbsp;"), eventimage: p_image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
+				response.render('admin/edit.html',{title:"Edit A Post!", headerimage:'../'+defaultheaderimage, postid:request.params.postid, eventtitle:item.title.replace(re, "&nbsp;"), eventcategory: item.category, eventcategory2: item.category2, eventbody: item.body, actualeventimage: item.image.replace(re, "&nbsp;"), eventimage: p_image.replace(re, "&nbsp;"), eventlinkto: item.linkto, eventstartdate: item.startdate, eventenddate: item.enddate, eventtime: item.time, eventprice: item.price, eventprice2: item.price2, description:description, admin:getAdminHTML(request), adposition: item.adposition, categories: generateCategoryHTML(), categoryforms: generateCategoryFormHTML(false, true, item.category, item.category2)});
 				}
 				else{
 				response.render('error.html',{title:"Error", headerimage:defaultheaderimage, description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML()});	
@@ -662,7 +676,7 @@ app.get('/approve/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q = conn_admin.query(sql);
 
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
@@ -671,9 +685,9 @@ app.get('/approve/:postid',function(request,response){
 			var today = new Date();
 			//var modify_d = moment(today).format('YYYYMMDDHHmmssSSS');
 			var modify_d = moment(today).format('X');
-			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
+			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)';
 
-			var q = conn.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,modify_d,row.adpos]); 
+			var q = conn.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price,row.price2,modify_d,row.adpos]); 
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -685,7 +699,7 @@ app.get('/reject/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
 		q = conn.query(sql);
@@ -711,9 +725,9 @@ app.get('/reject/:postid',function(request,response){
 
 	q.on('row', function(row){
 
-			var sql = 'INSERT INTO posts (category,category2, title,image,startdate,enddate,time,body,linkto,price,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)';
+			var sql = 'INSERT INTO posts (category,category2, title,image,startdate,enddate,time,body,linkto,price,price2,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
 
-			var q = conn_trash.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price, row.adpos]);
+			var q = conn_trash.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto,row.price, row.price2, row.adpos]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -725,15 +739,15 @@ app.get('/restore/:postid',function(request,response){
 	if(!checkAdminAccess(request, response)){
 		return;
 	}
-	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price, adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
+	var sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2, adpos FROM posts WHERE id == "+request.params.postid + " ORDER BY startdate DESC";
 	var q = conn_trash.query(sql);
 
 	var sql2 = "DELETE FROM posts WHERE id == "+request.params.postid;
 	var q2 = conn_trash.query(sql2);
 
 	q.on('row', function(row){
-			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9, $10,$11)';
-			var q = conn_admin.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto, row.price, row.adpos]);
+			var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9, $10,$11, $12)';
+			var q = conn_admin.query(sql, [row.category, row.category2, row.title, row.image, row.startdate, row.enddate, row.time, row.body, row.linkto, row.price, row.price2, row.adpos]);
 			q.on('error', console.error);
 
 		}).on('end',function(){
@@ -776,12 +790,12 @@ app.get('/:Category',function(request,response){
 			var modify_d = moment(today).format('YYYYMMDD')
 			var sql;
 			if (isDate){
-				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE startdate<=$1 AND enddate >=$1";
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE startdate<=$1 AND enddate >=$1 AND enddate >= " + modify_d;
 			}
 			else{
-				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE (category=$1 OR category2=$1) AND enddate >= "+modify_d;
+				sql = "SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE (category=$1 OR category2=$1) AND enddate >= "+modify_d;
 			}
-			sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
+			sql += " UNION SELECT DISTINCT id,category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos FROM posts WHERE enddate >= "+modify_d+" AND (category='Advertisement' OR category2='Advertisement') " + request.session.order.sql;
 			
 			var q;
 			
@@ -851,8 +865,19 @@ app.post('/submit/submit', function(request, response){
 
     var title = verifyString(request.body.title);
     var price = parseInt(verifyString(request.body.price));
-    if(!price){
-		price = 0;
+    var price2 = parseInt(verifyString(request.body.price2)); 
+    
+    if(price2 && !price){
+		price = price2;
+		price2 = -1;    
+    }
+    else{
+    	if(!price){
+			price = -1;
+    	}
+    	if(!price2){
+    		price2 = -1;
+    	}
     }
 
     var startmonth = monthtext.indexOf(request.body.startmonth) + 1;
@@ -890,25 +915,6 @@ app.post('/submit/submit', function(request, response){
     linkto = linkto.replace("https://", "");
     linkto = linkto.replace("http://", "");
 
-    /*var ext = image.substring(image.lastIndexOf('.')).toLowerCase();
-    var imageshortcut = "";
-    if(IMAGEFILEFORMATS.indexOf(ext) > -1){
-	    imageshortcut = 'public/images/uploads/' + generateImageIdentifier() + ext;
-
-	    http.get(image, imageshortcut, function (error, result) {
-		if (error) {
-		    console.error(error);
-		    imageshortcut = defaultimage;
-		} else {
-		    console.log('File downloaded at: ' + result.file);
-		}
-	    });
-    }
-    else{
-		console.log("Not a supported image file format. Using default picture instead. ");
-		imageshortcut = defaultimage;
-    }*/
-    
     var tempPath = request.files.image.path;
     var ext = path.extname(request.files.image.name).toLowerCase();
     var targetPath = 'public/images/uploads/' + generateImageIdentifier() + ext;
@@ -928,9 +934,9 @@ app.post('/submit/submit', function(request, response){
     	}
     }
 
-    var sql = 'INSERT INTO posts (category, category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
+    var sql = 'INSERT INTO posts (category, category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)';
 
-    var q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, 0]);
+    var q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, price2, 0, 0]);
 
     q.on('error', console.error);
 
@@ -965,10 +971,22 @@ app.post('/edit/submit', function(request, response){
 
     var title = verifyString(request.body.title);
     var price = parseInt(verifyString(request.body.price));
-    if(!price){
-		price = 0;
+    var price2 = parseInt(verifyString(request.body.price2));
+     
+    if(price2 && !price){
+		price = price2;
+		price2 = -1;    
+    }
+    else{
+    	if(!price){
+			price = -1;
+    	}
+    	if(!price2){
+    		price2 = -1;
+    	}
     }
     
+    console.log(price + " " + price2);
 
 
     var tempPath = request.files.image.path;
@@ -1045,17 +1063,17 @@ app.post('/edit/submit', function(request, response){
 		q2 = conn_trash.query(sql2);
 	}
 
-    var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)';
+    var sql = 'INSERT INTO posts (category,category2,title,image,startdate,enddate,time,body,linkto,price,price2,postdate,adpos) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)';
 
 	var q;
 	if(request.session.preview.value == PREVIEW.APPROVED.value){
-		q = conn.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, price2, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.UNAPPROVED.value){
-		q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn_admin.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, price2, 0, adpos]);
 	}
 	if(request.session.preview.value == PREVIEW.REJECTED.value){
-		q = conn_trash.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, 0, adpos]);
+		q = conn_trash.query(sql, [cat, cat2, title, imageshortcut, startdate, enddate, time, body, linkto, price, price2, 0, adpos]);
 	}
     q.on('error', console.error);
 });
@@ -1149,16 +1167,34 @@ function generatePostHTML(request, row){
 	post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
 	post_html += "<div class ='corner'></div>";
 	if(!isAd){
-		post_html += "<div class ='hover'>";
+		post_html += "<div class ='hover' onmousedown='return false;' ondragstart='return false;' ondrop='return false;'>";
 		post_html += getEditHTML(request, row.id);
 		post_html += "<h2>Event Description</h2>";
+		
+		
+		post_html += "<h4>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4);					
+		if(row.startdate != row.enddate){
+			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
+		} 					
+		post_html += "</h4>";		
+		post_html += "<br />";
+
 		post_html += "<h4>" + convertTime(row.time) + "</h4>";
 		if (row.price == 0){
-			post_html += "<h4> Free </h4>";
+			post_html += "<h4> Free";
+			if(row.price2 != null && row.price2 > 0){
+				post_html += " - $" + row.price2;
+			}
+			post_html += "</h4>";			
 		}
 		else{
-			post_html += "<h4>$" + row.price + "</h4>";
+			post_html += "<h4>$" + row.price;
+			if(row.price2 != null && row.price2 > 0){
+				post_html += " - $" + row.price2;
+			}
+			post_html += "</h4>";
 		}
+		
 		post_html += "<div class ='description'>";
 		post_html += "<p>" + row.body + "</p>";
 		post_html += "</div>";
