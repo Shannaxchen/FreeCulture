@@ -471,7 +471,7 @@ div#footer_nav {
 	display: inherit;
 }
 .hover:hover h2 {
-	margin-top: 15px;
+	margin-top: 10px;
 	margin-bottom: 20px;
 	display: inherit;
 	color: black;
@@ -486,6 +486,7 @@ div#footer_nav {
 }
 .hover:hover .description{
 	overflow-y: auto;
+	height: 125px;
 }
 .description{
 	height: 70%;

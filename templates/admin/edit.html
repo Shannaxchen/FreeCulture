@@ -30,7 +30,7 @@
 					
 					var imagefileformats = [".gif", ".jpg", ".jpeg", ".bmp", ".png"];
 					var ext = elements["image"].value.substring(elements["image"].value.lastIndexOf('.'));
-					if(imagefileformats.indexOf(ext) < 0){
+					if(elements["image"].value.length != 0 && imagefileformats.indexOf(ext) < 0){
 						errorbox.innerHTML += "* Image file format not supported. <br // >";
 						errors += 1;
 					}

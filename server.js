@@ -31,8 +31,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "localhost:" //
-var PORT = 3000;
+var hostname = "cultureonthecheap.com:" //
+var PORT = 80;
 
 // Read the file and print its contents.
 
@@ -867,15 +867,15 @@ app.post('/submit/submit', function(request, response){
     var price = parseInt(verifyString(request.body.price));
     var price2 = parseInt(verifyString(request.body.price2)); 
     
-    if(price2 && !price){
+    if(price2 && isNaN(price)){
 		price = price2;
 		price2 = -1;    
     }
     else{
-    	if(!price){
+    	if(isNaN(price)){
 			price = -1;
     	}
-    	if(!price2){
+    	if(isNaN(price2)){
     		price2 = -1;
     	}
     }
@@ -973,15 +973,15 @@ app.post('/edit/submit', function(request, response){
     var price = parseInt(verifyString(request.body.price));
     var price2 = parseInt(verifyString(request.body.price2));
      
-    if(price2 && !price){
+    if(price2 && isNaN(price)){
 		price = price2;
 		price2 = -1;    
     }
     else{
-    	if(!price){
+    	if(isNaN(price)){
 			price = -1;
     	}
-    	if(!price2){
+    	if(isNaN(price2)){
     		price2 = -1;
     	}
     }
@@ -1182,14 +1182,19 @@ function generatePostHTML(request, row){
 		post_html += "<h4>" + convertTime(row.time) + "</h4>";
 		if (row.price == 0){
 			post_html += "<h4> Free";
-			if(row.price2 != null && row.price2 > 0){
+			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
 				post_html += " - $" + row.price2;
 			}
 			post_html += "</h4>";			
 		}
+		else if(row.price2 == 0 && (row.price == null || row.price < 0)){
+			post_html += "<h4> Free";
+			post_html += "</h4>";					
+		}
+
 		else{
 			post_html += "<h4>$" + row.price;
-			if(row.price2 != null && row.price2 > 0){
+			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
 				post_html += " - $" + row.price2;
 			}
 			post_html += "</h4>";
