@@ -1,15 +1,15 @@
 ﻿@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
 li #social{
 	right: 24px;
-	bottom: 5px;
+	bottom: 4px;
 }
 
 #second_nav li{
-	bottom: 0px;	
+	bottom: 1px;	
 }
 
 #second_nav #submit{
-	bottom: 1px;
+	bottom: 3px;
 }
 
 

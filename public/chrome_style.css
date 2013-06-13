@@ -8,10 +8,12 @@ li #social{
 
 #second_nav li{
 	bottom: 0px;	
+	margin-right: 0;
 }
 
 #second_nav #submit{
 	bottom: 1px;
+	margin-right: 40px;
 }
 
 

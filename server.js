@@ -31,8 +31,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "localhost:" //
-var PORT = 3000;
+var hostname = "cultureonthecheap.com:" //
+var PORT = 80;
 
 // Read the file and print its contents.
 
@@ -1088,6 +1088,13 @@ app.listen(PORT, function(){
   console.log("FreeCulture server listening on "+PORT);
 });
 
+process.on('uncaughtException', function(err) {
+	console.log('Caught exception: ' + err);
+});
+
+setTimeout(function() {
+	console.log('This will still run.');
+}, 500);
 
 /**
   * The following are additional functions to help with some server code stuffs.
@@ -1189,7 +1196,7 @@ function generatePostHTML(request, row){
 		if(row.startdate != row.enddate){
 			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
 		} 					
-		post_html += "</h3></a>";
+		post_html += "</h3>";
 	}	
 	else{
 		post_html += "<h3>" +  "&nbsp;</h3></a>";	//double check on this
@@ -1240,7 +1247,7 @@ function generatePostHTML(request, row){
 		post_html += "</div>";
 	}
 	
-	post_html += "</div>";
+	post_html += "</div></a>";
 
 	return post_html;
 }
