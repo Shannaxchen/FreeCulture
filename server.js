@@ -31,8 +31,8 @@ var ORDER = {
 };
 
 var email = "dglassdes@aol.com";
-var hostname = "cultureonthecheap.com:" //
-var PORT = 80;
+var hostname = "localhost:" //
+var PORT = 3000;
 
 // Read the file and print its contents.
 
@@ -1166,50 +1166,7 @@ function generatePostHTML(request, row){
 	}
 	post_html += "<a href = '"+linkto+"' target='"+row.title+"'>";
 	post_html += "<div class ='corner'></div>";
-	if(!isAd){
-		post_html += "<div class ='hover' onmousedown='return false;' ondragstart='return false;' ondrop='return false;'>";
-		post_html += getEditHTML(request, row.id);
-		post_html += "<h2>Event Description</h2>";
-		
-		
-		post_html += "<h4>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4);					
-		if(row.startdate != row.enddate){
-			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
-		} 					
-		post_html += "</h4>";		
-		post_html += "<br />";
-
-		post_html += "<h4>" + convertTime(row.time) + "</h4>";
-		if (row.price == 0){
-			post_html += "<h4> Free";
-			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
-				post_html += " - $" + row.price2;
-			}
-			post_html += "</h4>";			
-		}
-		else if(row.price2 == 0 && (row.price == null || row.price < 0)){
-			post_html += "<h4> Free";
-			post_html += "</h4>";					
-		}
-
-		else{
-			post_html += "<h4>$" + row.price;
-			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
-				post_html += " - $" + row.price2;
-			}
-			post_html += "</h4>";
-		}
-		
-		post_html += "<div class ='description'>";
-		post_html += "<p>" + row.body + "</p>";
-		post_html += "</div>";
-		post_html += "</div>";
-	}
-	else if(checkAdmin(request)){
-		post_html += "<div class ='hover'>";
-		post_html += getEditHTML(request, row.id);
-		post_html += "</div>";
-	}
+	
 	var image = row.image;
 	if(!row.image || row.image.localeCompare("") == 0){
 		image = defaultimage;
@@ -1233,11 +1190,56 @@ function generatePostHTML(request, row){
 			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
 		} 					
 		post_html += "</h3></a>";
-
 	}	
 	else{
-		post_html += "<h3>" +  "&nbsp;</h3>";	
+		post_html += "<h3>" +  "&nbsp;</h3></a>";	//double check on this
 	}			
+	
+	if(!isAd){
+		post_html += "<div class ='hover' onmousedown='return false;' ondragstart='return false;' ondrop='return false;'>";
+		post_html += getEditHTML(request, row.id);
+		post_html += "<h2>Event Description</h2>";
+		
+		
+		post_html += "<h4>" + row.startdate.toString().substring(4,6) + "/" + row.startdate.toString().substring(6) + "/" + row.startdate.toString().substring(0,4);					
+		if(row.startdate != row.enddate){
+			post_html +=  " - " + row.enddate.toString().substring(4,6) + "/" + row.enddate.toString().substring(6) + "/" + row.enddate.toString().substring(0,4);
+		} 					
+		post_html += "</h4>";		
+		post_html += "<br />";
+
+		post_html += "<h4>" + convertTime(row.time) + "&nbsp;&nbsp;&nbsp;&nbsp;";
+		if (row.price == 0){
+			post_html += " Free";
+			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
+				post_html += " - $" + row.price2;
+			}
+			post_html += "</h4>";			
+		}
+		else if(row.price2 == 0 && (row.price == null || row.price < 0)){
+			post_html += " Free";
+			post_html += "</h4>";					
+		}
+
+		else{
+			post_html += " $" + row.price;
+			if(row.price2 != null && row.price2 > 0 && row.price != row.price2){
+				post_html += " - $" + row.price2;
+			}
+			post_html += "</h4>";
+		}
+		
+		post_html += "<div class ='description'>";
+		post_html += "<p>" + row.body + "</p>";
+		post_html += "</div>";
+		post_html += "</div>";
+	}
+	else if(checkAdmin(request)){
+		post_html += "<div class ='hover'>";
+		post_html += getEditHTML(request, row.id);
+		post_html += "</div>";
+	}
+	
 	post_html += "</div>";
 
 	return post_html;

@@ -1,15 +1,15 @@
 ﻿@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700);
-.adpost img{
-	margin-bottom: -24px;
-}
-
-#social{
-	margin-right: 44px;
-	bottom: 21px;
+li #social{
+	right: 14px;
+	bottom: 5px;
 }
 
 #second_nav li{
-	bottom: 25px;
+	bottom: 0px;	
+}
+
+#second_nav #submit{
+	bottom: 1px;
 }
 
 #admin_container #categoryForm{

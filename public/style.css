@@ -73,6 +73,7 @@ p{
 	display: block;
 }
 #second_header{
+	width: 450px;
 	height: 18px;
 	padding:3px;
 	margin-bottom:11px;
@@ -85,6 +86,7 @@ p{
 }
 
 #second_nav{
+	margin: 0px;
 	list-style: none;
 	display: inline-block;
 	padding-left: 0px;
@@ -110,7 +112,7 @@ p{
 	color:black;
 }
 .post img{
-	display:inline-block;
+
 	height: 120px;
 	width: 202px;
 	margin-top: 11px;
@@ -134,17 +136,19 @@ p{
 }
 
 .adpost img{
-	display:inline-block;
 	height: 208px;
 	width: 209px;
-	margin-top: 8px;
-	margin-left: 8px;
+	padding-top: 8px;
+	padding-left: 8px;
 	border: 0;
+	margin-bottom: -85px;	
 }
 
 #social{
-	padding: .4em 1em;	
+	margin-top: 11px;
+	padding: 0px 1em;	
 	position: relative;
+	display: inline;
 }
 
 #second_nav li{
@@ -458,9 +462,13 @@ div#footer_nav {
 	height: 87%;
 	color: transparent;
 	position: absolute;
+	margin-top: -226px;
 	padding: 15px;
 }
 .hover h2{
+	display: none;
+}
+.hover h4{
 	display: none;
 }
 
@@ -477,7 +485,12 @@ div#footer_nav {
 	color: black;
 }
 .hover:hover h4{
+	margin-top: 40px;
+	margin-bottom: 20px;
+	position:absolute;
 	color:black;
+	display: inline;
+
 }
 
 .hover:hover {
@@ -485,11 +498,14 @@ div#footer_nav {
 	opacity:.8;
 }
 .hover:hover .description{
+	margin-top: 57px;
 	overflow-y: auto;
 	height: 125px;
 }
 .description{
-	height: 70%;
+	margin-top: 39px;
+	overflow-y: auto;
+	height: 125px;
 }
 
 
@@ -532,18 +548,22 @@ h1,h2,h3,h4,.admin{
 h1{
 	font-size: x-small;
 	text-transform: uppercase;
+	position: absolute;
 }
 
 h2{
-	margin-top: 20px;
+	margin-top: 35px;
 	text-transform: capitalize;
 	font-size:medium;
 	font-weight:normal;
 	height:7px;
+	position: absolute;
 }
 
-h3, h4{
-	display:inline;
+h3{
+	position: relative;
+	margin-top: 60px;
+
 	color:gray;
 }
 h4{
