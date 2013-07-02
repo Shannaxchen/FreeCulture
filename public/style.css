@@ -469,7 +469,8 @@ div#footer_nav {
 	display: none;
 }
 .hover h4{
-	display: none;
+	display: inline;
+	font-size: 0;
 }
 
 .hover:hover p {
@@ -490,6 +491,7 @@ div#footer_nav {
 	position:absolute;
 	color:black;
 	display: inline;
+	font-size: small;
 
 }
 

@@ -207,7 +207,7 @@ app.get('/',function(request,response){
 			}
 			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML(), headerimage: defaultheaderimage});
 	});
-
+	today = null;
 });
 
 app.get('/sitemap.xml',function(request,response){
@@ -1083,6 +1083,7 @@ var  https = require('https');
 
 var http = require('http-get');
 
+app.enable('view cache');
 
 app.listen(PORT, function(){
   console.log("FreeCulture server listening on "+PORT);
@@ -1344,7 +1345,7 @@ function checkSession(request){
 		request.session.preview = PREVIEW.APPROVED;
 	}
 	if(!('order' in request.session)){
-		request.session.order = ORDER.ED;
+		request.session.order = ORDER.PD;
 	}
 }
 
