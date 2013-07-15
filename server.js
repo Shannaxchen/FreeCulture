@@ -194,7 +194,7 @@ app.get('/',function(request,response){
 				htmls.push(post_html);
 			}
 		}).on('end',function(){
-			post_html = "";
+			post_html = '';
 
 			adhtmls.sort(function(a,b){return a.adpos-b.adpos});
 			for(var i = 0; i < adhtmls.length; i++){
@@ -208,6 +208,8 @@ app.get('/',function(request,response){
 			response.render('homepage.html',{title:"Culture on The Cheap", posts:post_html,preview:getPreviewHTML(request), description:description, adlink:adlink, admin:getAdminHTML(request), categories: generateCategoryHTML(), headerimage: defaultheaderimage});
 	});
 	today = null;
+	htmls = [];
+	post_html = '';
 });
 
 app.get('/sitemap.xml',function(request,response){
